@@ -1,0 +1,125 @@
+extends _base.pug
+
+block main
+    div
+        h1=list.name
+
+        .navigation
+            if prevList
+                span.prev: a(href="/list/" + prevList) Previous: #{prevList}
+
+            if nextList
+                span.next: a(href="/list/"+nextList) Next: #{nextList}
+
+        .entries
+            h2 Entries
+
+            for entry in list.entries
+                span.entry
+                    h3=entry.media.title.romaji
+
+                    .content
+                        img(src=entry.media.coverImage.large)
+                        - let data = savedData.data[entry.id] || { mult: 1.0, order: 0, startAt: 0 };
+                        - totals += entry.media.episodes * entry.media.duration * data.mult;
+
+                        .data(data-id=entry.id)
+                            span.time
+                                if entry.media.episodes > 1
+                                    span.episodes #{entry.media.episodes - data.startAt}
+                                    span &nbsp;Episode#{entry.media.episodes !== 1 ? 's' : ''} &times;&nbsp;
+
+                                span.moment.duration(data-minutes=entry.media.duration, data-mult=data.mult)
+
+                                if entry.media.episodes > 1
+                                    | &nbsp;=&nbsp;
+                                    span.moment.duration.count(data-minutes=(entry.media.episodes - data.startAt) * entry.media.duration, data-mult=data.mult)
+
+                            hr
+
+                            .current
+                                | #{entry.status.toLowerCase()}, #{entry.progress} / #{entry.media.episodes} Watched
+
+                                | #{entry.notes}
+
+                            hr
+
+                            .controls
+                                .form-control
+                                    label(for="mult-"+entry.media.id) Multiplier
+                                    input(type="number", id="mult-"+entry.media.id, onchange="updateMult(this)", value=data.mult, step=0.1, min=1, max=2)
+
+                                .form-control
+                                    label(for="start-at-"+entry.media.id) Start At
+
+                                    if data.startAt > 1
+                                        input(type="number", id="start-at-"+entry.media.id, name="start-at" value=Number(data.startAt) + 1)
+                                    else
+                                        input(type="number", id="start-at-"+entry.media.id, name="start-at" value=0)
+
+                                .form-control
+                                    label(for="order-"+entry.media.id) Order
+
+                                    input(type="number", name="order", id="order-"+entry.media.id, value=data.order || 0)
+
+            span.entry
+                h2 Totals
+
+                .content
+                    img(src="https://via.placeholder.com/230x326.png/000000FF?text=%3F")
+
+                    .data
+                        span.moment.duration.totals(data-minutes=0, data-mult=1)
+
+                        hr
+
+                        .controls
+                            .form-control
+                                button(type="button", onclick="save()") Save
+
+    .chunks
+        h2 Chunks
+
+        - let chunkNum = 0;
+        for chunk in chunks
+            - chunkNum++
+
+            br
+
+            .chunk(data-id=chunk.entry.data.id)
+                h3 #{chunkNum}. #{chunk.entry.data.media.title.romaji}
+
+                .info
+                    unless chunk.isComplete
+                        .info-box.progress
+                            span Progress:
+                            span #{chunk.progress.toFixed(1)}%
+
+                    if debug
+                        .info-box
+                            span (dbg) Joined
+                            span #{chunk.isJoined}
+
+                        .info-box
+                            span (dbg) Saved Data
+                            span M=#{chunk.entry.savedData.mult}, S=#{chunk.entry.savedData.startAt}, O=#{chunk.entry.savedData.order}
+
+                    if chunk.entry.data.status === "DROPPED"
+                        .info-box.status
+                            span Status:
+                            span Dropped
+
+                    else
+                        .info-box.format
+                            span Format:
+                            span #{chunk.entry.data.media.format}
+
+                        if chunk.end !== 1
+                            .info-box.episodes
+                                span Episodes:
+                                span #{chunk.start} - #{chunk.end}
+
+
+                        .info-box.duration
+                            span Duration:
+                            span.moment.duration(data-minutes=(chunk.end - chunk.start + 1) * chunk.entry.data.media.duration, data-mult=chunk.entry.savedData.mult)

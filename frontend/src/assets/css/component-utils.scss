@@ -1,0 +1,20 @@
+@use "sass:math";
+
+@import "variables", "mixins";
+
+$image-aspect-ratio: math.div(115, 163);
+
+$image-height: 12.5;
+$image-width: $image-height * $image-aspect-ratio;
+
+%series-cover
+{
+  width: #{$image-width}rem;
+  height: #{$image-height}rem;
+}
+
+%series-cover-small
+{
+  width: #{$image-width * 0.6}rem;
+  height: #{$image-height * 0.6}rem;
+}

@@ -1,0 +1,95 @@
+<script setup lang="ts">
+  import {useChunks} from "../../../composition/useChunks";
+  import {ApiStatus} from "../../../composition/useApi";
+  import {reactive, ref} from "vue";
+  import {useEntries} from "../../../composition/useEntries";
+
+  import draggable from 'vuedraggable';
+
+  const props = defineProps({
+    user: {
+      type: String,
+      required: true,
+    },
+
+    list: {
+      type: String,
+      required: true,
+    },
+  });
+
+  const { user, list } = reactive(props);
+
+  const {
+    data: chunkData,
+    status,
+    reload: reloadChunks
+  } = useChunks(user, list);
+
+  const {
+    data: entryData,
+    status: entryStatus,
+    reload: reloadEntries,
+    updateSavedData,
+  } = useEntries(user, list);
+
+  const updating = ref(false);
+
+  async function update()
+  {
+    updating.value = true;
+
+    await updateSavedData();
+
+    await reloadEntries();
+    await reloadChunks();
+
+    updating.value = false;
+  }
+
+  function allowDrag()
+  {
+    return !updating.value;
+  }
+
+  function updateOrder()
+  {
+    let idx = 0;
+    for(const entry of entryData.value) {
+      entry.savedData.order = idx++;
+    }
+  }
+
+  console.log(user, list, status);
+</script>
+
+<template>
+  <h1>{{ list }}</h1>
+
+  <button @click="update()">Update</button>
+
+  <div v-if="entryData">
+    <draggable v-model="entryData" :item-key="(entry) => entry.savedData.order" :move="allowDrag" @update="updateOrder">
+      <template #item="{ index }">
+        <ListEntry v-model:entry="entryData[index]" class="entry" />
+      </template>
+    </draggable>
+  </div>
+
+  <div v-if="status === ApiStatus.Fetching">
+    Loading...
+  </div>
+
+  <div v-for="(chunk, index) of chunkData.chunks" v-if="status === ApiStatus.Ok">
+    <Chunk :chunk="chunk" :index="index" />
+  </div>
+</template>
+
+<style scoped lang="scss">
+
+  //.entry {
+  //  display: inline-block;
+  //  width: 50%;
+  //}
+
+</style>

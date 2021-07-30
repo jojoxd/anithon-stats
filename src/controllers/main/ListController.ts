@@ -1,8 +1,8 @@
 import {BodyParams, Controller, Get, PathParams, PlatformResponse, Post, QueryParams, Res, View} from "@tsed/common";
 import {Inject} from "@tsed/di";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
-import {SavedDataRepository} from "../entity/SavedDataRepository";
-import {ChunkService} from "../services/ChunkService";
+import {SavedDataRepository} from "../../entity/SavedDataRepository";
+import {ChunkService} from "../../services/ChunkService";
 import {NotFound} from "@tsed/exceptions";
 
 @Controller("/:user/list")

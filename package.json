@@ -11,10 +11,13 @@
     "typeorm": "tsed typeorm"
   },
   "workspaces": [
-    "packages/anilist"
+    "packages/anilist",
+    "packages/shared",
+    "frontend"
   ],
   "dependencies": {
     "@anime-rss-filter/anilist": "workspace:packages/anilist",
+    "@anistats/shared": "workspace:packages/shared",
     "@tsed/ajv": "^6.59.3",
     "@tsed/cli-core": "3.3.1",
     "@tsed/common": "^6.59.3",

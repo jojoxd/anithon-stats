@@ -15,11 +15,16 @@ import {config, rootDir} from "./config";
   acceptMimes: ["application/json"],
   httpPort: process.env.PORT || 8083,
   httpsPort: false, // CHANGE
+
   mount: {
     "/": [
-      `${rootDir}/controllers/**/*.ts`
-    ]
+      `${rootDir}/controllers/main/**/*.ts`
+    ],
+    "/api": [
+        `${rootDir}/controllers/api/**/*.ts`
+    ],
   },
+
   exclude: [
     "**/*.spec.ts"
   ],

@@ -1,5 +1,6 @@
 import {Column, Entity, PrimaryColumn} from "typeorm";
 import {Property} from "@tsed/schema";
+import {ISavedData} from "@anistats/shared";
 
 @Entity()
 export class SavedData
@@ -9,5 +10,5 @@ export class SavedData
     public listName: string;
 
     @Column("simple-json")
-    public data: { [key: string]: { mult: number, order: number; startAt?: number } };
+    public data: { [key: string]: ISavedData };
 }

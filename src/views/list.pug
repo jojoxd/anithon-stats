@@ -81,8 +81,11 @@ block main
         h2 Chunks
 
         - let chunkNum = 0;
+        - let totalProgress = 0;
+
         for chunk in chunks
             - chunkNum++
+            - totalProgress += chunk.progress
 
             br
 
@@ -123,3 +126,7 @@ block main
                         .info-box.duration
                             span Duration:
                             span.moment.duration(data-minutes=(chunk.end - chunk.start + 1) * chunk.entry.data.media.duration, data-mult=chunk.entry.savedData.mult)
+
+        div
+            span Total Progress:
+            span #{(totalProgress / chunks.length).toFixed(1)}%

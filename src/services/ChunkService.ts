@@ -1,13 +1,10 @@
 import {Service} from "@tsed/di";
-import {
-    MediaFormat,
-    userLists_MediaListCollection_lists
-} from "@anime-rss-filter/anilist";
-import {SavedData} from "../entity/SavedData";
+import {MediaFormat} from "@anime-rss-filter/anilist";
 import {$log} from "@tsed/common";
 import {Chunk} from "./ChunkService/Chunk";
 import {Entry} from "./ChunkService/Entry";
 import {StackManager} from "./ChunkService/StackManager";
+import {ChunkList} from "../dto/ChunkList";
 
 /**
  * Chunk Service
@@ -15,21 +12,6 @@ import {StackManager} from "./ChunkService/StackManager";
 @Service()
 export class ChunkService
 {
-    async chunkize(data: userLists_MediaListCollection_lists, savedData: SavedData): Promise<Array<Chunk>>
-    {
-        const entries = data.entries!.map(entry => new Entry(entry!, savedData));
-
-        // use for loop so we don't reference unknown entities
-        for(let i = 0; i < entries.length; i++) {
-            this.applySequels(entries[i], entries);
-        }
-
-        // reorder using savedData
-        entries.sort((a, b) => a.savedData.order > b.savedData.order ? 1 : -1);
-
-        return Array.from(this.generate(entries));
-    }
-
     /**
      * The Maximum length a Chunk can be
      */
@@ -42,30 +24,14 @@ export class ChunkService
      */
     static LAST_CUTOFF = 0.75 * 60;
 
-    applySequels(entry: Entry, entries: Array<Entry>)
+    async chunkize(entries: Array<Entry>): Promise<ChunkList>
     {
-        if(!entry.getSequel()) {
-            const sequels = entry.data.media!.relations!.edges!.filter(edge => edge!.relationType === 'SEQUEL').map(edge => edge!.node!);
+        const list = new ChunkList();
 
-            for (const sequel of sequels) {
-                const sequelIndex = entries.findIndex((entry) => sequel.id === entry.data.media!.id!);
+        list.user = {};
+        list.chunks = Array.from(this.generate(entries));
 
-                if (sequelIndex >= 0) {
-                    // remove index from entries, append to entry
-                    let sequel = entries.splice(sequelIndex, 1)[0];
-                    entry.setSequel(sequel);
-
-                    $log.info('(%s).setSequel(%s)', entry?.data.media!.title!.romaji!, sequel.data.media!.title!.romaji!);
-                } else {
-                    $log.info('no sequel found in entries for %s', entry.data.media!.title!.romaji!);
-                }
-            }
-        }
-
-        // Recursively apply sequels
-        let entrySequel = entry.getSequel();
-        if(entrySequel)
-            this.applySequels(entrySequel, entries);
+        return list;
     }
 
     *generate(entries: Array<Entry>): Generator<Chunk>

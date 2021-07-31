@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import components from 'vite-plugin-components';
 import pages from 'vite-plugin-pages';
+import icons, { ViteIconsResolver } from 'vite-plugin-icons';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,7 +22,21 @@ export default defineConfig({
     plugins: [
         vue(),
 
-        components(),
+        components({
+            dirs: [
+                'src/components/**'
+            ],
+
+            customComponentResolvers: [
+                ViteIconsResolver({
+                    componentPrefix: 'icon'
+                }),
+            ],
+        }),
+
+        icons({
+
+        }),
 
         pages({
             importMode: "async",

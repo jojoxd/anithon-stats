@@ -13,15 +13,17 @@
     "include-media": "^1.4.10",
     "vue": "^3.0.5",
     "vue-router": "^4.0.10",
-    "vuedraggable": "next"
+    "vue3-popper": "^1.2.0"
   },
   "devDependencies": {
+    "@iconify/json": "^1.1.381",
     "@vitejs/plugin-vue": "^1.2.5",
     "@vue/compiler-sfc": "^3.0.5",
     "sass": "^1.35.2",
     "typescript": "^4.3.2",
     "vite": "^2.4.2",
     "vite-plugin-components": "^0.13.0",
+    "vite-plugin-icons": "^0.6.5",
     "vite-plugin-pages": "^0.15.0",
     "vue-tsc": "^0.0.24"
   }

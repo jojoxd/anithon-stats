@@ -48,6 +48,7 @@ __metadata:
   resolution: "@anistats/frontend@workspace:frontend"
   dependencies:
     "@anistats/shared": "workspace:packages/shared"
+    "@iconify/json": ^1.1.381
     "@vitejs/plugin-vue": ^1.2.5
     "@vue/compiler-sfc": ^3.0.5
     "@vueuse/core": ^5.1.4
@@ -57,11 +58,12 @@ __metadata:
     typescript: ^4.3.2
     vite: ^2.4.2
     vite-plugin-components: ^0.13.0
+    vite-plugin-icons: ^0.6.5
     vite-plugin-pages: ^0.15.0
     vue: ^3.0.5
     vue-router: ^4.0.10
     vue-tsc: ^0.0.24
-    vuedraggable: next
+    vue3-popper: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -329,6 +331,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconify/json-tools@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@iconify/json-tools@npm:1.0.10"
+  checksum: 40f8c650534bda3962041bb238f2cf0183888c5addc9115a60d8628a4b9ab2ad9178bbad7267cb6383ff51a5ae538f3506362bb3b3ccce225832050a0accf655
+  languageName: node
+  linkType: hard
+
+"@iconify/json@npm:^1.1.381":
+  version: 1.1.381
+  resolution: "@iconify/json@npm:1.1.381"
+  checksum: 0c75565c03cb209495a6c37f8ab13ccdfeb18c481357040c33c48df050bd7d114e7e2a78ac61881b3203d7dfa752b2ddbf2bf17f3791b46829de9419fa8d39d4
+  languageName: node
+  linkType: hard
+
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -412,6 +428,13 @@ __metadata:
     node-gyp: ^7.1.0
     read-package-json-fast: ^2.0.1
   checksum: e4f8a5198ddaa9611f7e3b868baa4d446e20f970859fa55711f80b497793be41cbed5a403afc36fd97b3d21f44ee62c0d9bffc9af0eab53b72ea3018b3e1a0f9
+  languageName: node
+  linkType: hard
+
+"@popperjs/core@npm:^2.9.2":
+  version: 2.9.2
+  resolution: "@popperjs/core@npm:2.9.2"
+  checksum: cc4de8b46fc190805619224f1c683bee6a162276430af3728d35087099ad83a80da3c11c4eac7cb2b5aa2fa59d4c7c689e211a3e955136588ed6dedb5bff32c5
   languageName: node
   linkType: hard
 
@@ -2810,6 +2833,13 @@ __metadata:
   version: 3.0.0
   resolution: "date-format@npm:3.0.0"
   checksum: 42fc691af56bd78c1881e3f2d1f64d02f9b821fe3d927e4d559a75c8b67f22492e471372e2b37514451bbf37b705f0b130ef5aa07cb1e9d2ebaf11ccc0fa295f
+  languageName: node
+  linkType: hard
+
+"debounce@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "debounce@npm:1.2.1"
+  checksum: 04a00c6c45173ac6fb03ad3a7cf742fa4a86f6bf86b22f5b867085f739d0010ad98cbb92e80d60293faf6efb5452c637941092bd8d783cfeabe55c2000b1b07f
   languageName: node
   linkType: hard
 
@@ -7497,13 +7527,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.10.2":
-  version: 1.10.2
-  resolution: "sortablejs@npm:1.10.2"
-  checksum: 4815489b3d333c074a05e93d15691d001724be21ec318b283997d0fbef6f8de6e66c38379efaab11de3d963b8c8498b719c03a0390530cc28e749a757aea8312
-  languageName: node
-  linkType: hard
-
 "source-map-js@npm:^0.6.2":
   version: 0.6.2
   resolution: "source-map-js@npm:0.6.2"
@@ -8615,6 +8638,25 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
+"vite-plugin-icons@npm:^0.6.5":
+  version: 0.6.5
+  resolution: "vite-plugin-icons@npm:0.6.5"
+  dependencies:
+    "@iconify/json-tools": ^1.0.10
+    vue-template-es2015-compiler: ^1.9.1
+  peerDependencies:
+    "@iconify/json": "*"
+    "@vue/compiler-sfc": ^3.0.2
+    vue-template-compiler: ^2.6.12
+  peerDependenciesMeta:
+    "@vue/compiler-sfc":
+      optional: true
+    vue-template-compiler:
+      optional: true
+  checksum: ca387935b659d93b39f5e4ac87c2c35ef18d566c79c03a37e74f92e85b67c6603034ad5687d3d4aabde684db24c86db77304474cfa60f303710d3ccd1efe511b
+  languageName: node
+  linkType: hard
+
 "vite-plugin-pages@npm:^0.15.0":
   version: 0.15.0
   resolution: "vite-plugin-pages@npm:0.15.0"
@@ -8686,6 +8728,13 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
+"vue-template-es2015-compiler@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "vue-template-es2015-compiler@npm:1.9.1"
+  checksum: e25c0d4603cafb76a2d2c2adbd5cc62f419377d23d65118bc19793320c6448ef80ae191a8d6ec88e62fdd7ecb33d54850b232b02110da94a1fcfac3e062e9e83
+  languageName: node
+  linkType: hard
+
 "vue-tsc@npm:^0.0.24":
   version: 0.0.24
   resolution: "vue-tsc@npm:0.0.24"
@@ -8697,6 +8746,18 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
+"vue3-popper@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "vue3-popper@npm:1.2.0"
+  dependencies:
+    "@popperjs/core": ^2.9.2
+    debounce: ^1.2.1
+  peerDependencies:
+    vue: ^3.0.5
+  checksum: d29e233a416685ddfe8fcd887e6f2a7b84852233a9c2a31108eb155de0ef727aa9c8c53efc1f77fdb215ce95592b15785920f8711d9b0cc1a1ae325c564e3c7d
+  languageName: node
+  linkType: hard
+
 "vue@npm:^3.0.5":
   version: 3.1.5
   resolution: "vue@npm:3.1.5"
@@ -8705,17 +8766,6 @@ typescript@^3.8.3:
     "@vue/runtime-dom": 3.1.5
     "@vue/shared": 3.1.5
   checksum: 4d7d27b5276a41307a41e329fccbd7d6a706699962020e57325c9dba337f47fabaa1862b65b8efabbe345134bd9db4be7a3b4bffe91941a15b0d910610dc2568
-  languageName: node
-  linkType: hard
-
-"vuedraggable@npm:next":
-  version: 4.0.3
-  resolution: "vuedraggable@npm:4.0.3"
-  dependencies:
-    sortablejs: 1.10.2
-  peerDependencies:
-    vue: ^3.0.1
-  checksum: c265d59e66a7a32837e476ec520059f31fc0a9a6b0dcc718974ffd3dbed2689d6b7c2e053e5696a1239da906b402791fb086ca22bf1d7e6027bb9e2c6c5c3e9c
   languageName: node
   linkType: hard
 

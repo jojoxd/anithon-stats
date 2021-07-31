@@ -4,8 +4,6 @@
   import {reactive, ref} from "vue";
   import {useEntries} from "../../../composition/useEntries";
 
-  import draggable from 'vuedraggable';
-
   const props = defineProps({
     user: {
       type: String,
@@ -69,11 +67,11 @@
   <button @click="update()">Update</button>
 
   <div v-if="entryData">
-    <draggable v-model="entryData" :item-key="(entry) => entry.savedData.order" :move="allowDrag" @update="updateOrder">
-      <template #item="{ index }">
-        <ListEntry v-model:entry="entryData[index]" class="entry" />
+    <Sortable v-model:items="entryData" :key="item => item.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
+      <template #item="{ item, up, down, index }">
+        <ListEntry :entry="item" class="entry" @move-up="up" @move-down="down" :index="index" />
       </template>
-    </draggable>
+    </Sortable>
   </div>
 
   <div v-if="status === ApiStatus.Fetching">

@@ -1,6 +1,21 @@
 @import "./variables";
 @import "./mixins";
 
+:root
+{
+  --popper-theme-background-color: #{lighten($background-color, 10%)};
+  --popper-theme-text-color: #{lighten($text-color, 10%)};
+
+  --popper-theme-background-color-hover: #{lighten($background-color, 10%)};
+  --popper-theme-border-width: 0px;
+
+  --popper-theme-border-style: solid;
+
+  --popper-theme-border-radius: .2rem;
+  --popper-theme-padding: .5rem;
+  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+}
+
 html, body {
   margin: 0;
 
@@ -33,4 +48,3 @@ main.content {
     width: 90vw;
   }
 }
-

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import {useVModel} from "@vueuse/core";
-  import {computed, reactive, ref, watch} from "vue";
+  import {reactive, ref, watch} from "vue";
 
   /// <editor-fold desc="props">
   const props = defineProps({
@@ -13,9 +13,14 @@
       type: Boolean,
       default: false,
     },
+
+    index: {
+      type: Number,
+      default: -1,
+    }
   });
 
-  const { isSequel, entry: entrySelf } = reactive(props);
+  const { isSequel, entry: entrySelf, index } = reactive(props);
 
   const sequels = ref([]);
   watch(entrySelf, () => {
@@ -43,8 +48,20 @@
 
       <h2 class="entry-title">{{ entry.series.title.romaji }}</h2>
 
+      <div class="entry-modifiers">
+        <span>
+          <icon-mdi-chevron-up @click="$emit('move-up')" style="font-size: 1.5rem;" />
+        </span>
+
+        <span class="entry-index">{{ index + 1 }}</span>
+
+        <span>
+          <icon-mdi-chevron-down @click="$emit('move-down')" style="font-size: 1.5rem;" />
+        </span>
+      </div>
+
       <div class="entry-data">
-        {{ entry.episodes }} &times; {{ entry.series.duration * entry.savedData.mult }}m = {{ entry.episodes * (entry.series.duration * entry.savedData.mult) }}m
+        <EntryTime :entry="entry" />
 
         <div class="entry-control">
           <div class="multiplier">
@@ -56,12 +73,32 @@
             <label>Start At</label>
             <input type="number" v-model="entry.savedData.startAt" />
           </div>
+
+          <div class="order">
+            <label>Order</label>
+
+            {{ entry.savedData.order }}
+          </div>
         </div>
       </div>
 
       <div v-if="sequels.length > 0" class="entry-sequels">
         <div class="entry-sequel" v-for="sequel in sequels">
-          <img class="entry-sequel-cover" :src="sequel.series.coverImage" />
+          <Popper hover arrow disable-click-away>
+            <img class="entry-sequel-cover" :src="sequel.series.coverImage" />
+
+            <template #content>
+              <h3 class="entry-sequel-title">{{ sequel.series.title.romaji }}</h3>
+
+              <div class="entry-sequel-data">
+                <EntryTime :entry="sequel" />
+              </div>
+            </template>
+          </Popper>
+        </div>
+
+        <div class="entry-sequel-data">
+          <EntryTime :entries="sequels" />
         </div>
       </div>
     </div>
@@ -70,29 +107,6 @@
 <style lang="scss" scoped>
   @import "$$component-utils";
 
-  //.entry {
-  //  // Sequels
-  //
-  //  .entry-data-wrapper {
-  //    img {
-  //      @extend %series-cover;
-  //    }
-  //  }
-  //
-  //  &.sequel {
-  //    .entry-data-wrapper {
-  //      img {
-  //        @extend %series-cover-small;
-  //      }
-  //    }
-  //  }
-  //
-  //  .sequels {
-  //    background-color: red;
-  //  }
-  //}
-
-  // new styling
   .entry {
     background-color: $background-color;
     display: grid !important;
@@ -104,9 +118,9 @@
     border-radius: .5rem;
 
     grid-template:
-      [row1-start] "image         title   title" 2rem [row1-end]
-      [row2-start] "image         sequels data"  calc(#{$image-height}rem - 2rem) [row2-end]
-                 /  #{$image-width}rem  auto    auto;
+      [row1-start] "modifiers image               title   title" 2rem [row1-end]
+      [row2-start] "modifiers image               sequels data"  calc(#{$image-height}rem - 2rem) [row2-end]
+                 /  2.5rem      #{$image-width}rem  auto    auto;
 
     .entry-cover {
       grid-area: image;
@@ -119,10 +133,31 @@
       }
     }
 
+    .entry-modifiers {
+      grid-area: modifiers;
+
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-content: center;
+      justify-content: flex-start;
+      align-items: center;
+
+      &:deep(svg) {
+        cursor: pointer;
+      }
+
+      .entry-index {
+        margin: -.4rem 0;
+        user-select: none;
+      }
+    }
+
     .entry-title {
       grid-area: title;
 
       margin: 0;
+      margin-left: .7rem;
     }
 
     .entry-data {
@@ -139,15 +174,30 @@
       flex-direction: row;
       flex-wrap: nowrap;
 
+      margin-left: .5rem;
+
       .entry-sequel {
         width: 5rem;
 
         display: inline-block;
         bottom: 0;
 
+        margin: .2rem;
+
+        .entry-sequel-title {
+          font-size: 1.2rem;
+          margin: .2rem 0;
+        }
+
+        .entry-sequel-data {
+
+        }
+
         .entry-sequel-cover {
-          width: 100%;
-          height: auto;
+          width: 5rem;
+          height: #{5 / $image-aspect-ratio}rem;
+
+          border-radius: .25rem;
         }
       }
     }

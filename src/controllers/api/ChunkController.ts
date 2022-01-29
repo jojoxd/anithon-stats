@@ -32,7 +32,7 @@ export class ChunkController
             if(e instanceof NotFound)
                 throw e;
 
-            throw new InternalServerError("Something went wrong", "ChunkController::getIndex()");
+            throw new InternalServerError("Something went wrong", e);
         }
     }
 }

@@ -62,6 +62,8 @@ export class StackManager
                 yield chunk;
             } else {
                 $log.info('Empty this.stack[%s]', this.pointer);
+
+                $log.info(new Error().stack);
             }
 
             // Always update this.stack Pointer

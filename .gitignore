@@ -53,3 +53,8 @@ test/**/*.js.map
 /dist
 
 database.sqlite
+
+.yarn
+!.yarn/build-state.yml
+!.yarn/install-state.gz
+!.yarn/releases

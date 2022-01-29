@@ -1,8 +1,8 @@
 export interface ISavedData
 {
-    readonly mult: number;
+    mult: number;
 
     order: number;
 
-    readonly startAt: number | undefined;
+    startAt?: number;
 }

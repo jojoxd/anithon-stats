@@ -14,7 +14,8 @@ import {
     userListsVariables
 } from "../..";
 import {GraphQLError} from "graphql";
-import {$log} from "@tsed/common";
+import {$log, UseCache} from "@tsed/common";
+import {inspect} from "util";
 
 @Service()
 export class AnilistService implements IAnilistApi
@@ -31,6 +32,7 @@ export class AnilistService implements IAnilistApi
         this.apollo = builder.build();
     }
 
+    @UseCache({ ttl: 30 })
     async fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<userLists> | never
     {
         // Normalize Statuses

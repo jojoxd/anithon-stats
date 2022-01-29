@@ -1,9 +1,12 @@
-import {BodyParams, Controller, Get, PathParams, PlatformResponse, Post, QueryParams, Res, View} from "@tsed/common";
+import {$log, BodyParams, Controller, Get, PathParams, PlatformResponse, Post, QueryParams, Res, View} from "@tsed/common";
 import {Inject} from "@tsed/di";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 import {SavedDataRepository} from "../../entity/SavedDataRepository";
 import {ChunkService} from "../../services/ChunkService";
 import {NotFound} from "@tsed/exceptions";
+import {Entry} from "../../services/ChunkService/Entry";
+import {EntryService} from "../../services/EntryService";
+import {inspect} from "util";
 
 @Controller("/:user/list")
 export class ListController {
@@ -11,10 +14,15 @@ export class ListController {
     @Inject(AnilistService)
     protected anilist!: AnilistService;
 
+    @Inject(EntryService)
+    protected entryService!: EntryService;
+
     @Get("/:list")
     @View("list.pug")
     async getIndex(@PathParams("user") user: string, @PathParams("list") list: string, @QueryParams("debug") debug: boolean = false) {
         const _list = await this.anilist.getUserList(user, MediaType.ANIME, list);
+
+        // @TODO: Recreate this function
 
         if(!_list) {
             throw new NotFound("List not found");
@@ -22,7 +30,10 @@ export class ListController {
 
         let savedData = await this.savedDataRepo.findOrCreate(list);
 
-        const chunks = await this.chunkService.chunkize(_list, savedData);
+        const entries = await this.entryService.getEntries(user, list);
+        const chunks = await this.chunkService.chunkize(entries);
+
+        $log.info(inspect(chunks, { depth: null, colors: true }));
 
         const lists = await this.anilist.getUserLists(user, MediaType.ANIME);
         const currentIndex = lists.findIndex((listName) => listName === list);
@@ -32,7 +43,7 @@ export class ListController {
         return {
             list: _list,
             savedData,
-            chunks,
+            chunks: chunks.chunks,
             user,
             debug,
 

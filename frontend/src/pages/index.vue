@@ -26,7 +26,9 @@
     <div class="stage1">
       <h2>Your username</h2>
 
-      <input v-model="user" />
+      <div class="form-control">
+        <input v-model="user" placeholder="Username" />
+      </div>
 
       <span v-if="![ApiStatus.Ok, ApiStatus.Initial].includes(status)">
         {{ status }}
@@ -36,14 +38,14 @@
     <div class="stage2" v-if="stage2">
       <h2>Select your list</h2>
 
-      <div>
+      <div class="form-control">
         <select v-model="selectedList">
           <option disabled selected :value="null">Select a list</option>
           <option v-for="list of lists" :value="list" :key="list">{{ list }}</option>
         </select>
       </div>
 
-      <div>
+      <div class="form-control goto">
         <button @click="goToList()">Go To List</button>
       </div>
     </div>
@@ -55,6 +57,26 @@
 
   .userlist-select {
     text-align: center;
+
+    .form-control {
+      display: block;
+
+      input,
+      select,
+      button {
+        width: 10% !important;
+
+        min-width: 200px;
+
+        @include respond(mobile) {
+          width: 80vw !important;
+        }
+      }
+
+      button {
+        margin: 1rem;
+      }
+    }
 
     @include respond(mobile) {
       background-color: red;

@@ -23,5 +23,5 @@ $log.level = isProduction ? 'info' : 'debug';
 $log.info('%s Mode', isProduction ? 'Production' : 'Development');
 
 export const loggerConfig: Partial<PlatformLoggerSettings> = {
-  disableRoutesSummary: isProduction
+  disableRoutesSummary: isProduction,
 };

@@ -52,6 +52,8 @@ export class ChunkService
             return chunk[0]!.entry.data!.media!.format! === MediaFormat.MOVIE || chunk[0]!.entry.chunks === 1;
         });
 
+        $log.debug("Episodes & Movies", {episodes, movies});
+
         let episodeStack = new StackManager(episodes, 3);
         let moviesStack = new StackManager(movies, movies.length);
 
@@ -62,7 +64,7 @@ export class ChunkService
 
         let i = 0;
         while(!episodeStack.done || !moviesStack.done) {
-            // $log.debug('i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
+            $log.debug('i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
 
             $log.debug('emit episodeChunk');
             let episodeChunk = episodeGenerator.next().value;

@@ -26,5 +26,9 @@ export const config: Partial<TsED.Configuration> = {
         moment
       }
     }
+  },
+
+  cache: {
+    ttl: 100
   }
 };

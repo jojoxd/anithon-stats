@@ -1,24 +1,34 @@
 import {Chunk} from "../services/ChunkService/Chunk";
 import {CollectionOf, ForwardGroups, Property} from "@tsed/schema";
 import {IChunkList} from "@anistats/shared";
+import {MediaListStatus} from "@anime-rss-filter/anilist";
 
 export class ChunkList implements IChunkList
 {
     @Property()
     public user: IUserData;
 
+    /**
+     * Progress over time
+     */
     @Property()
     get weightedProgress(): number
     {
-        let episodeCount = 0;
-        let progress = 0;
+        let totalTime = 0;
+        let progressionTime = 0;
 
         for(const chunk of this.chunks) {
-            episodeCount += chunk.end - chunk.start;
-            progress += chunk.progress;
+            const chunkTime = chunk.entry.totalTime / chunk.entry.episodes * (chunk.end - chunk.start);
+
+            // Don't count dropped series as completion progress
+            if(chunk.entry.data.status === MediaListStatus.DROPPED)
+                continue;
+
+            totalTime += chunkTime;
+            progressionTime += chunkTime / 100 * chunk.progress;
         }
 
-        return Number((progress / episodeCount).toFixed(1));
+        return Number((progressionTime / totalTime * 100).toFixed(1));
     }
 
     @CollectionOf(Chunk)

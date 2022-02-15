@@ -1,5 +1,6 @@
 "use strict";
 
+export { AnilistError } from "./src/AnilistError";
 export { AnilistService } from "./src/services/AnilistService";
 export { IAnilistApi } from "./src/services/IAnilistApi";
 

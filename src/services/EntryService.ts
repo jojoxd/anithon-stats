@@ -24,7 +24,7 @@ export class EntryService
             }
 
             // reorder using savedData
-            // @TODO: Can savedData be undefined here? if so, make this safe
+            // @TODO: #1 Can savedData be undefined here? if so, make this safe
             entries.sort((a, b) => a.savedData.order > b.savedData.order ? 1 : -1);
 
             return entries;

@@ -38,7 +38,7 @@
 
   const debug = true;
 
-  // @TODO: Cleanup data structure
+  // @TODO: #1 Cleanup data structure into a useX call?
   const data = computed(() => [
       ['progress', `${(chunk.progress ?? 0).toFixed(1)}%`],
 
@@ -55,7 +55,7 @@
   ]);
 </script>
 
-<!-- TODO: Cleanup appearance of Chunk.vue -->
+<!-- TODO: #2 Cleanup appearance of Chunk.vue -->
 
 <template>
   <div class="chunk">

@@ -26,7 +26,7 @@
     <Entry :entry="entry" :index="index" @move-up="$emit('move-up')" @move-down="$emit('move-down')" />
 
     <template v-for="sequel of sequels">
-      <Entry :entry="sequel" class="sub-entry" />
+      <Entry :entry="sequel" />
     </template>
   </div>
 </template>
@@ -40,9 +40,5 @@
     @include respond(mobile) {
       margin: 1rem 0;
     }
-  }
-
-  .sub-entry {
-    // @TODO: Add <hr />
   }
 </style>

@@ -96,7 +96,6 @@ export class Entry implements IEntry
     @Property()
     get chunks(): number
     {
-        // @TODO: Check if this works correctly
         if(this.savedData.split) {
             // Ensure we are into range 1 - episodeCount
             return Math.min(Math.max(this.savedData.split, 1), this.episodes);
@@ -135,7 +134,7 @@ export class Entry implements IEntry
         }
 
         if(this.sequel) {
-            yield* this.sequel.next(); // @TODO: Check if this can be rewritten as 'yield* this.sequel?.next()'
+            yield* this.sequel.next();
         }
     }
 }

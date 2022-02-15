@@ -15,7 +15,7 @@ export class ChunkService
 {
     /**
      * The Maximum length a Chunk can be (In Minutes)
-     * @TODO: Change this to a per-list basis (UserList.cutoff)
+     * @TODO: #7 Change this to a per-list basis (UserList.cutoff)
      */
     static CUTOFF = 2.25 * 60;
 
@@ -24,7 +24,7 @@ export class ChunkService
      *
      * Using this, the last chunk can be as large as CUTOFF + LAST_CUTOFF
      *
-     * @TODO: Change this to a per-list basis (Userlist.lastCutoff)
+     * @TODO: #7 Change this to a per-list basis (Userlist.lastCutoff)
      */
     static LAST_CUTOFF = 0.75 * 60;
 

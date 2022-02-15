@@ -24,7 +24,7 @@ export function useUserLists(user: Ref<string>): UseUserListsReturn
     return {
         status,
 
-        // @TODO: Correct typing for useUserLists() return { lists } / (UseUserListsReturn::lists)
+        // @TODO: #1 Correct typing for useUserLists() return { lists } / (UseUserListsReturn::lists)
         lists: data
     };
 }

@@ -2,6 +2,7 @@ import {Entry} from "./Entry";
 import {MediaListStatus} from "@anime-rss-filter/anilist";
 import {ForwardGroups, Property} from "@tsed/schema";
 import {IChunk} from "@anistats/shared";
+import { $log } from "@tsed/common";
 
 /**
  * Data Class
@@ -29,8 +30,7 @@ export class Chunk implements IChunk
         this.end = end;
         this.isJoined = isJoined;
 
-        // @TODO: Convert to $log
-        console.log(`New Chunk - ${this.entry.data.media!.title!.romaji!} ${this.start} - ${this.end}`);
+        $log.debug(`New Chunk - ${this.entry.data.media!.title!.romaji!} ${this.start} - ${this.end}`);
     }
 
     @Property()

@@ -5,7 +5,7 @@
   import {ApiStatus} from "../composition/useApi";
   import {useRouter} from "vue-router";
 
-  // @TODO: Fix instantiation of user and selectedList, it should be read from router or something
+  // @TODO: #1 Fix instantiation of user and selectedList, it should be read from router or something
   const user: Ref<string> = ref(null);
   const selectedList: Ref<string> = ref(null);
 
@@ -14,6 +14,7 @@
   const stage2 = computed(() => status.value === ApiStatus.Ok);
 
   const router = useRouter();
+
   function goToList() {
     if(user.value && selectedList.value) {
       router.push(`/${user.value}/list/${selectedList.value}`);

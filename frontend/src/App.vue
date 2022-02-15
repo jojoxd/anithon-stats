@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, watch } from "vue";
 
-  // @TODO: Create controller for overlays, use it here
+  // @TODO: #6 Create controller for overlays, use it here
   const updating = ref(false);
   watch(updating, () => {
     console.log('updating changed');

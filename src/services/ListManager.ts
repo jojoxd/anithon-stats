@@ -18,7 +18,6 @@ export class ListManager
     @Inject()
     protected readonly userListRepository!: UserListRepository;
 
-    // @TODO: Caching?
     async getList(user: string, list: string): Promise<UserListContainer>
     {
         const userList = await this.userListRepository.findOrCreate(user, list);

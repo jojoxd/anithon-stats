@@ -63,7 +63,7 @@
 
     <div class="entry-title">{{ title }}</div>
 
-    <!-- TODO: Cleanup .entry-meta span appearance -->
+    <!-- TODO: #2 Cleanup .entry-meta span appearance -->
     <div class="entry-meta">
       <span class="blue">{{ episodes }}<span v-if="episodes !== entry.series.episodes">&nbsp;(of {{ entry.series.episodes }})</span> episodes</span>
       <span class="purple">{{ $moment.duration(episodeDuration, 'minutes').format() }}/episode</span>

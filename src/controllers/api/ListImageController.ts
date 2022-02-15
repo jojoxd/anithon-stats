@@ -20,7 +20,7 @@ export class ListImageController
     ) {
         const list = await this.listManager.getList(user.toLowerCase(), listName);
 
-        // @TODO: Change ListImage constructor to use UserListContainer
+        // @TODO: #1 Change ListImage constructor to use UserListContainer
         const listImage = new ListImage(
             await list.toEntries(),
             await list.toChunkList(),

@@ -3,6 +3,7 @@ import {ChunkService} from "../ChunkService";
 import {EntryService} from "../EntryService";
 import {Entry} from "../ChunkService/Entry";
 import {ChunkList} from "../../dto/ChunkList";
+import {UseCache} from "@tsed/common";
 
 export class UserListContainer
 {
@@ -30,15 +31,15 @@ export class UserListContainer
         return this.userList.listName;
     }
 
+    @UseCache({ ttl: 10 })
     async toEntries(): Promise<Array<Entry>>
     {
-        // @TODO: Add caching?
         return await this.entryService.getEntries(this);
     }
 
+    @UseCache({ ttl: 10 })
     async toChunkList(): Promise<ChunkList>
     {
-        // @TODO: Add caching?
         return await this.chunkService.chunkize(this);
     }
 }

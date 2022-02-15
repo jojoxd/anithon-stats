@@ -15,6 +15,7 @@ import {
 } from "../..";
 import {GraphQLError} from "graphql";
 import {$log, UseCache} from "@tsed/common";
+import {AnilistError} from "../AnilistError";
 
 @Service()
 export class AnilistService implements IAnilistApi
@@ -48,9 +49,10 @@ export class AnilistService implements IAnilistApi
             fetchPolicy: "network-only",
         });
 
-        // Error Handling @TODO: Throw AnilistError() instead of Error()
-        if (data.errors)
-            throw new Error(data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n"));
+        if (data.errors) {
+            const errorMessage = data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n");
+            throw new AnilistError(errorMessage, data.errors);
+        }
 
         // @DEBUG
         const len = new TextEncoder().encode(JSON.stringify(data.data)).byteLength
@@ -74,9 +76,10 @@ export class AnilistService implements IAnilistApi
             variables: { username, type, statuses }
         });
 
-        // Error Handling @TODO: Throw AnilistError() instead of Error()
-        if (data.errors)
-            throw new Error(data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n"));
+        if (data.errors) {
+            const errorMessage = data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n");
+            throw new AnilistError(errorMessage, data.errors);
+        }
 
         return data.data.MediaListCollection?.lists?.map(list => list!.name!) ?? [];
     }

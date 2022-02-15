@@ -135,7 +135,7 @@ export class Entry implements IEntry
         }
 
         if(this.sequel) {
-            yield* this.sequel.next();
+            yield* this.sequel.next(); // @TODO: Check if this can be rewritten as 'yield* this.sequel?.next()'
         }
     }
 }

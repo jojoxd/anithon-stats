@@ -29,6 +29,7 @@ export class Chunk implements IChunk
         this.end = end;
         this.isJoined = isJoined;
 
+        // @TODO: Convert to $log
         console.log(`New Chunk - ${this.entry.data.media!.title!.romaji!} ${this.start} - ${this.end}`);
     }
 

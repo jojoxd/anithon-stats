@@ -1,5 +1,8 @@
 import {useMediaQuery} from "@vueuse/core";
 
+/**
+ * Creates references for mobile, tablet and desktop Media Queries
+ */
 export function useBreakpoints()
 {
     // Keep in sync with _mixins.scss

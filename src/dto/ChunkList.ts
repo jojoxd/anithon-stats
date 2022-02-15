@@ -20,6 +20,9 @@ export class ChunkList implements IChunkList
         for(const chunk of this.chunks) {
             const chunkTime = chunk.entry.totalTime / chunk.entry.episodes * (chunk.end - chunk.start);
 
+            // @TODO: Is it correct to not count dropped series as completion progress
+            //        They should, probably. Otherwise a 100% complete list is impossible to get?
+            //        But, it would depend on context
             // Don't count dropped series as completion progress
             if(chunk.entry.data.status === MediaListStatus.DROPPED)
                 continue;

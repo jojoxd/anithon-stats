@@ -1,6 +1,9 @@
 import {IEntry} from "@anistats/shared";
 import {ref, Ref, watch } from "vue";
 
+/**
+ * Creates a reference to a flat list of Entries that are a sequel of an Entry
+ */
 export function useSequels(entry: Ref<IEntry>): Ref<Array<IEntry>>
 {
     const sequels: Ref<Array<IEntry>> = ref([]);

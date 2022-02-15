@@ -1,6 +1,9 @@
 import {IEntry} from "@anistats/shared";
 import {ref, Ref, watch} from "vue";
 
+/**
+ * Creates a reference to Duration Data of an Entry
+ */
 export function useEntryDuration(entry: Ref<IEntry>): IUseEntryDurationReturn
 {
     const episodes = ref(0);
@@ -9,7 +12,7 @@ export function useEntryDuration(entry: Ref<IEntry>): IUseEntryDurationReturn
     const totalDuration = ref(0);
 
     watch(entry, () => {
-        episodes.value = entry.value.series.episodes!
+        episodes.value = entry.value.series.episodes!;
 
         if(entry.value.savedData.startAt) {
             episodes.value = entry.value.series.episodes! - entry.value.savedData.startAt;
@@ -17,7 +20,6 @@ export function useEntryDuration(entry: Ref<IEntry>): IUseEntryDurationReturn
 
         episodeDuration.value = entry.value.series.duration! * entry.value.savedData.mult;
         totalDuration.value = episodes.value * episodeDuration.value;
-
     }, { immediate: true, deep: true });
 
     return {

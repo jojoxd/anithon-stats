@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import {defineProps, ref, watch, computed} from "vue";
+  import type { IEntry } from "@anistats/shared";
+  import type { Ref } from "vue";
   import {useEntryTitle} from "../../composition/entry/useEntryTitle";
   import {useVModel} from "@vueuse/core";
   import {useEntryDescription} from "../../composition/entry/useEntryDescription";
@@ -19,7 +21,7 @@
     },
   });
 
-  const entry = useVModel(props, "entry");
+  const entry = useVModel(props, "entry") as Ref<IEntry>;
   const index = useVModel(props, "index");
   const title = useEntryTitle(entry);
   const description = useEntryDescription(entry);
@@ -61,6 +63,7 @@
 
     <div class="entry-title">{{ title }}</div>
 
+    <!-- TODO: Cleanup .entry-meta span appearance -->
     <div class="entry-meta">
       <span class="blue">{{ episodes }}<span v-if="episodes !== entry.series.episodes">&nbsp;(of {{ entry.series.episodes }})</span> episodes</span>
       <span class="purple">{{ $moment.duration(episodeDuration, 'minutes').format() }}/episode</span>

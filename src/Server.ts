@@ -1,6 +1,6 @@
 import {Configuration, Inject} from "@tsed/di";
 import {PlatformApplication} from "@tsed/common";
-import "@tsed/platform-express"; // /!\ keep this import
+import "@tsed/platform-express";
 import bodyParser from "body-parser";
 import compress from "compression";
 import cookieParser from "cookie-parser";
@@ -17,9 +17,6 @@ import {config, rootDir} from "./config";
   httpsPort: false, // CHANGE
 
   mount: {
-    "/": [
-      `${rootDir}/controllers/main/**/*.ts`
-    ],
     "/api": [
         `${rootDir}/controllers/api/**/*.ts`
     ],
@@ -27,12 +24,7 @@ import {config, rootDir} from "./config";
 
   exclude: [
     "**/*.spec.ts"
-  ],
-
-  serveStatic: {
-    "/moment": `${rootDir}/../node_modules/moment/min`,
-    "/static": `${rootDir}/static`
-  }
+  ]
 })
 export class Server {
   @Inject()

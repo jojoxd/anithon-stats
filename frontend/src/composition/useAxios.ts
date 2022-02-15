@@ -20,6 +20,9 @@ if(import.meta.env.DEV) {
     });
 }
 
+/**
+ * Creates an Axios Instance
+ */
 export function useAxios()
 {
     return axiosInstance;

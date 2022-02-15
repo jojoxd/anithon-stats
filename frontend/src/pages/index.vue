@@ -5,6 +5,7 @@
   import {ApiStatus} from "../composition/useApi";
   import {useRouter} from "vue-router";
 
+  // @TODO: Fix instantiation of user and selectedList, it should be read from router or something
   const user: Ref<string> = ref(null);
   const selectedList: Ref<string> = ref(null);
 
@@ -57,6 +58,16 @@
 
   .userlist-select {
     text-align: center;
+
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+
+    height: 100vh;
+
+    > div {
+      width: 100%;
+    }
 
     .form-control {
       display: block;

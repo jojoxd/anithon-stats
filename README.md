@@ -1,21 +1,12 @@
-# anistats
+# Anithon Stats Project
 
-> An awesome project based on Ts.ED framework
+This project is for generating a complete, chunked list of Anime, for use in an Anithon (Anime Marathon).
 
-See [Ts.ED](https://tsed.io) project for more information.
+This code is very much alive, and as such, will change and break often.
+This is also why there will never be a finished release.
 
-## Build setup
+Notable files are `ChunkService.ts` and `EntryService.ts`
 
-> **Important!** Ts.ED requires Node >= 10, Express >= 4 and TypeScript >= 3.
+## Running this project
 
-```batch
-# install dependencies
-$ yarn install
-
-# serve
-$ yarn start
-
-# build for production
-$ yarn build
-$ yarn start:prod
-```
+`yarn start` and `cd frontend && yarn dev`

@@ -18,7 +18,7 @@
     },
   });
 
-  function moveUp(index)
+  function moveUp(index: number)
   {
     return function moveUpInner()
     {
@@ -34,7 +34,7 @@
     }
   }
 
-  function moveDown(index)
+  function moveDown(index: number)
   {
     return function moveDownInner()
     {

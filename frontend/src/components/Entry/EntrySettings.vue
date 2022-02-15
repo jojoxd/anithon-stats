@@ -1,15 +1,18 @@
 <script setup lang="ts">
   import {useVModel} from "@vueuse/core";
   import {ref, watch} from "vue";
+  import type { Ref } from "vue";
+  import type { IEntry } from "@anistats/shared";
 
   const props = defineProps({
     entry: {
-      type: Object /* IEntry */
+      type: Object /* IEntry */,
+      required: true,
     }
   });
 
   const autosplit = ref(true);
-  const entry = useVModel(props, 'entry');
+  const entry = useVModel(props, 'entry') as Ref<IEntry>;
 
   watch(autosplit, () => {
     if(autosplit.value) {

@@ -47,13 +47,12 @@ export class StackManager
         this._done = false;
 
         while(!this._done) {
-            $log.info('sp = %s', this.pointer);
+            $log.debug('[StackManager] sp = %s', this.pointer);
 
             if(!this.stack[this.pointer] || this.stack[this.pointer].length === 0) {
-                // update this.stack[this.pointer]
                 this.stack[this.pointer] = this.chunks.shift() ?? [];
 
-                $log.info('update this.stack[sp=%s] (%s) cl=%s', this.pointer, this.stack[this.pointer], this.chunks.length);
+                $log.debug('[StackManager] update this.stack[sp=%s] (%s) cl=%s', this.pointer, this.stack[this.pointer], this.chunks.length);
             }
 
             if(this.stack[this.pointer].length > 0) {
@@ -61,7 +60,7 @@ export class StackManager
 
                 yield chunk;
             } else {
-                $log.info('Empty this.stack[%s]', this.pointer);
+                $log.debug('[StackManager] Empty this.stack[%s]', this.pointer);
             }
 
             // Always update this.stack Pointer

@@ -1,6 +1,9 @@
 import { ComputedRef, computed, Ref, ref, watch } from "vue";
 import {useAxios} from "./useAxios";
 
+/**
+ * Creates a data wrapper for using the API while conforming to Vue Reactivity.
+ */
 export function useApi<TData = undefined, TReturn = any>(endpoint: string, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
 {
     const axiosInstance = useAxios();

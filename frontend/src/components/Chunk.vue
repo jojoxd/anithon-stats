@@ -2,7 +2,6 @@
   import type {IChunk} from "@anistats/shared";
   import {computed, reactive, ref, watch} from "vue";
 
-  /// <editor-fold desc="props">
   const props = defineProps({
     chunk: {
       type: Object /* IChunk */,
@@ -24,24 +23,22 @@
     chunk,
     index,
     progress
-  } = reactive(props) as any as {
+  } = reactive(props) as {
     chunk: IChunk,
     index: number,
     progress: boolean
   };
-  /// </editor-fold>
 
-  /// <editor-fold desc="Progress">
   const progressElement = ref<HTMLElement | null>(null);
 
   watch([chunk, progressElement], () => {
     if(progressElement.value)
       progressElement.value.style.height = `${(chunk.progress ?? 0).toFixed(0)}%`;
   }, { immediate: true });
-  /// </editor-fold>
 
-  /// <editor-fold desc="Chunk Data">
   const debug = true;
+
+  // @TODO: Cleanup data structure
   const data = computed(() => [
       ['progress', `${(chunk.progress ?? 0).toFixed(1)}%`],
 
@@ -56,8 +53,9 @@
           ['dbg.is-joined', chunk.isJoined]
       ] : []),
   ]);
-  /// </editor-fold>
 </script>
+
+<!-- TODO: Cleanup appearance of Chunk.vue -->
 
 <template>
   <div class="chunk">

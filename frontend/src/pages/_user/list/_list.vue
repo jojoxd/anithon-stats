@@ -19,7 +19,7 @@
   });
 
   const { user, list } = reactive(props);
-  const updating = useVModel(props, 'updating');
+  const updating = useVModel(props, 'updating'); // @TODO: Fix updating overlay
 
   const {
     data: chunkData,
@@ -92,9 +92,10 @@
     <h1>{{user}} / {{ list }}</h1>
 
     <div class="stats">
-      <EntryTime :entries="entryData" />
+      TODO: Update this: EntryTime does not exist anymore, we need something like it for entryData here
     </div>
 
+    <!-- @TODO: Change :href to fully computed value -->
     <a :href="`${host}/api/${user}/list/${list}/image.png`" target="_blank">Embed</a>
 
     <div class="form-control update">
@@ -109,10 +110,12 @@
       </Sortable>
     </div>
 
+    <!-- @TODO: Change Loading... to a generalized controller -->
     <div v-if="status === ApiStatus.Fetching">
       Loading...
     </div>
 
+    <!-- @TODO: Change Updating... to a generalized controller -->
     <div v-if="updating">
       Updating...
     </div>

@@ -3,6 +3,9 @@ import {IMetadata} from "@anistats/shared";
 import { ref, reactive, Ref } from "vue";
 import {useAxios} from "./useAxios";
 
+/**
+ * Creates a wrapper to manage Metadata for a User List.
+ */
 export function useMetadata(user: string, list: string)
 {
     const api = useApi<void, IMetadata>(`${user}/list/${list}/metadata`, ref());
@@ -15,7 +18,7 @@ export function useMetadata(user: string, list: string)
             data: metadata.value
         });
 
-        console.info(`POST /api/${user}/list/${list}/save`, metadata.value);
+        console.info(`POST /api/${user}/list/${list}/metadata`, metadata.value);
 
         return response.status;
     }

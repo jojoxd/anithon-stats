@@ -14,7 +14,8 @@ import {UserListContainer} from "./ListManager/UserListContainer";
 export class ChunkService
 {
     /**
-     * The Maximum length a Chunk can be
+     * The Maximum length a Chunk can be (In Minutes)
+     * @TODO: Change this to a per-list basis (UserList.cutoff)
      */
     static CUTOFF = 2.25 * 60;
 
@@ -22,6 +23,8 @@ export class ChunkService
      * If the last Chunk of an entry is less than LAST_CUTOFF minutes, merge the last 2 chunks together
      *
      * Using this, the last chunk can be as large as CUTOFF + LAST_CUTOFF
+     *
+     * @TODO: Change this to a per-list basis (Userlist.lastCutoff)
      */
     static LAST_CUTOFF = 0.75 * 60;
 
@@ -67,7 +70,7 @@ export class ChunkService
                 try {
                     const mergedChunk = chunks[idx].merge(chunks[idx + 1]);
 
-                    $log.info(`Merged Chunks ${idx} & ${idx + 1}`, mergedChunk.entry.series.title.romaji);
+                    $log.info(`[ChunkService] Merged Chunks ${idx} & ${idx + 1}`, mergedChunk.entry.series.title.romaji);
 
                     newChunks.push(mergedChunk);
                     merges = true;
@@ -98,7 +101,7 @@ export class ChunkService
             chunks.push(Array.from(entries[i].next()));
         }
 
-        $log.info('chunks', chunks.map(ch => `[\n\t${ch.map(c => `"${c.entry.data.media!.title!.romaji!}" ${c.start} - ${c.end}`).join("],\n\t[")}]`).join("\n"));
+        $log.info('[ChunkService] chunks', chunks.map(ch => `[\n\t${ch.map(c => `"${c.entry.data.media!.title!.romaji!}" ${c.start} - ${c.end}`).join("],\n\t[")}]`).join("\n"));
 
         const episodes = chunks.filter(chunk => {
             return chunk[0]!.entry.data!.media!.format! !== MediaFormat.MOVIE && chunk[0]!.entry.chunks > 1;
@@ -109,7 +112,7 @@ export class ChunkService
             return chunk[0]!.entry.data!.media!.format! === MediaFormat.MOVIE || chunk[0]!.entry.chunks === 1;
         });
 
-        $log.debug("Episodes & Movies", {episodes, movies});
+        $log.debug("[ChunkService] Episodes & Movies", {episodes, movies});
 
         let episodeStack = new StackManager(episodes, 3);
         let moviesStack = new StackManager(movies, movies.length);
@@ -121,15 +124,15 @@ export class ChunkService
 
         let i = 0;
         while(!episodeStack.done || !moviesStack.done) {
-            $log.debug('i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
+            $log.debug('[ChunkService] i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
 
-            $log.debug('emit episodeChunk');
+            $log.debug('[ChunkService] emit episodeChunk');
             let episodeChunk = episodeGenerator.next().value;
             if(episodeChunk)
                 yield episodeChunk;
 
             if(i % movieInterval === 0) {
-                $log.debug('emit movieChunk');
+                $log.debug('[ChunkService] emit movieChunk');
                 let movieChunk = movieGenerator.next().value;
 
                 if(movieChunk)

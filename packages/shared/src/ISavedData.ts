@@ -5,4 +5,6 @@ export interface ISavedData
     order: number;
 
     startAt?: number;
+
+    split?: number;
 }

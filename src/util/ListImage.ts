@@ -10,6 +10,8 @@ export class ListImage
 
     protected listName: string;
 
+    protected userName: string;
+
     protected chunks: ChunkList;
 
     /**
@@ -22,11 +24,12 @@ export class ListImage
      */
     protected static readonly TEXT_COLOR = "rgb(159, 173, 189)";
 
-    constructor(entries: Array<Entry>, chunks: ChunkList, listName: string)
+    constructor(entries: Array<Entry>, chunks: ChunkList, listName: string, userName: any)
     {
         this.entries = entries;
         this.chunks = chunks;
         this.listName = listName;
+        this.userName = userName;
     }
 
     protected async fetchImage(url: string): Promise<Buffer>
@@ -132,8 +135,15 @@ export class ListImage
 
         // Write all text at the top
         await canvas.text(async (text) => {
+            let listNameBox: Box;
             await text.withFont('1.5rem Arial', ListImage.TEXT_COLOR, () => {
-                text.write('#' + this.listName, { x: 10, y: 40 });
+                text.write(`#${this.listName}`, { x: 10, y: 40 });
+
+                listNameBox = text.measure(`#${this.listName}`);
+            });
+
+            await text.withFont('italic 0.75rem Arial', ListImage.TEXT_COLOR, () => {
+                text.write(`anilist.co/user/${this.userName}/animelist/${this.listName}`, { x: listNameBox.w + 10 + 10, y: 40 });
             });
 
             const textPlaces: Array<Point> = [
@@ -143,6 +153,8 @@ export class ListImage
                 { x: 110, y: 90 },
                 { x: 210, y: 70 },
                 { x: 210, y: 90 },
+                { x: 310, y: 70 },
+                { x: 310, y: 90 },
             ];
 
             await text.withFont('.75rem Arial', 'rgb(159, 173, 189)', () => {
@@ -160,6 +172,16 @@ export class ListImage
                 const droppedCount = this.entries.filter((e) => e.data.status === MediaListStatus.DROPPED).length;
                 if(droppedCount > 0)
                     text.write(`${droppedCount} Dropped`, textPlaces.shift()!);
+
+                // chunk[0]!.entry.data!.media!.format!
+                const totalSeriesEpisodes = this.entries.filter(e => e.data!.media!.format! !== "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
+                const totalMoviesEpisodes = this.entries.filter(e => e.data!.media!.format! === "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
+
+                if(totalSeriesEpisodes > 0)
+                    text.write(`${totalSeriesEpisodes} episodes`, textPlaces.shift()!);
+
+                if(totalMoviesEpisodes > 0)
+                    text.write(`${totalMoviesEpisodes} movies`, textPlaces.shift()!);
             });
         });
 

@@ -5,6 +5,7 @@ import {Chunk} from "./ChunkService/Chunk";
 import {Entry} from "./ChunkService/Entry";
 import {StackManager} from "./ChunkService/StackManager";
 import {ChunkList} from "../dto/ChunkList";
+import {UserListContainer} from "./ListManager/UserListContainer";
 
 /**
  * Chunk Service
@@ -24,14 +25,70 @@ export class ChunkService
      */
     static LAST_CUTOFF = 0.75 * 60;
 
-    async chunkize(entries: Array<Entry>): Promise<ChunkList>
+    async chunkize(ctx: UserListContainer): Promise<ChunkList>
     {
         const list = new ChunkList();
 
         list.user = {};
-        list.chunks = Array.from(this.generate(entries));
+        const chunks = Array.from(this.generate(await ctx.toEntries()));
+
+        list.chunks = chunks;
+
+        if(ctx.userList.allowChunkMerge) {
+            let canMerge = true;
+            let _chunks = chunks;
+            while(canMerge) {
+                let merged = this.merge(_chunks);
+
+                _chunks = merged.chunks;
+                canMerge = merged.merges;
+            }
+
+            list.chunks = _chunks;
+        }
 
         return list;
+    }
+
+    merge(chunks: Array<Chunk>): { chunks: Array<Chunk>, merges: boolean }
+    {
+        const newChunks: Array<Chunk> = [];
+        let merges = false;
+
+        for(let idx = 0; idx < chunks.length; idx++) {
+            if(chunks[idx].entry.id === chunks[idx + 1]?.entry.id) {
+
+                // Don't merge if split is on / autosplit is off
+                if(typeof chunks[idx].entry.savedData.split !== "undefined") {
+                    newChunks.push(chunks[idx]);
+                    continue;
+                }
+
+                try {
+                    const mergedChunk = chunks[idx].merge(chunks[idx + 1]);
+
+                    $log.info(`Merged Chunks ${idx} & ${idx + 1}`, mergedChunk.entry.series.title.romaji);
+
+                    newChunks.push(mergedChunk);
+                    merges = true;
+
+                    idx += 1; // skip next Chunk as it's been merged together
+                } catch(e) {
+                    $log.warn(e);
+
+                    newChunks.push(chunks[idx]);
+                }
+
+                continue;
+            }
+
+            newChunks.push(chunks[idx]);
+        }
+
+        return {
+            chunks: newChunks,
+            merges
+        }
     }
 
     *generate(entries: Array<Entry>): Generator<Chunk>

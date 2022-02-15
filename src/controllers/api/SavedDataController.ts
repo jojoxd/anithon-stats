@@ -3,6 +3,7 @@ import {Inject} from "@tsed/di";
 import {SavedData} from "../../entity/SavedData";
 import {SavedDataRepository} from "../../entity/SavedDataRepository";
 import {ISavedData} from "@anistats/shared";
+import {Header} from "@tsed/schema";
 
 @Controller("/:user/list/:list/save")
 export class SavedDataController
@@ -11,6 +12,9 @@ export class SavedDataController
     protected savedDataRepo: SavedDataRepository;
 
     @Post()
+    @Header({
+        'Cache-Control': 'no-store',
+    })
     public async postIndex(
         @PathParams("user") user: string,
         @PathParams("list") listName: string,

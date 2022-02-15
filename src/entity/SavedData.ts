@@ -5,10 +5,10 @@ import {ISavedData} from "@anistats/shared";
 @Entity()
 export class SavedData
 {
-    @PrimaryColumn()
+    @PrimaryColumn({ generated: "increment" })
     @Property()
-    public listName: string;
+    public id: number;
 
     @Column("simple-json")
-    public data: { [key: string]: ISavedData };
+    public data: { [key: string]: ISavedData } = {};
 }

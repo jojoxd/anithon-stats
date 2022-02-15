@@ -36,6 +36,7 @@ export default gql`
                         format
                         episodes
                         duration
+                        description
 
                         coverImage {
                             large

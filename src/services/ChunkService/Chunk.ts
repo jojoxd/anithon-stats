@@ -48,4 +48,21 @@ export class Chunk implements IChunk
             return this.isComplete ? 100 : 0;
         }
     }
+
+    /**
+     * Merges this chunk with another chunk
+     * (Creates a new Chunk)
+     */
+    merge(chunk: Chunk): Chunk
+    {
+        if(chunk.entry !== this.entry)
+            throw new Error("Entries are not the same, cannot merge");
+
+        return new Chunk(
+            chunk.entry,
+            Math.min(this.start, chunk.start),
+            Math.max(this.end, chunk.end),
+            true
+        );
+    }
 }

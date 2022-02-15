@@ -1,24 +1,29 @@
 import {Controller, Get, PathParams} from "@tsed/common";
 import {InternalServerError} from "@tsed/exceptions";
 import {Inject} from "@tsed/di";
-import {EntryService} from "../../services/EntryService";
-import {Returns} from "@tsed/schema";
+import {Header, Returns} from "@tsed/schema";
 import {Entry} from "../../services/ChunkService/Entry";
+import {ListManager} from "../../services/ListManager";
 
 @Controller("/:user/list/:list/entries")
 export class EntryController
 {
     @Inject()
-    protected entryService: EntryService;
+    protected listManager: ListManager;
 
     @Get()
     @Returns(200, Array).Of(Entry).Groups('deep-entry')
+    @Header({
+        'Cache-Control': 'no-store',
+    })
     public async getIndex(
         @PathParams("user") user: string,
         @PathParams("list") listName: string
     ) {
         try {
-            return await this.entryService.getEntries(user, listName);
+            const list = await this.listManager.getList(user.toLowerCase(), listName);
+
+            return list.toEntries();
         } catch(e) {
             throw new InternalServerError("Something went wrong", "EntryController::getIndex()");
         }

@@ -22,7 +22,7 @@ export class Entry implements IEntry
     {
         this.data = data;
 
-        this.savedData = savedData.data[data.id!] ?? { mult: 1, order: 0, startAt: 0 };
+        this.savedData = savedData.data[data.id!] ?? { mult: 1, order: 0, startAt: 0, split: undefined };
     }
 
     @Property()
@@ -47,9 +47,29 @@ export class Entry implements IEntry
         return this._sequel;
     }
 
-    public setSequel(entry: Entry)
+    protected _sequelLocked: boolean;
+
+    public setSequel(entry: Entry): boolean
     {
+        if(this._sequelLocked)
+            return false;
+
         this._sequel = entry;
+
+        return true;
+    }
+
+    public unsetSequel(): Entry | undefined
+    {
+        const sequel = this._sequel;
+        this._sequel = undefined;
+
+        return sequel;
+    }
+
+    public lockSequel()
+    {
+        this._sequelLocked = true;
     }
 
     public getSequel(): Entry | null
@@ -66,12 +86,21 @@ export class Entry implements IEntry
     @Property()
     get hasJoinedLastChunk()
     {
+        if(this.savedData.split) {
+            return Math.floor(this.episodes / this.savedData.split) <= 1;
+        }
+
         return this.totalTime % ChunkService.CUTOFF < (ChunkService.LAST_CUTOFF);
     }
 
     @Property()
     get chunks(): number
     {
+        // @TODO: Check if this works correctly
+        if(this.savedData.split) {
+            // Ensure we are into range 1 - episodeCount
+            return Math.min(Math.max(this.savedData.split, 1), this.episodes);
+        }
 
         if(this.hasJoinedLastChunk) {
             // Join Last Chunk

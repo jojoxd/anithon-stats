@@ -33,6 +33,7 @@ export default gql`
                         status
                         format
                         episodes
+                        description
 
                         coverImage {
                             large

@@ -54,6 +54,8 @@ __metadata:
     "@vueuse/core": ^5.1.4
     axios: ^0.21.1
     include-media: ^1.4.10
+    moment: ^2.29.1
+    moment-duration-format: ^2.3.2
     sass: ^1.35.2
     typescript: ^4.3.2
     vite: ^2.4.2
@@ -1440,6 +1442,7 @@ __metadata:
     "@types/node": ^16.3.1
     "@types/skia-canvas": ^0.9.1
     ajv: ^8.6.1
+    async-mutex: ^0.3.2
     body-parser: ^1.19.0
     canvas: ^2.8.0
     compression: ^1.7.4
@@ -1830,6 +1833,15 @@ __metadata:
   version: 1.1.0
   resolution: "assertion-error@npm:1.1.0"
   checksum: 7bbc9fa2ff51618b0ea3c4ae13dbafe6dfb71b11c267aa93c749489355f55d0b844403bfc3dc8b9a98b0f21837fa2b59191c8a8f76e65303d06498fab4867f4c
+  languageName: node
+  linkType: hard
+
+"async-mutex@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "async-mutex@npm:0.3.2"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: ad6710a629ee4f128df32e05e59777459c14a66cab3bbc842db4c1e5ebf7f83fc93ad670fe3a0e28665796369306efe2d72bb9fe2a2beec63c0f61f5366f4b40
   languageName: node
   linkType: hard
 
@@ -5932,6 +5944,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"moment-duration-format@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "moment-duration-format@npm:2.3.2"
+  checksum: e4d548c14c7ff30adbf92815d2dee49b41188ccd2908d0165521e3e231c533f72460aee20228614e3091f788d9a60bcedcc5c2e48d5a2825c53ef5cf8768f8d5
+  languageName: node
+  linkType: hard
+
 "moment@npm:^2.29.1":
   version: 2.29.1
   resolution: "moment@npm:2.29.1"
@@ -8523,6 +8542,13 @@ fsevents@~2.3.2:
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: f44fe7f216946b17d3e3074df3746372703cf24e9127b4c045511456e8e4bf25515fb0a1bb3937676cc305651c5d4fcb6377b0588a4c6a957e748c4c28905d17
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "tslib@npm:2.3.1"
+  checksum: 5ae2f209c5127bad284974c78916f02c72082615f65889a7ed0c7ca6d5f935c30338a0ee7310e1d9652dabc7b7507fd2905035487446d09d45fc1f19de71cf05
   languageName: node
   linkType: hard
 

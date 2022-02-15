@@ -10,5 +10,9 @@ export interface ISeriesData
 
     readonly duration: number;
 
+    readonly episodes: number | null;
+
     readonly notes: string | null;
+
+    readonly description: string | null;
 }

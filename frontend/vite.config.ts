@@ -9,6 +9,8 @@ export default defineConfig({
     base: 'http://localhost:3000/',
 
     server: {
+        port: 3000,
+
         proxy: {
             '/api': "http://localhost:8083",
         },

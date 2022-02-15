@@ -11,6 +11,8 @@
     "@vueuse/core": "^5.1.4",
     "axios": "^0.21.1",
     "include-media": "^1.4.10",
+    "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.10",
     "vue3-popper": "^1.2.0"

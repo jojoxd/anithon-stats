@@ -21,7 +21,7 @@
   });
 
   const episodeDuration = computed(() => {
-    return entry.series.duration * entry.savedData.mult
+    return (entry.series.duration * entry.savedData.mult);
   });
 
   const totalDuration = computed(() => {
@@ -30,17 +30,23 @@
 
   const getEpisodeDuration = (entry) => entry.series.duration * entry.savedData.mult;
   const getTotalEpisodeDuration = (entry) => getEpisodeDuration(entry) * entry.episodes;
+
+  const toHM = (minutes: number) => minutes > 10 ? `${Math.floor(minutes / 60)}:${(minutes % 60).toFixed(0)}` : `${minutes.toFixed(0)}`;
 </script>
 
 <template>
   <span class="entry-time">
     <span v-for="(_entry, idx) in _entries">
       <span v-if="_entry.episodes > 1">
-        <span class="episodes">{{ _entry.episodes }}</span>
+        <span class="episodes">
+          {{ _entry.episodes }}
+
+          <span v-if="_entry.series.episodes !== null && _entry.series.episodes !== _entry.episodes">(of {{ _entry.series.episodes }})</span>
+        </span>
         &times;
       </span>
 
-      <span class="episode-duration">{{ getEpisodeDuration(_entry) }}m</span>
+      <span class="episode-duration">{{ toHM(getEpisodeDuration(_entry)) }}m</span>
 
       <span v-if="(idx + 1) < (_entries.length)">
         &plus;
@@ -51,6 +57,6 @@
       &equals;
     </span>
 
-    <span class="total-duration">{{ totalDuration }}m</span>
+    <span class="total-duration">{{ toHM(totalDuration) }}</span>
   </span>
 </template>

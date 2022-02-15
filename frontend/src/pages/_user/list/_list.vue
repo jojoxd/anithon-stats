@@ -1,8 +1,10 @@
 <script setup lang="ts">
   import {useChunks} from "../../../composition/useChunks";
-  import {ApiStatus} from "../../../composition/useApi";
-  import {reactive, ref} from "vue";
+  import {reactive, computed} from "vue";
   import {useEntries} from "../../../composition/useEntries";
+  import {useMetadata} from "../../../composition/useMetadata";
+  import {ApiStatus} from "../../../composition/useApi";
+  import {useVModel} from "@vueuse/core";
 
   const props = defineProps({
     user: {
@@ -17,6 +19,7 @@
   });
 
   const { user, list } = reactive(props);
+  const updating = useVModel(props, 'updating');
 
   const {
     data: chunkData,
@@ -28,21 +31,44 @@
     data: entryData,
     status: entryStatus,
     reload: reloadEntries,
-    updateSavedData,
   } = useEntries(user, list);
 
-  const updating = ref(false);
+  const {
+    data: metadata,
+    updateMetadata,
+    reload: reloadMetadata,
+  } = useMetadata(user, list);
+
+  const host = computed(() => {
+    return `${window.location.protocol}//${window.location.host}`;
+  });
 
   async function update()
   {
     updating.value = true;
 
-    await updateSavedData();
+    for(const entry of entryData.value) {
+      console.log('SD>>', entry.id, entry.series.title.romaji, entry.savedData);
+      metadata.value!.savedData[entry.id] = entry.savedData;
+
+      let _sequel = entry.sequel;
+      while(_sequel) {
+        metadata.value!.savedData[_sequel.id] = _sequel.savedData;
+
+        _sequel = _sequel.sequel;
+      }
+    }
+
+    await updateMetadata();
 
     await reloadEntries();
     await reloadChunks();
+    await reloadMetadata();
 
-    updating.value = false;
+    // Make the overlay feel more right (also less flashing)
+    setTimeout(() => {
+      updating.value = false;
+    }, 1000);
   }
 
   function allowDrag()
@@ -58,36 +84,58 @@
     }
   }
 
-  console.log(user, list, status);
+  console.log(user, list, status, host);
 </script>
 
 <template>
-  <h1>{{ list }}</h1>
+  <div>
+    <h1>{{user}} / {{ list }}</h1>
 
-  <button @click="update()">Update</button>
+    <div class="stats">
+      <EntryTime :entries="entryData" />
+    </div>
 
-  <div v-if="entryData">
-    <Sortable v-model:items="entryData" :key="item => item.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
-      <template #item="{ item, up, down, index }">
-        <ListEntry :entry="item" class="entry" @move-up="up" @move-down="down" :index="index" />
-      </template>
-    </Sortable>
-  </div>
+    <a :href="`${host}/api/${user}/list/${list}/image.png`" target="_blank">Embed</a>
 
-  <div v-if="status === ApiStatus.Fetching">
-    Loading...
-  </div>
+    <div class="form-control update">
+      <button @click="update()">Update</button>
+    </div>
 
-  <div v-for="(chunk, index) of chunkData.chunks" v-if="status === ApiStatus.Ok">
-    <Chunk :chunk="chunk" :index="index" />
+    <div class="dev" v-if="entryData">
+      <Sortable v-model:items="entryData" :key="item => item.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
+        <template #item="{ item, up, down, index }">
+          <EntryContainer :entry="item" @move-up="up" @move-down="down" :index="index" />
+        </template>
+      </Sortable>
+    </div>
+
+    <div v-if="status === ApiStatus.Fetching">
+      Loading...
+    </div>
+
+    <div v-if="updating">
+      Updating...
+    </div>
+
+    <div v-for="(chunk, index) of chunkData.chunks" v-if="status === ApiStatus.Ok">
+      <Chunk :chunk="chunk" :index="index" />
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 
-  //.entry {
-  //  display: inline-block;
-  //  width: 50%;
-  //}
+  .form-control
+  {
+    &.update
+    {
+      grid-template:
+      [row1-start] "input" 1.4rem [row1-end]
+                 / 100% !important;
 
+      input, button {
+        width: 100%;
+      }
+    }
+  }
 </style>

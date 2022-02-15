@@ -137,6 +137,7 @@ export interface userLists_MediaListCollection_lists_entries_media {
   duration: number | null;
   id: number | null;
   relations: { edges?: (userLists_MediaListCollection_lists_entries_media_edge | null)[] } | null;
+  description: string | null;
 }
 
 export interface userLists_MediaListCollection_lists_entries_media_edge {

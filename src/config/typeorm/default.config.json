@@ -3,7 +3,7 @@
   "type": "sqlite",
   "database": "database.sqlite",
   "synchronize": true,
-  "logging": false,
+  "logging": true,
   "entities": [
     "${rootDir}/entity/**/*.{js,ts}"
   ],

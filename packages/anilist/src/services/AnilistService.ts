@@ -15,7 +15,6 @@ import {
 } from "../..";
 import {GraphQLError} from "graphql";
 import {$log, UseCache} from "@tsed/common";
-import {inspect} from "util";
 
 @Service()
 export class AnilistService implements IAnilistApi

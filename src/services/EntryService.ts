@@ -1,9 +1,9 @@
 import {Inject, Service} from "@tsed/di";
-import {IEntry} from "@anistats/shared";
 import {Entry} from "./ChunkService/Entry";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 import {SavedDataRepository} from "../entity/SavedDataRepository";
 import {$log} from "@tsed/common";
+import {UserListContainer} from "./ListManager/UserListContainer";
 
 @Service()
 export class EntryService
@@ -14,11 +14,13 @@ export class EntryService
     @Inject()
     protected savedDataRepository: SavedDataRepository;
 
-    async getEntries(userName: string, listName: string): Promise<Array<Entry>>
+    async getEntries(ctx: UserListContainer): Promise<Array<Entry>>
     {
         try {
-            const data = await this.anilist.getUserList(userName, MediaType.ANIME, listName);
-            const savedData = await this.savedDataRepository.findOrCreate(listName);
+            const data = await this.anilist.getUserList(ctx.userName, MediaType.ANIME, ctx.listName);
+            const savedData = ctx.userList.savedData;
+
+            $log.info(savedData);
 
             const entries = data.entries!.map(entry => new Entry(entry!, savedData));
 
@@ -49,7 +51,22 @@ export class EntryService
                 if (sequelIndex >= 0) {
                     // remove index from entries, append to entry
                     let sequel = entries.splice(sequelIndex, 1)[0];
-                    entry.setSequel(sequel);
+
+                    if(entry.sequel) {
+                        // remove sequel from entry and maintain default entries
+                        const _sequel = entry.unsetSequel()!;
+                        entry.lockSequel();
+
+                        entries.push(_sequel);
+                        entries.push(sequel);
+
+                        $log.info(`Undid sequelizing for ${entry.data.media!.title!.romaji!} (REASON: Entry has multiple sequels)`);
+                    } else {
+                        if(!entry.setSequel(sequel)) {
+                            // Sequels Locked, re-add sequel to entries
+                            entries.push(sequel);
+                        }
+                    }
 
                     $log.info('(%s).setSequel(%s)', entry?.data.media!.title!.romaji!, sequel.data.media!.title!.romaji!);
                 } else {

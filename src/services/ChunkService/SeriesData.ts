@@ -16,10 +16,16 @@ export class SeriesData implements ISeriesData
     public readonly coverImage: string;
 
     @Property()
+    public readonly episodes: number | null;
+
+    @Property()
     public readonly duration: number;
 
     @Property()
     public readonly notes: string | null;
+
+    @Property()
+    public readonly description: string | null;
 
     constructor(data: userLists_MediaListCollection_lists_entries)
     {
@@ -33,7 +39,10 @@ export class SeriesData implements ISeriesData
 
         this.coverImage = data.media!.coverImage!.large!;
 
+        this.episodes = data.media!.episodes ?? null;
         this.duration = data.media!.duration!;
+
+        this.description = data.media!.description!;
 
         this.notes = data.notes;
     }

@@ -232,6 +232,18 @@ class CanvasTextUtil
 
         ctx.fillText(text, pos.x, pos.y);
     }
+
+    measure(text: string): Box
+    {
+        let ctx = this.canvas.context;
+
+        const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = ctx.measureText(text);
+
+        return {
+            w: width,
+            h: actualBoundingBoxDescent - actualBoundingBoxAscent
+        };
+    }
 }
 
 class CanvasFillUtil

@@ -3,16 +3,13 @@ import {Inject} from "@tsed/di";
 import {Controller, Get, PathParams, UseCache} from "@tsed/common";
 import {ContentType} from "@tsed/schema";
 import {ListImage} from "../../util/ListImage";
-import {ChunkService} from "../../services/ChunkService";
+import {ListManager} from "../../services/ListManager";
 
 @Controller("/:user/list/:list/image.png")
 export class ListImageController
 {
     @Inject()
-    protected entryService: EntryService;
-
-    @Inject()
-    protected chunkService: ChunkService;
+    protected listManager: ListManager;
 
     @Get()
     @ContentType('image/png')
@@ -21,10 +18,15 @@ export class ListImageController
         @PathParams("user") user: string,
         @PathParams("list") listName: string
     ) {
-        const entries = await this.entryService.getEntries(user, listName);
-        const chunks = await this.chunkService.chunkize(entries);
+        const list = await this.listManager.getList(user.toLowerCase(), listName);
 
-        const listImage = new ListImage(entries, chunks, listName);
+        // @TODO: Change ListImage constructor to use UserListContainer
+        const listImage = new ListImage(
+            await list.toEntries(),
+            await list.toChunkList(),
+            listName,
+            user
+        );
 
         return listImage.generate();
     }

@@ -1,36 +1,34 @@
-import {Controller, Get, PathParams} from "@tsed/common";
+import {$log, Controller, Get, PathParams} from "@tsed/common";
 import {Inject} from "@tsed/di";
 import {InternalServerError, NotFound} from "@tsed/exceptions";
-import {ChunkService} from "../../services/ChunkService";
-import {EntryService} from "../../services/EntryService";
-import {Returns} from "@tsed/schema";
+import {Header, Returns} from "@tsed/schema";
 import {ChunkList} from "../../dto/ChunkList";
+import {ListManager} from "../../services/ListManager";
 
 @Controller("/:user/list/:list/chunks")
 export class ChunkController
 {
     @Inject()
-    protected chunkService: ChunkService;
-
-    @Inject()
-    protected entryService: EntryService;
+    protected listManager: ListManager;
 
     @Get()
     @Returns(200, ChunkList).Groups()
+    @Header({
+        'Cache-Control': 'no-store',
+    })
     public async getIndex(
         @PathParams("user") user: string,
         @PathParams("list") listName: string
     ) {
         try {
-            const entries = await this.entryService.getEntries(user, listName);
+            const list = await this.listManager.getList(user.toLowerCase(), listName);
 
-            if(!entries)
-                throw new NotFound("List Not Found");
-
-            return this.chunkService.chunkize(entries);
+            return list.toChunkList();
         } catch(e) {
             if(e instanceof NotFound)
                 throw e;
+
+            $log.error(e);
 
             throw new InternalServerError("Something went wrong", e);
         }

@@ -9,6 +9,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anime-rss-filter/anilist@workspace:packages/anilist"
   dependencies:
+    "@jojoxd/tsconfig": 1.1.2
     "@tsed/cli-plugin-mocha": 3.4.7
     "@tsed/common": ^6.59.3
     "@tsed/di": ^6.59.3
@@ -35,7 +36,7 @@ __metadata:
     sinon-chai: 3.5.0
     supertest: 4.0.2
     tslint: ^6.1.1
-    typescript: ^3.8.3
+    typescript: ^4.3.5
   peerDependencies:
     "@tsed/common": ^6.59.3
     "@tsed/di": ^6.59.3
@@ -49,6 +50,7 @@ __metadata:
   dependencies:
     "@anistats/shared": "workspace:packages/shared"
     "@iconify/json": ^1.1.381
+    "@jojoxd/tsconfig": 1.1.2
     "@vitejs/plugin-vue": ^1.2.5
     "@vue/compiler-sfc": ^3.0.5
     "@vueuse/core": ^5.1.4
@@ -367,7 +369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jojoxd/tsconfig@npm:^1.1.2":
+"@jojoxd/tsconfig@npm:1.1.2":
   version: 1.1.2
   resolution: "@jojoxd/tsconfig@npm:1.1.2"
   peerDependencies:
@@ -1433,7 +1435,7 @@ __metadata:
   dependencies:
     "@anime-rss-filter/anilist": "workspace:packages/anilist"
     "@anistats/shared": "workspace:packages/shared"
-    "@jojoxd/tsconfig": ^1.1.2
+    "@jojoxd/tsconfig": 1.1.2
     "@tsed/ajv": ^6.59.3
     "@tsed/cli-core": 3.3.1
     "@tsed/cli-plugin-typeorm": 3.3.1
@@ -8721,16 +8723,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-typescript@^3.8.3:
-  version: 3.9.10
-  resolution: "typescript@npm:3.9.10"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 544f3810ac3d3fcd141907e7f52f0b8c70af178adc83af47e2b8a48351e5a119919a4d3bfbe2f62d5165b5aa203e896fe0432024cfbda670dbd03a4f53ce7748
-  languageName: node
-  linkType: hard
-
 "typescript@^4.3.2, typescript@^4.3.5":
   version: 4.3.5
   resolution: "typescript@npm:4.3.5"
@@ -8738,16 +8730,6 @@ typescript@^3.8.3:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: d9a8e78d72dd19896e6bfa73ab2a0fcea6eca2700d1d6e7c33f67a970af54a3e0fed8f715a8c4e6a0ff7fc0995067b394b2003518ab0aa84cd396377e54b760c
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^3.8.3#builtin<compat/typescript>":
-  version: 3.9.10
-  resolution: "typescript@patch:typescript@npm%3A3.9.10#builtin<compat/typescript>::version=3.9.10&hash=ddfc1b"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 744dab471ae59659b1618be636ab56b9c0afbca801e0640c3cdfad0a894315c87d30a290b7063c6a3f1860bf47fe44d9188cb85e46b2bdadda7f207d67e6b4e1
   languageName: node
   linkType: hard
 

@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@iconify/json": "^1.1.381",
+    "@jojoxd/tsconfig": "1.1.2",
     "@vitejs/plugin-vue": "^1.2.5",
     "@vue/compiler-sfc": "^3.0.5",
     "sass": "^1.35.2",
@@ -27,7 +28,6 @@
     "vite-plugin-components": "^0.13.0",
     "vite-plugin-icons": "^0.6.5",
     "vite-plugin-pages": "^0.15.0",
-    "vue-tsc": "^0.0.24",
-    "@jojoxd/tsconfig": "1.1.2"
+    "vue-tsc": "^0.0.24"
   }
 }

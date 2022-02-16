@@ -4,6 +4,7 @@
   "compilerOptions": {
     "declaration": false,
     "importHelpers": true,
+    "module": "commonjs",
     "newLine": "LF",
     "noEmit": true,
     "lib": [

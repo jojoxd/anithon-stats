@@ -367,6 +367,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jojoxd/tsconfig@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@jojoxd/tsconfig@npm:1.1.2"
+  peerDependencies:
+    typescript: ^4.3.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 1b492dc78eee3413a3bc60f16ba03cb2aed416cea0315c9f29a2e178ce36de6f78684eeee8fc10098fef2a8d8977d73da5a9c997e36fd1b5d208e414d1378221
+  languageName: node
+  linkType: hard
+
 "@mapbox/node-pre-gyp@npm:^1.0.0, @mapbox/node-pre-gyp@npm:^1.0.5":
   version: 1.0.5
   resolution: "@mapbox/node-pre-gyp@npm:1.0.5"
@@ -1421,6 +1433,7 @@ __metadata:
   dependencies:
     "@anime-rss-filter/anilist": "workspace:packages/anilist"
     "@anistats/shared": "workspace:packages/shared"
+    "@jojoxd/tsconfig": ^1.1.2
     "@tsed/ajv": ^6.59.3
     "@tsed/cli-core": 3.3.1
     "@tsed/cli-plugin-typeorm": 3.3.1

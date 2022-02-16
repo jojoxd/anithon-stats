@@ -1,19 +1,8 @@
 {
+  "extends": "@jojoxd/tsconfig/config/base.json",
+
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2016",
-    "sourceMap": true,
     "declaration": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
-    "isolatedModules": false,
-    "suppressImplicitAnyIndexErrors": false,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "newLine": "LF",
     "noEmit": true,

@@ -48,6 +48,7 @@
     "typeorm": "^0.2.34"
   },
   "devDependencies": {
+    "@jojoxd/tsconfig": "1.1.2",
     "@tsed/cli-plugin-typeorm": "3.3.1",
     "@types/compression": "^1.7.1",
     "@types/cookie-parser": "^1.4.2",

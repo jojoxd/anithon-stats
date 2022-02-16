@@ -25,6 +25,7 @@
     "@types/sinon": "7.5.2",
     "@types/sinon-chai": "3.2.3",
     "@types/supertest": "2.0.8",
+    "@jojoxd/tsconfig": "1.1.2",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "cross-env": "7.0.2",

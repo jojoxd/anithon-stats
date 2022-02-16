@@ -9,7 +9,7 @@ import {ListManager} from "../../services/ListManager";
 export class ListImageController
 {
     @Inject()
-    protected listManager: ListManager;
+    protected listManager!: ListManager;
 
     @Get()
     @ContentType('image/png')

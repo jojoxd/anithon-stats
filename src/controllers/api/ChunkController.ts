@@ -9,7 +9,7 @@ import {ListManager} from "../../services/ListManager";
 export class ChunkController
 {
     @Inject()
-    protected listManager: ListManager;
+    protected listManager!: ListManager;
 
     @Get()
     @Returns(200, ChunkList).Groups()

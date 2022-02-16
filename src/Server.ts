@@ -28,10 +28,10 @@ import {config, rootDir} from "./config";
 })
 export class Server {
   @Inject()
-  app: PlatformApplication;
+  app!: PlatformApplication;
 
   @Configuration()
-  settings: Configuration;
+  settings!: Configuration;
 
   $beforeRoutesInit(): void {
     this.app

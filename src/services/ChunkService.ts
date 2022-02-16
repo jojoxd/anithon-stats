@@ -59,16 +59,16 @@ export class ChunkService
         let merges = false;
 
         for(let idx = 0; idx < chunks.length; idx++) {
-            if(chunks[idx].entry.id === chunks[idx + 1]?.entry.id) {
+            if(chunks[idx]!.entry.id === chunks[idx + 1]?.entry.id) {
 
                 // Don't merge if split is on / autosplit is off
-                if(typeof chunks[idx].entry.savedData.split !== "undefined") {
-                    newChunks.push(chunks[idx]);
+                if(typeof chunks[idx]!.entry.savedData.split !== "undefined") {
+                    newChunks.push(chunks[idx]!);
                     continue;
                 }
 
                 try {
-                    const mergedChunk = chunks[idx].merge(chunks[idx + 1]);
+                    const mergedChunk = chunks[idx]!.merge(chunks[idx + 1]!);
 
                     $log.info(`[ChunkService] Merged Chunks ${idx} & ${idx + 1}`, mergedChunk.entry.series.title.romaji);
 
@@ -79,13 +79,13 @@ export class ChunkService
                 } catch(e) {
                     $log.warn(e);
 
-                    newChunks.push(chunks[idx]);
+                    newChunks.push(chunks[idx]!);
                 }
 
                 continue;
             }
 
-            newChunks.push(chunks[idx]);
+            newChunks.push(chunks[idx]!);
         }
 
         return {
@@ -98,7 +98,7 @@ export class ChunkService
     {
         const chunks = [];
         for(let i = 0; i < entries.length; i++) {
-            chunks.push(Array.from(entries[i].next()));
+            chunks.push(Array.from(entries[i]!.next()));
         }
 
         $log.info('[ChunkService] chunks', chunks.map(ch => `[\n\t${ch.map(c => `"${c.entry.data.media!.title!.romaji!}" ${c.start} - ${c.end}`).join("],\n\t[")}]`).join("\n"));

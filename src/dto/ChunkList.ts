@@ -6,7 +6,7 @@ import {MediaListStatus} from "@anime-rss-filter/anilist";
 export class ChunkList implements IChunkList
 {
     @Property()
-    public user: IUserData;
+    public user: IUserData = {};
 
     /**
      * Progress over time
@@ -36,7 +36,7 @@ export class ChunkList implements IChunkList
 
     @CollectionOf(Chunk)
     @ForwardGroups()
-    public chunks: Array<Chunk>;
+    public chunks: Array<Chunk> = [];
 }
 
 interface IUserData

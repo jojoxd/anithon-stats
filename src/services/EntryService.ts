@@ -8,7 +8,7 @@ import {UserListContainer} from "./ListManager/UserListContainer";
 export class EntryService
 {
     @Inject()
-    protected anilist: AnilistService;
+    protected anilist!: AnilistService;
 
     async getEntries(ctx: UserListContainer): Promise<Array<Entry>>
     {
@@ -20,7 +20,7 @@ export class EntryService
 
             // use for loop so we don't reference unknown entries
             for(let i = 0; i < entries.length; i++) {
-                this.applySequels(entries[i], entries);
+                this.applySequels(entries[i]!, entries);
             }
 
             // reorder using savedData
@@ -53,19 +53,19 @@ export class EntryService
                         entry.lockSequel();
 
                         entries.push(_sequel);
-                        entries.push(sequel);
+                        entries.push(sequel!);
 
-                        $log.info(`[EntryService] Undid sequelizing for ${entry.data.media!.title!.romaji!} (REASON: Entry has multiple sequels)`);
+                        $log.info(`[EntryService] Undid sequelizing for ${entry!.data.media!.title!.romaji!} (REASON: Entry has multiple sequels)`);
                     } else {
-                        if(!entry.setSequel(sequel)) {
+                        if(!entry.setSequel(sequel!)) {
                             // Sequels Locked, re-add sequel to entries
-                            entries.push(sequel);
+                            entries.push(sequel!);
                         }
                     }
 
-                    $log.info('[EntryService] (%s).setSequel(%s)', entry?.data.media!.title!.romaji!, sequel.data.media!.title!.romaji!);
+                    $log.info('[EntryService] (%s).setSequel(%s)', entry!.data.media!.title!.romaji!, sequel!.data.media!.title!.romaji!);
                 } else {
-                    $log.info('[EntryService] no sequel found in entries for %s', entry.data.media!.title!.romaji!);
+                    $log.info('[EntryService] no sequel found in entries for %s', entry!.data.media!.title!.romaji!);
                 }
             }
         }

@@ -47,7 +47,7 @@ export class Entry implements IEntry
         return this._sequel;
     }
 
-    protected _sequelLocked: boolean;
+    protected _sequelLocked: boolean = false;
 
     public setSequel(entry: Entry): boolean
     {

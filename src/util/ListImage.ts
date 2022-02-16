@@ -1,8 +1,8 @@
 import {Box, CanvasUtil, Point} from "./CanvasUtil";
 import {Entry} from "../services/ChunkService/Entry";
-import got from "got";
 import {ChunkList} from "../dto/ChunkList";
 import {MediaListStatus} from "@anime-rss-filter/anilist";
+import axios from "axios";
 
 export class ListImage
 {
@@ -34,9 +34,9 @@ export class ListImage
 
     protected async fetchImage(url: string): Promise<Buffer>
     {
-        const avaRequest = await got(url, { method: "GET" });
+        const response = await axios.get(url, { responseType: "arraybuffer" })
 
-        return Buffer.from(avaRequest.rawBody);
+        return Buffer.from(response.data);
     }
 
     protected getTotalSequels(entry: Entry): number

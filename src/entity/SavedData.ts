@@ -7,7 +7,7 @@ export class SavedData
 {
     @PrimaryColumn({ generated: "increment" })
     @Property()
-    public id: number;
+    public id!: number;
 
     @Column("simple-json")
     public data: { [key: string]: ISavedData } = {};

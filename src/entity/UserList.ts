@@ -14,20 +14,20 @@ export class UserList
     @PrimaryColumn()
     @Generated("increment")
     @Property()
-    public id: number;
+    public id!: number;
 
     // Identifying info
     @Property()
     @Column()
-    public userName: string;
+    public userName!: string;
 
     @Property()
     @Column()
-    public listName: string;
+    public listName!: string;
 
     // Settings
     @Column({ default: true })
-    public allowChunkMerge: boolean;
+    public allowChunkMerge!: boolean;
 
     @OneToOne(() => SavedData, { eager: true, cascade: true })
     @JoinColumn()

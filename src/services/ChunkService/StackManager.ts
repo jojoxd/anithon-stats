@@ -49,14 +49,14 @@ export class StackManager
         while(!this._done) {
             $log.debug('[StackManager] sp = %s', this.pointer);
 
-            if(!this.stack[this.pointer] || this.stack[this.pointer].length === 0) {
+            if(!this.stack[this.pointer] || this.stack[this.pointer]!.length === 0) {
                 this.stack[this.pointer] = this.chunks.shift() ?? [];
 
                 $log.debug('[StackManager] update this.stack[sp=%s] (%s) cl=%s', this.pointer, this.stack[this.pointer], this.chunks.length);
             }
 
-            if(this.stack[this.pointer].length > 0) {
-                const chunk = this.stack[this.pointer].shift()!;
+            if(this.stack[this.pointer]!.length > 0) {
+                const chunk = this.stack[this.pointer]!.shift()!;
 
                 yield chunk;
             } else {

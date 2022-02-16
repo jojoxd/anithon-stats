@@ -6,7 +6,7 @@ import {UserListRepository} from "../../entity/UserListRepository";
 export class MetadataController
 {
     @Inject()
-    protected readonly userListRepository: UserListRepository;
+    protected readonly userListRepository!: UserListRepository;
 
     @Get()
     public async get(

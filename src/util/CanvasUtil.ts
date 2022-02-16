@@ -27,6 +27,8 @@ export class CanvasUtil
             this.canvas = options;
         } else if(options) {
             this.canvas = new Canvas(options.w, options.h);
+        } else {
+            this.canvas = new Canvas();
         }
     }
 
@@ -38,10 +40,13 @@ export class CanvasUtil
         };
     }
 
-    protected _context: CanvasRenderingContext2D;
+    protected _context?: CanvasRenderingContext2D;
     public get context(): CanvasRenderingContext2D
     {
-        return this._context ?? this.canvas.getContext("2d");
+        if(!this._context)
+            this._context = this.canvas.getContext("2d");
+
+        return this._context;
     }
 
     public get fill(): CanvasFillUtil
@@ -169,14 +174,14 @@ export class CanvasUtil
         return this;
     }
 
-    public get toBuffer(): Canvas['toBuffer']
+    public get toBuffer(): Canvas['toBufferSync']
     {
-        return this.canvas.toBuffer.bind(this.canvas);
+        return this.canvas.toBufferSync.bind(this.canvas);
     }
 
     public toPng(): Buffer
     {
-        return this.toBuffer('image/png');
+        return this.toBuffer('png');
     }
 }
 

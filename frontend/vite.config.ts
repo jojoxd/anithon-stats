@@ -2,7 +2,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import components from 'vite-plugin-components';
 import pages from 'vite-plugin-pages';
-import icons, { ViteIconsResolver } from 'vite-plugin-icons';
+import icons from 'unplugin-icons/vite';
+import ViteIconsResolver from "unplugin-icons/resolver";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,9 +17,11 @@ export default defineConfig({
         },
     },
 
-    alias: {
-        '~include-media': 'include-media',
-        '$$component-utils': './src/assets/css/component-utils.scss'
+    resolve: {
+        alias: {
+            '~include-media': 'include-media',
+            '$$component-utils': './src/assets/css/component-utils.scss'
+        },
     },
 
     plugins: [

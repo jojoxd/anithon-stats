@@ -9,7 +9,7 @@ import {ListManager} from "../../services/ListManager";
 export class EntryController
 {
     @Inject()
-    protected listManager: ListManager;
+    protected listManager!: ListManager;
 
     @Get()
     @Returns(200, Array).Of(Entry).Groups('deep-entry')

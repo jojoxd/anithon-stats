@@ -7,7 +7,7 @@
       required: true,
     },
 
-    key: {
+    keys: {
       type: Function,
       required: true,
     },
@@ -59,11 +59,11 @@
     }
   }
 
-  const { items, key, propUpdate } = reactive(props);
+  const { items, keys, propUpdate } = reactive(props);
 </script>
 
 <template>
-  <div v-for="(item, index) of items" :key="(_item) => key(_item)">
+  <div v-for="(item, index) of items" :key="(_item) => keys(_item)">
     <slot name="item" :item="item" :index="index" :up="moveUp(index)" :down="moveDown(index)" />
   </div>
 </template>

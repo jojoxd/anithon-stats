@@ -18,15 +18,9 @@ export class ListImageController
         @PathParams("user") user: string,
         @PathParams("list") listName: string
     ) {
-        const list = await this.listManager.getList(user.toLowerCase(), listName);
+        const container = await this.listManager.getList(user.toLowerCase(), listName);
 
-        // @TODO: #1 Change ListImage constructor to use UserListContainer
-        const listImage = new ListImage(
-            await list.toEntries(),
-            await list.toChunkList(),
-            listName,
-            user
-        );
+        const listImage = new ListImage(container);
 
         return listImage.generate();
     }

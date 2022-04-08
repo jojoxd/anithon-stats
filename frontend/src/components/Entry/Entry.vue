@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {defineProps, ref, watch, computed} from "vue";
+  import {ref, watch, computed} from "vue";
   import type { IEntry } from "@anistats/shared";
   import type { Ref } from "vue";
   import {useEntryTitle} from "../../composition/entry/useEntryTitle";
@@ -17,7 +17,8 @@
 
     index: {
       type: Number,
-      required: true
+      required: false,
+      default: -1
     },
   });
 

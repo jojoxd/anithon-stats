@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type {IChunk} from "@anistats/shared";
   import {computed, reactive, ref, watch} from "vue";
+  import {useEntryTitle} from "../composition/entry/useEntryTitle";
 
   const props = defineProps({
     chunk: {
@@ -28,6 +29,9 @@
     index: number,
     progress: boolean
   };
+
+  const entry = computed(() => chunk.entry);
+  const title = useEntryTitle(entry);
 
   const progressElement = ref<HTMLElement | null>(null);
 
@@ -63,11 +67,11 @@
 
     <div class="chunk-content">
       <div class="chunk-image">
-        <img :src="chunk.entry.series.coverImage" :alt="`Cover image of ${chunk.entry.series.title.romaji}`"/>
+        <img :src="chunk.entry.series.coverImage" :alt="`Cover image of ${title}`"/>
       </div>
 
       <div class="chunk-data">
-        <h3>{{ index + 1 }}. {{ chunk.entry.series.title.romaji }}</h3>
+        <h3>{{ index + 1 }}. {{ title }}</h3>
 
         <div v-for="[title, data] of data">
           {{ title }}: {{ data }}

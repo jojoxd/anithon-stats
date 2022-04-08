@@ -1,10 +1,13 @@
-<script setup lang="ts">
+<script setup="{ $overlay }" lang="ts">
   import {useChunks} from "../../../composition/useChunks";
-  import {reactive, computed} from "vue";
+  import {computed, reactive, ref, watch} from "vue";
   import {useEntries} from "../../../composition/useEntries";
   import {useMetadata} from "../../../composition/useMetadata";
   import {ApiStatus} from "../../../composition/useApi";
-  import {useVModel} from "@vueuse/core";
+
+  import {IOverlayController} from "../../../plugin/overlay";
+
+  declare const $overlay: IOverlayController;
 
   const props = defineProps({
     user: {
@@ -19,7 +22,7 @@
   });
 
   const { user, list } = reactive(props);
-  const updating = useVModel(props, 'updating'); // @TODO: #6 Fix updating overlay
+  const updating = ref<boolean>(false);
 
   const {
     data: chunkData,
@@ -71,20 +74,23 @@
     }, 1000);
   }
 
-  function allowDrag()
-  {
-    return !updating.value;
-  }
+  watch([status, entryStatus], () => {
+    console.log("$overlay = ", $overlay);
 
-  function updateOrder()
-  {
-    let idx = 0;
-    for(const entry of entryData.value) {
-      entry.savedData.order = idx++;
+    if(status.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
+      $overlay.show("Loading", true);
+    } else {
+      $overlay.hide();
     }
-  }
+  }, { immediate: true });
 
-  console.log(user, list, status, host);
+  watch(updating, () => {
+    if(updating.value) {
+      $overlay.show("Updating", true);
+    } else {
+      $overlay.hide();
+    }
+  });
 </script>
 
 <template>
@@ -103,7 +109,7 @@
     </div>
 
     <div class="dev" v-if="entryData">
-      <Sortable v-model:items="entryData" :key="item => item.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
+      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
         <template #item="{ item, up, down, index }">
           <EntryContainer :entry="item" @move-up="up" @move-down="down" :index="index" />
         </template>

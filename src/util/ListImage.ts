@@ -1,18 +1,12 @@
 import {Box, CanvasUtil, Point} from "./CanvasUtil";
 import {Entry} from "../services/ChunkService/Entry";
-import {ChunkList} from "../dto/ChunkList";
 import {MediaListStatus} from "@anime-rss-filter/anilist";
 import axios from "axios";
+import {UserListContainer} from "../services/ListManager/UserListContainer";
 
 export class ListImage
 {
-    protected entries: Array<Entry>;
-
-    protected listName: string;
-
-    protected userName: string;
-
-    protected chunks: ChunkList;
+    protected container: UserListContainer;
 
     /**
      * @see frontend/src/assets/css/_variables.scss
@@ -24,12 +18,9 @@ export class ListImage
      */
     protected static readonly TEXT_COLOR = "rgb(159, 173, 189)";
 
-    constructor(entries: Array<Entry>, chunks: ChunkList, listName: string, userName: any)
+    constructor(container: UserListContainer)
     {
-        this.entries = entries;
-        this.chunks = chunks;
-        this.listName = listName;
-        this.userName = userName;
+        this.container = container;
     }
 
     protected async fetchImage(url: string): Promise<Buffer>
@@ -46,7 +37,10 @@ export class ListImage
 
     async generate()
     {
-        const imageBox: Box = { w: this.entries.length * 100 + 10, h: 150 };
+        const entries = await this.container.toEntries();
+        const chunks = await this.container.toChunkList();
+
+        const imageBox: Box = { w: entries.length * 100 + 10, h: 150 };
         const textBox: Box = { w: imageBox.w, h: 100 };
 
         const canvas = new CanvasUtil({
@@ -70,7 +64,7 @@ export class ListImage
         });
 
         // Render main entries
-        await canvas.divide(canvas.size.w, this.entries, 10, async (x, maxSize, entry) => {
+        await canvas.divide(canvas.size.w, entries, 10, async (x, maxSize, entry) => {
             await canvas.withRestore(async (ctx) => {
                 await canvas.clipRadius(5, { x, y: textBox.h + 10, w: maxSize, h: imageBox.h - 20 });
 
@@ -137,13 +131,13 @@ export class ListImage
         await canvas.text(async (text) => {
             let listNameBox: Box;
             await text.withFont('1.5rem Arial', ListImage.TEXT_COLOR, () => {
-                text.write(`#${this.listName}`, { x: 10, y: 40 });
+                text.write(`#${this.container.listName}`, { x: 10, y: 40 });
 
-                listNameBox = text.measure(`#${this.listName}`);
+                listNameBox = text.measure(`#${this.container.listName}`);
             });
 
             await text.withFont('italic 0.75rem Arial', ListImage.TEXT_COLOR, () => {
-                text.write(`anilist.co/user/${this.userName}/animelist/${this.listName}`, { x: listNameBox.w + 10 + 10, y: 40 });
+                text.write(`anilist.co/user/${this.container.userName}/animelist/${this.container.listName}`, { x: listNameBox.w + 10 + 10, y: 40 });
             });
 
             const textPlaces: Array<Point> = [
@@ -158,24 +152,24 @@ export class ListImage
             ];
 
             await text.withFont('.75rem Arial', 'rgb(159, 173, 189)', () => {
-                text.write(`${this.entries.length} Serie${this.entries.length > 1 ? 's' : ''}`, textPlaces.shift()!);
+                text.write(`${entries.length} Serie${entries.length > 1 ? 's' : ''}`, textPlaces.shift()!);
 
-                const totalSequels: number = this.entries.reduce((acc, e) => acc + this.getTotalSequels(e), 0);
+                const totalSequels: number = entries.reduce((acc, e) => acc + this.getTotalSequels(e), 0);
                 if(totalSequels > 0)
                     text.write(`+ ${totalSequels} Sequel${totalSequels > 1 ? 's' : ''}`, textPlaces.shift()!);
 
-                const totalTime = this.entries.reduce((acc, e) => acc + e.totalTime, 0);
+                const totalTime = entries.reduce((acc, e) => acc + e.totalTime, 0);
                 text.write(`${(totalTime / 60).toFixed(0)} Hours`, textPlaces.shift()!);
 
-                text.write(`${this.chunks.weightedProgress.toFixed(1)}% Completed`, textPlaces.shift()!);
+                text.write(`${chunks.weightedProgress.toFixed(1)}% Completed`, textPlaces.shift()!);
 
-                const droppedCount = this.entries.filter((e) => e.data.status === MediaListStatus.DROPPED).length;
+                const droppedCount = entries.filter((e) => e.data.status === MediaListStatus.DROPPED).length;
                 if(droppedCount > 0)
                     text.write(`${droppedCount} Dropped`, textPlaces.shift()!);
 
                 // chunk[0]!.entry.data!.media!.format!
-                const totalSeriesEpisodes = this.entries.filter(e => e.data!.media!.format! !== "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
-                const totalMoviesEpisodes = this.entries.filter(e => e.data!.media!.format! === "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
+                const totalSeriesEpisodes = entries.filter(e => e.data!.media!.format! !== "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
+                const totalMoviesEpisodes = entries.filter(e => e.data!.media!.format! === "MOVIE").reduce((acc, e) => acc + e.episodes, 0);
 
                 if(totalSeriesEpisodes > 0)
                     text.write(`${totalSeriesEpisodes} episodes`, textPlaces.shift()!);

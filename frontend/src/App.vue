@@ -2,29 +2,35 @@
 </script>
 
 <template>
-  <main class="content" :class="{ 'overlayed': $overlay.shown.value }">
-    <span class="header">
-      <LanguageSwitcher />
-      <UserComponent />
-    </span>
+  <div class="page">
+    <Header />
 
-    <router-view />
+    <main class="content" :class="{ 'overlayed': $overlay.shown.value }">
+      <router-view />
 
-    <div class="overlay" v-if="$overlay.shown.value">
-      <div class="overlay-wrapper">
-        <div class="overlay-inner">
-          <div class="overlay-title">{{ $overlay.title.value }}</div>
+      <div class="overlay" v-if="$overlay.shown.value">
+        <div class="overlay-wrapper">
+          <div class="overlay-inner">
+            <div class="overlay-title">{{ $overlay.title.value }}</div>
 
-          <div class="spinner" v-if="$overlay.withSpinner.value"></div>
+            <div class="overlay-content" v-if="$overlay.hasContent.value" v-html="$overlay.content.value"></div>
+
+            <div class="spinner" v-if="$overlay.withSpinner.value"></div>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <style scoped lang="scss">
   @use "sass:color";
   @import "$$component-utils";
+
+  main
+  {
+    margin-top: 6rem;
+  }
 
   main.overlayed
   {
@@ -67,6 +73,11 @@
 
         .overlay-title {
           font-size: 2rem;
+        }
+
+        .overlay-content {
+          font-size: 1rem;
+          margin-top: 2rem;
         }
 
         .spinner {

@@ -52,7 +52,9 @@ test/**/*.js.map
 /public
 /dist
 
+# Databases
 database.sqlite
+*.sqlite*
 
 .yarn
 !.yarn/build-state.yml

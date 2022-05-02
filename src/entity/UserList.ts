@@ -1,10 +1,10 @@
-import {Column, Entity, Generated, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Unique} from "typeorm";
+import {Column, Entity, Generated, Index, JoinColumn, ManyToOne, OneToOne, PrimaryColumn} from "typeorm";
 import {Property} from "@tsed/schema";
 import {SavedData} from "./SavedData";
 import {AnilistUser} from "./AnilistUser";
 
 @Entity()
-@Unique("UQ_USERLISTS", ["userName", "listName"])
+@Index("UQ_IDX_USERLIST", ["user", "listName"], { unique: true })
 export class UserList
 {
     constructor()
@@ -18,18 +18,13 @@ export class UserList
     public id!: number;
 
     @Property()
-    @OneToMany(() => AnilistUser, (user) => user.lists)
-    public user!: AnilistUser;
-
-    // @TODO: Change this to AnilistUser
-    // Identifying info
-    @Property()
-    @Column()
-    public userName!: string;
-
-    @Property()
     @Column()
     public listName!: string;
+
+    @Property()
+    @ManyToOne(() => AnilistUser, (user) => user.lists, { eager: true })
+    @JoinColumn({ name: "userId" })
+    public user!: AnilistUser;
 
     // Settings
     @Column({ default: true })

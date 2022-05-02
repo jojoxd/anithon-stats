@@ -1,5 +1,9 @@
 import { ComputedRef, computed, Ref, ref, watch } from "vue";
 import {useAxios} from "./useAxios";
+import {IOverlayController} from "../plugin/overlay";
+import {AxiosError} from "axios";
+
+declare const $overlay: IOverlayController;
 
 /**
  * Creates a data wrapper for using the API while conforming to Vue Reactivity.
@@ -13,6 +17,9 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: string, data:
     const status: Ref<ApiStatus> = ref(ApiStatus.Initial);
 
     let _initial = true;
+
+    // @ts-ignore
+    console.log("useApi(): $overlay =", $overlay);
 
     async function execute(_status: ApiStatus)
     {
@@ -29,8 +36,17 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: string, data:
 
             status.value = (response.status >= 200 && response.status < 400) ? ApiStatus.Ok : ApiStatus.Failure;
         } catch(e) {
+            if(isAxiosError<TData, TReturn>(e)) {
+                responseStatus.value = e.response?.status ?? null;
+            }
+
             status.value = ApiStatus.Failure;
         }
+    }
+
+    function isAxiosError<TData, TRet>(error: any): error is AxiosError
+    {
+        return (error as AxiosError<TData, TRet>).isAxiosError !== undefined;
     }
 
     watch(data, async () => {

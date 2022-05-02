@@ -1,13 +1,13 @@
 <script setup="{ $overlay }" lang="ts">
-  import {useChunks} from "../../../composition/useChunks";
-  import {computed, reactive, ref, watch} from "vue";
-  import {useEntries} from "../../../composition/useEntries";
-  import {useMetadata} from "../../../composition/useMetadata";
-  import {ApiStatus} from "../../../composition/useApi";
+import {useChunks} from "../../../composition/useChunks";
+import {computed, reactive, ref, watch} from "vue";
+import {useEntries} from "../../../composition/useEntries";
+import {useMetadata} from "../../../composition/useMetadata";
+import {ApiStatus} from "../../../composition/useApi";
 
-  import {IOverlayController} from "../../../plugin/overlay";
+import {IOverlayController} from "../../../plugin/overlay";
 
-  declare const $overlay: IOverlayController;
+declare const $overlay: IOverlayController;
 
   const props = defineProps({
     user: {
@@ -26,13 +26,15 @@
 
   const {
     data: chunkData,
-    status,
+    status: chunkStatus,
+    responseStatus: chunkResponseStatus,
     reload: reloadChunks
   } = useChunks(user, list);
 
   const {
     data: entryData,
     status: entryStatus,
+    responseStatus: entryResponseStatus,
     reload: reloadEntries,
   } = useEntries(user, list);
 
@@ -74,11 +76,21 @@
     }, 1000);
   }
 
-  watch([status, entryStatus], () => {
+  watch([chunkStatus, entryStatus], () => {
     console.log("$overlay = ", $overlay);
 
-    if(status.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
-      $overlay.show("Loading", true);
+    if(chunkStatus.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
+      if(chunkStatus.value === ApiStatus.Failure) {
+        $overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+        return;
+      }
+
+      if(entryStatus.value === ApiStatus.Failure) {
+        $overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+        return;
+      }
+
+      $overlay.show("Loading", null, true);
     } else {
       $overlay.hide();
     }
@@ -86,7 +98,7 @@
 
   watch(updating, () => {
     if(updating.value) {
-      $overlay.show("Updating", true);
+      $overlay.show("Updating", null, true);
     } else {
       $overlay.hide();
     }

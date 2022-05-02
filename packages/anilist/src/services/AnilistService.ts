@@ -10,8 +10,10 @@ import {MediaListStatus, MediaType, userLists, userLists_MediaListCollection_lis
 import {GraphQLError} from "graphql";
 import {AnilistError} from "../AnilistError";
 import getCurrentUser from "../gql/getCurrentUser";
+import getUser from "../gql/getUser.gql"
 import {InjectContext} from "@tsed/di";
 import { Env } from "@tsed/core";
+import {AnilistNotAUserError} from "../AnilistNotAUserError";
 
 @Service()
 @Scope(ProviderScope.REQUEST)
@@ -53,6 +55,8 @@ export class AnilistService implements IAnilistApi
     @UseCache({ ttl: 30 })
     async fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<userLists> | never
     {
+        $log.info(`AnilistService.fetchUserLists(${username}, ${type}, [${statuses}])`);
+
         // Normalize Statuses
         if (typeof statuses === "undefined")
             statuses = Object.values(MediaListStatus);
@@ -65,9 +69,11 @@ export class AnilistService implements IAnilistApi
             query: fetchUserLists,
             variables: { username, type, statuses },
             fetchPolicy: "network-only",
+            errorPolicy: "ignore",
         });
 
         if (data.errors) {
+            $log.error(data.data);
             throw this.createError(data.errors!);
         }
 
@@ -81,6 +87,8 @@ export class AnilistService implements IAnilistApi
 
     async getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<Array<string>> | never
     {
+        $log.info(`AnilistService.getUserLists(${username}, ${type}, [${statuses}])`);
+
         // Normalize Statuses
         if (typeof statuses === "undefined")
             statuses = Object.values(MediaListStatus);
@@ -91,10 +99,13 @@ export class AnilistService implements IAnilistApi
         // Fetch Data
         const data = await this.apollo.query<userLists, any>({
             query: getUserLists,
-            variables: { username, type, statuses }
+            variables: { username, type, statuses },
+            fetchPolicy: "network-only",
+            errorPolicy: "ignore",
         });
 
         if (data.errors) {
+            $log.error(data.data);
             throw this.createError(data.errors!);
         }
 
@@ -103,6 +114,8 @@ export class AnilistService implements IAnilistApi
 
     async getUserList(username: string, type: MediaType, name: string): Promise<userLists_MediaListCollection_lists> | never
     {
+        $log.info("AnilistService.getUserList()");
+
         const lists = await this.fetchUserLists(username, type);
 
         return lists.MediaListCollection?.lists?.find(list => list?.name === name)!;
@@ -113,11 +126,16 @@ export class AnilistService implements IAnilistApi
         if(!this.token)
             return null;
 
+        $log.info("AnilistService.getCurrentUser()");
+
         const data = await this.apollo.query<any, any>({
             query: getCurrentUser,
+            fetchPolicy: "network-only",
+            errorPolicy: "ignore",
         });
 
         if(data.errors) {
+            $log.error(data.data);
             throw this.createError(data.errors!);
         }
 
@@ -129,6 +147,35 @@ export class AnilistService implements IAnilistApi
 
             avatar: {
                 large: viewer.avatar.large,
+            },
+        };
+    }
+
+    async getUser(userName: string): Promise<IAnilistUser | never>
+    {
+        const data = await this.apollo.query<any, any>({
+            query: getUser,
+            variables: { name: userName },
+            fetchPolicy: "network-only",
+            errorPolicy: "ignore"
+        });
+
+        if(data.errors) {
+            $log.error(data.data);
+            throw this.createError(data.errors!);
+        }
+
+        const user = data.data.User;
+
+        if(!user || !user.id)
+            throw new AnilistNotAUserError(`User "${userName}" does not exist on AniList`);
+
+        return {
+            id: user.id,
+            name: user.name,
+
+            avatar: {
+                large: user.avatar.large,
             },
         };
     }

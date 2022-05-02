@@ -23,7 +23,7 @@ export class UserListContainer
 
     get userName(): string
     {
-        return this.userList.userName;
+        return this.userList.user.userName;
     }
 
     get listName(): string

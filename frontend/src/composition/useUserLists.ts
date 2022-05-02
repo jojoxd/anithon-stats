@@ -1,4 +1,4 @@
-import {ComputedRef, ref, Ref} from "vue";
+import {ComputedRef, ref, Ref, computed} from "vue";
 import {ApiStatus, useApi} from "./useApi";
 import {debouncedWatch} from "@vueuse/core";
 
@@ -19,7 +19,7 @@ export function useUserLists(user: Ref<string>): UseUserListsReturn
         }
     }, { immediate: true, debounce: 500 });
 
-    const { status, data } = useApi<FetchUserListsDTO, any>('user/lists', apiData, false);
+    const { status, data } = useApi<FetchUserListsDTO, Array<string>>('user/lists', apiData, false);
 
     return {
         status,

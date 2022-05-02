@@ -1,8 +1,10 @@
 import {ChunkService} from "./ChunkService";
 import {EntryService} from "./EntryService";
 import {Inject} from "@tsed/di";
-import {USERLIST_REPOSITORY, UserListRepository} from "../entity/repository/UserListRepository";
+import {USERLIST_REPOSITORY} from "../entity/repository/UserListRepository";
 import {UserListContainer} from "./ListManager/UserListContainer";
+import {ANILIST_USER_REPOSITORY} from "../entity/repository/AnilistUserRepository";
+import {AnilistUserManager} from "./AnilistUserManager";
 
 /**
  * Creates a helper that wraps a list
@@ -15,12 +17,26 @@ export class ListManager
     @Inject()
     protected readonly entryService!: EntryService;
 
+    @Inject()
+    protected readonly anilistUserManager!: AnilistUserManager;
+
+    @Inject(ANILIST_USER_REPOSITORY)
+    protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
+
     @Inject(USERLIST_REPOSITORY)
     protected readonly userListRepository!: USERLIST_REPOSITORY;
 
-    async getList(user: string, list: string): Promise<UserListContainer>
+    async getList(userName: string, listName: string): Promise<UserListContainer>
     {
-        const userList = await this.userListRepository.findOrCreate(user, list);
+        const user = await this.anilistUserManager.getUserByName(userName);
+
+        if(!user)
+            throw new Error("Undefined behavior: user is not defined / null");
+
+        const userList = user.lists.find((list) => list.listName === listName);
+
+        if(!userList)
+            throw new Error("User has no such list");
 
         return new UserListContainer(userList, this.chunkService, this.entryService);
     }

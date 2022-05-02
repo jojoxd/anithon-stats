@@ -1,6 +1,7 @@
 import {BodyParams, Controller, Get, Inject, PathParams, Post} from "@tsed/common";
 import {IMetadata} from "@anistats/shared";
 import {USERLIST_REPOSITORY, UserListRepository} from "../../entity/repository/UserListRepository";
+import {ANILIST_USER_REPOSITORY} from "../../entity/repository/AnilistUserRepository";
 
 @Controller("/:user/list/:list/metadata")
 export class MetadataController
@@ -8,13 +9,19 @@ export class MetadataController
     @Inject(USERLIST_REPOSITORY)
     protected readonly userListRepository!: USERLIST_REPOSITORY;
 
+    @Inject(ANILIST_USER_REPOSITORY)
+    protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
+
     @Get()
     public async get(
-        @PathParams("user") user: string,
+        @PathParams("user") userName: string,
         @PathParams("list") list: string
     ): Promise<IMetadata>
     {
-        const userList = await this.userListRepository.findOrCreate(user.toLowerCase(), list);
+        // @TODO: Fetch user using a manager?
+        const user = await this.anilistUserRepository.findOne({ where: { userName: userName.toLowerCase() } });
+
+        const userList = await this.userListRepository.findOrCreate(user!, list);
 
         return {
             allowChunkMerge: userList.allowChunkMerge,
@@ -25,12 +32,15 @@ export class MetadataController
 
     @Post()
     public async save(
-        @PathParams("user") user: string,
+        @PathParams("user") userName: string,
         @PathParams("list") list: string,
         @BodyParams("data") data: IMetadata
     ): Promise<IMetadata>
     {
-        const userList = await this.userListRepository.findOrCreate(user.toLowerCase(), list);
+        // @TODO: Fetch user using a manager?
+        const user = await this.anilistUserRepository.findOne({ where: { userName: userName.toLowerCase() } });
+
+        const userList = await this.userListRepository.findOrCreate(user!, list);
 
         if(data.savedData)
             userList.savedData.data = data.savedData;
@@ -40,6 +50,6 @@ export class MetadataController
 
         await this.userListRepository.save(userList);
 
-        return this.get(user, list);
+        return this.get(userName, list);
     }
 }

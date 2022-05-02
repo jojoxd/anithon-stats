@@ -2,6 +2,8 @@ import {Controller, Context, Constant, QueryParams, Session, $log, Inject} from 
 import {Get} from "@tsed/schema";
 import {AnilistOAuthService} from "@anime-rss-filter/anilist/src/services/AnilistOAuthService";
 import {ANILIST_USER_REPOSITORY, AnilistUserRepository} from "../../entity/repository/AnilistUserRepository";
+import {AnilistUser} from "../../entity/AnilistUser";
+import {AnilistService} from "@anime-rss-filter/anilist";
 
 @Controller("/oauth")
 export class OAuthController
@@ -12,6 +14,9 @@ export class OAuthController
 
     @Inject(ANILIST_USER_REPOSITORY)
     protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
+
+    @Inject()
+    protected readonly anilistService!: AnilistService;
 
     @Constant("EXTERNAL_API_URL")
     public readonly externalApiUrl!: string;
@@ -35,18 +40,26 @@ export class OAuthController
     @Get("/redirect")
     public async getRedirect(@Context() ctx: Context, @QueryParams("code") code: string, @Session() session: any)
     {
-        $log.info(`Got an anilist code: ${code}`);
-
         if(!session.oauth_redirect_next) {
             return "OK";
         }
 
         session.anilist_token = await this.anilistOAuthService.getToken(code, this.redirectUri);
 
-        $log.info(`Anilist Token: ${session.anilist_token}`);
-
         const redirectResponse = ctx.response.redirect(302, session.oauth_redirect_next);
         delete session.oauth_redirect_next;
+
+        // User Onboarding
+        const currentUser = await this.anilistService.getCurrentUser();
+
+        if(!currentUser)
+            throw new Error("Something went wrong...");
+
+        const user = new AnilistUser();
+        user.userName = currentUser.name;
+        user.anilistUserId = currentUser.id;
+
+        this.anilistUserRepository.updateOrCreate(user);
 
         return redirectResponse;
     }

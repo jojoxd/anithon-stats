@@ -3,6 +3,7 @@
 import {ApolloClient, InMemoryCache, ApolloLink, HttpLink, Operation, NextLink} from "apollo-boost";
 import {ApolloCache} from "apollo-cache";
 import fetch from "node-fetch";
+import {$log} from "@tsed/common";
 
 export class ApolloClientBuilder
 {
@@ -58,6 +59,21 @@ export class ApolloClientBuilder
         });
     }
 
+    protected get interceptorLink(): ApolloLink
+    {
+        return new ApolloLink((operation: Operation, forward: NextLink): any => {
+
+            // Before
+            $log.info(`GQL REQUEST "${operation.operationName}"`);
+
+            const response = forward(operation);
+
+            // After
+
+            return response;
+        });
+    }
+
     build(): ApolloClient<any> | never {
         if (this.link === null)
             throw new Error("No Link Specified");
@@ -65,7 +81,7 @@ export class ApolloClientBuilder
         if (this.cache === null)
             this.withMemoryCache();
 
-        let link: ApolloLink = this.link;
+        let link: ApolloLink = this.interceptorLink.concat(this.link);
 
         if(this.authLink) {
             link = this.authLink.concat(this.link);

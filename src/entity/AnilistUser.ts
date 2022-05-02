@@ -1,9 +1,9 @@
-import {Column, Entity, Generated, ManyToOne, PrimaryColumn, Unique} from "typeorm";
+import {Column, Entity, Generated, ManyToOne, OneToMany, PrimaryColumn, Unique} from "typeorm";
 import {Property} from "@tsed/schema";
 import {UserList} from "./UserList";
 
 @Entity()
-@Unique("UQ_USER_ANILIST_USERNAME", ["userName"])
+@Unique("UQ_USER_ANILIST_UID", ["anilistUserId"])
 export class AnilistUser
 {
     @PrimaryColumn()
@@ -17,8 +17,12 @@ export class AnilistUser
 
     @Property()
     @Column({ nullable: false })
-    public anilistUserId!: string;
+    public anilistUserId!: number;
 
-    @ManyToOne(() => UserList, (list) => list.user)
-    public lists: Array<UserList> = [];
+    @Property()
+    @Column()
+    public lastUpdated!: Date;
+
+    @OneToMany(() => UserList, (list) => list.user, { cascade: true })
+    public lists?: Array<UserList>;
 }

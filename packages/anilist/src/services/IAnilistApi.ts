@@ -17,4 +17,6 @@ export interface IAnilistApi
     getUserList(username: string, type: MediaType, name: string): Promise<userLists_MediaListCollection_lists> | never;
 
     getCurrentUser(): Promise<IAnilistUser | null>;
+
+    getUser(username: string): Promise<IAnilistUser | null>;
 }

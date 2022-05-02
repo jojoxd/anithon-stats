@@ -6,7 +6,7 @@ import {
     userLists,
     userLists_MediaListCollection_lists
 } from "../..";
-import {CurrentUser} from "./AnilistService";
+import {IAnilistUser} from "./AnilistService";
 
 export interface IAnilistApi
 {
@@ -16,5 +16,5 @@ export interface IAnilistApi
 
     getUserList(username: string, type: MediaType, name: string): Promise<userLists_MediaListCollection_lists> | never;
 
-    getCurrentUser(): Promise<CurrentUser | null>;
+    getCurrentUser(): Promise<IAnilistUser | null>;
 }

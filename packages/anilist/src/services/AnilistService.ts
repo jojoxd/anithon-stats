@@ -1,6 +1,6 @@
 "use strict";
 
-import {ProviderScope, Scope, Service, Env, $log, UseCache, Constant, PlatformContext} from "@tsed/common";
+import {ProviderScope, Scope, Service, $log, UseCache, Constant, PlatformContext} from "@tsed/common";
 import {IAnilistApi} from "./IAnilistApi";
 import {ApolloClient} from "apollo-boost";
 import {ApolloClientBuilder} from "../lib/ApolloClientBuilder";
@@ -11,6 +11,7 @@ import {GraphQLError} from "graphql";
 import {AnilistError} from "../AnilistError";
 import getCurrentUser from "../gql/getCurrentUser";
 import {InjectContext} from "@tsed/di";
+import { Env } from "@tsed/core";
 
 @Service()
 @Scope(ProviderScope.REQUEST)
@@ -28,15 +29,9 @@ export class AnilistService implements IAnilistApi
 
     protected get token(): string | null
     {
-        $log.info("Context:");
-        $log.info(this.$ctx);
+        const session: any = this.$ctx?.getRequest()?.session;
 
-        const session: any = this.$ctx?.get("request");
-
-        $log.info("Session:");
-        $log.info(session);
-
-        return null;
+        return session.anilist_token ?? null;
     }
 
     constructor()
@@ -44,7 +39,7 @@ export class AnilistService implements IAnilistApi
         // Setup Apollo Client
         const builder = new ApolloClientBuilder(AnilistService.ENDPOINT);
 
-        builder.withAuth(() => this.token ?? null);
+        builder.withAuth(() => this.token);
 
         this.apollo = builder.build();
     }
@@ -141,7 +136,7 @@ export class AnilistService implements IAnilistApi
 
 export interface IAnilistUser
 {
-    id: string;
+    id: number;
 
     name: string;
 

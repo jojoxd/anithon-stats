@@ -1,6 +1,7 @@
-import {Controller, Inject, ProviderScope, Scope, Session} from "@tsed/common";
+import {$log, Controller, Inject, ProviderScope, Scope, Session} from "@tsed/common";
 import {AnilistService} from "@anime-rss-filter/anilist";
-import {Get} from "@tsed/schema";
+import {ContentType, Get} from "@tsed/schema";
+import {ICurrentUser} from "@anistats/shared";
 
 @Controller("/user")
 @Scope(ProviderScope.REQUEST)
@@ -10,10 +11,15 @@ export class UserController
     protected anilistService!: AnilistService;
 
     @Get("/current")
-    async getCurrentUser(@Session() session: any)
+    @ContentType("application/json")
+    async getCurrentUser(@Session() session: any): Promise<ICurrentUser>
     {
-        // this.anilistService.setToken(session.anilist_token);
+        const currentUser = await this.anilistService.getCurrentUser();
 
-        return this.anilistService.getCurrentUser();
+        if(!currentUser) {
+            return { isAuthenticated: false };
+        }
+
+        return { ...currentUser, isAuthenticated: true };
     }
 }

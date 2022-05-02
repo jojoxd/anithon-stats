@@ -46,7 +46,7 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: string, data:
     };
 }
 
-interface IUseApiReturnData<TReturn>
+export interface IUseApiReturnData<TReturn>
 {
     data: Ref<TReturn | null>,
 

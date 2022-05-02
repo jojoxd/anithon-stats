@@ -40,6 +40,7 @@ export class ListImage
         const entries = await this.container.toEntries();
         const chunks = await this.container.toChunkList();
 
+        // @TODO: Change imageBox to an entries.length % {entries per line}, and make more lines as neccesary
         const imageBox: Box = { w: entries.length * 100 + 10, h: 150 };
         const textBox: Box = { w: imageBox.w, h: 100 };
 

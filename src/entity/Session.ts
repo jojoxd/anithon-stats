@@ -1,4 +1,4 @@
-import {ISession} from "@jojoxd/connect-typeorm";
+import {ISession} from "connect-typeorm";
 import {Column, Entity, Index, PrimaryColumn} from "typeorm";
 
 @Entity()

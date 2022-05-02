@@ -3,7 +3,10 @@
 
 <template>
   <main class="content" :class="{ 'overlayed': $overlay.shown.value }">
-    <LanguageSwitcher />
+    <span class="header">
+      <LanguageSwitcher />
+      <UserComponent />
+    </span>
 
     <router-view />
 

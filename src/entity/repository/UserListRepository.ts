@@ -15,7 +15,7 @@ export const UserListRepository = SqliteDataSource.getRepository(UserList).exten
     {
         return findOrCreateMutex.runExclusive(async () => {
             try {
-                return await this.findOneOrFail({ userName, listName });
+                return await this.findOneOrFail({ where: { userName, listName } });
             } catch(ignored) {
                 let userList = this.create({ userName, listName });
                 userList.savedData = new SavedData();
@@ -34,4 +34,4 @@ export type USERLIST_REPOSITORY = typeof UserListRepository;
 registerProvider<USERLIST_REPOSITORY>({
     provide: USERLIST_REPOSITORY,
     useValue: UserListRepository,
-})
+});

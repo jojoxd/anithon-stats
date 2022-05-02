@@ -4,8 +4,10 @@
   import {useUserLists} from "../composition/useUserLists";
   import {ApiStatus} from "../composition/useApi";
   import {useRouter} from "vue-router";
+  import {useCurrentUser} from "../composition/useCurrentUser";
 
   // @TODO: #1 Fix instantiation of user and selectedList, it should be read from router or something
+  // @TODO: Read username from useCurrentUser()
   const user: Ref<string> = ref(null);
   const selectedList: Ref<string> = ref(null);
 
@@ -14,10 +16,6 @@
   const stage2 = computed(() => status.value === ApiStatus.Ok);
 
   const router = useRouter();
-
-  const oauthUrl = computed(() => {
-    return `/api/oauth?redirect=${encodeURIComponent(window.location.href)}`;
-  });
 
   function goToList() {
     if(user.value && selectedList.value) {
@@ -28,9 +26,6 @@
 
 <template>
   <div class="userlist-select">
-
-    <a :href="oauthUrl">Login using Anilist</a>
-
     <div class="stage1">
       <h2>Your username</h2>
 

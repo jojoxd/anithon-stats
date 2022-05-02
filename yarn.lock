@@ -11,8 +11,8 @@ __metadata:
   dependencies:
     "@jojoxd/tsconfig": 1.1.2
     "@tsed/cli-plugin-mocha": 3.4.7
-    "@tsed/common": ^6.102.1
-    "@tsed/di": ^6.102.1
+    "@tsed/common": ^6.114.3
+    "@tsed/di": ^6.114.3
     "@types/chai": 4.2.11
     "@types/chai-as-promised": 7.1.2
     "@types/express": ^4.17.4
@@ -39,8 +39,8 @@ __metadata:
     tsup: ^5.12.6
     typescript: ^4.3.5
   peerDependencies:
-    "@tsed/common": ^6.102.1
-    "@tsed/di": ^6.102.1
+    "@tsed/common": ^6.114.3
+    "@tsed/di": ^6.114.3
     node-fetch: ^3.0.0-beta.4
   languageName: unknown
   linkType: soft
@@ -453,20 +453,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jojoxd/connect-typeorm@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@jojoxd/connect-typeorm@npm:1.2.0"
-  dependencies:
-    "@types/debug": ^4.1.7
-    "@types/express-session": ^1.17.3
-    debug: ^4.3.4
-    express-session: ^1.17.2
-  peerDependencies:
-    typeorm: ^0.3.6
-  checksum: 6aa6f1dba0b5d67b16dc7e718b1c99a0f31e2467bcd3b141f8f5db0441632255550e650bbcad7de41bcb1eb5ff9b3864795269cc83dd364d14132d4936c42311
-  languageName: node
-  linkType: hard
-
 "@jojoxd/tsconfig@npm:1.1.2":
   version: 1.1.2
   resolution: "@jojoxd/tsconfig@npm:1.1.2"
@@ -793,7 +779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsed/common@npm:^6.102.1, @tsed/common@npm:^6.114.3":
+"@tsed/common@npm:^6.114.3":
   version: 6.114.3
   resolution: "@tsed/common@npm:6.114.3"
   dependencies:
@@ -851,7 +837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsed/di@npm:6.114.3, @tsed/di@npm:^6.102.1, @tsed/di@npm:^6.114.3":
+"@tsed/di@npm:6.114.3, @tsed/di@npm:^6.114.3":
   version: 6.114.3
   resolution: "@tsed/di@npm:6.114.3"
   dependencies:
@@ -1186,21 +1172,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsed/typeorm@npm:^6.114.3":
-  version: 6.114.3
-  resolution: "@tsed/typeorm@npm:6.114.3"
-  dependencies:
-    tslib: 2.3.1
-  peerDependencies:
-    "@tsed/core": ^6.114.3
-    "@tsed/di": ^6.114.3
-    "@tsed/json-mapper": ^6.114.3
-    "@tsed/schema": ^6.114.3
-    typeorm: ^0.2.26
-  checksum: 534042ef9efe1c7b46e595514422d212fee381d78ebd7fede263eb01ef153292f776ea7988162882fc750ab9efebd540c96505ca66cb639e52c0082ce2388f90
-  languageName: node
-  linkType: hard
-
 "@types/body-parser@npm:*":
   version: 1.19.1
   resolution: "@types/body-parser@npm:1.19.1"
@@ -1282,12 +1253,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/debug@npm:^4.1.7":
-  version: 4.1.7
-  resolution: "@types/debug@npm:4.1.7"
-  dependencies:
-    "@types/ms": "*"
-  checksum: 0a7b89d8ed72526858f0b61c6fd81f477853e8c4415bb97f48b1b5545248d2ae389931680b94b393b993a7cfe893537a200647d93defe6d87159b96812305adc
+"@types/debug@npm:0.0.31":
+  version: 0.0.31
+  resolution: "@types/debug@npm:0.0.31"
+  checksum: d3f2cfa083f0f71015874f4a3e338deb3acbd80fc52c2b4c4eb21e2f28a0f5f5184d0861c8ec2b83e7c1e4db01fc2ec96646ae14fa7028f6da5acdf948b72fcb
   languageName: node
   linkType: hard
 
@@ -1302,7 +1271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-session@npm:^1.17.3, @types/express-session@npm:^1.17.4":
+"@types/express-session@npm:^1.15.5, @types/express-session@npm:^1.17.4":
   version: 1.17.4
   resolution: "@types/express-session@npm:1.17.4"
   dependencies:
@@ -1394,13 +1363,6 @@ __metadata:
   dependencies:
     moment: ">=2.14.0"
   checksum: 84fe8cf1582fb51f588ce46edaf876bbe92523062bb2750d7b8a60a853a5fd59cc8edcd6b2ca7db6c91e3d0479e36e86b52997adc472e3156ca51011be46a260
-  languageName: node
-  linkType: hard
-
-"@types/ms@npm:*":
-  version: 0.7.31
-  resolution: "@types/ms@npm:0.7.31"
-  checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
   languageName: node
   linkType: hard
 
@@ -1942,7 +1904,6 @@ __metadata:
   dependencies:
     "@anime-rss-filter/anilist": "workspace:packages/anilist"
     "@anistats/shared": "workspace:packages/shared"
-    "@jojoxd/connect-typeorm": ^1.2.0
     "@jojoxd/tsconfig": 1.1.2
     "@tsed/ajv": ^6.114.3
     "@tsed/cli-core": ^3.20.9
@@ -1955,7 +1916,6 @@ __metadata:
     "@tsed/json-mapper": ^6.114.3
     "@tsed/platform-express": ^6.114.3
     "@tsed/schema": ^6.114.3
-    "@tsed/typeorm": ^6.114.3
     "@types/compression": ^1.7.2
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.12
@@ -1973,6 +1933,7 @@ __metadata:
     body-parser: ^1.19.2
     canvas: ^2.9.0
     compression: ^1.7.4
+    connect-typeorm: ^1.1.4
     cookie-parser: ^1.4.6
     cors: ^2.8.5
     cross-env: ^7.0.3
@@ -3293,6 +3254,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"connect-typeorm@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "connect-typeorm@npm:1.1.4"
+  dependencies:
+    "@types/debug": 0.0.31
+    "@types/express-session": ^1.15.5
+    debug: ^4.1.1
+    express-session: ^1.15.6
+  peerDependencies:
+    typeorm: ^0.1.4 || ^0.2.5
+  checksum: 53e8d718f51d58149af562908b11ddbc3a716563a06e13f9c0ffc52d89774c1dd1660ca5e9958ecfe66469ac7d023d68fddf5b10aefb48c061da6c42b766ab28
+  languageName: node
+  linkType: hard
+
 "console-control-strings@npm:^1.0.0, console-control-strings@npm:^1.1.0, console-control-strings@npm:~1.1.0":
   version: 1.1.0
   resolution: "console-control-strings@npm:1.1.0"
@@ -4321,7 +4296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-session@npm:^1.17.2":
+"express-session@npm:^1.15.6, express-session@npm:^1.17.2":
   version: 1.17.2
   resolution: "express-session@npm:1.17.2"
   dependencies:

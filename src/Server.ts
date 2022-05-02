@@ -8,12 +8,9 @@ import methodOverride from "method-override";
 import cors from "cors";
 import session from "express-session";
 import "@tsed/ajv";
-import "@tsed/typeorm";
 import {config, rootDir} from "./config";
-import {TypeormStore} from "@jojoxd/connect-typeorm";
+import {TypeormStore} from "connect-typeorm";
 import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
-import {SQLITE_DATASOURCE} from "./datasources/SqliteDataSource";
-import {DataSource} from "typeorm";
 
 @Configuration({
     ...config,
@@ -77,16 +74,10 @@ export class Server
 
     $onReady(): void
     {
-        const ds = this.injector.get<DataSource>(SQLITE_DATASOURCE);
-        $log.info("DataSource (Server)", ds);
-
-        $log.info("SessRepo Exists? ", this.injector.has(SESSION_REPOSITORY));
-
         const sessionRepository = this.injector.get<SESSION_REPOSITORY>(SESSION_REPOSITORY);
 
-        $log.info(this.injector.get<SESSION_REPOSITORY>(SESSION_REPOSITORY));
-
-        $log.info("Session Repo =", sessionRepository);
+        if(!sessionRepository)
+            throw new Error("Failed to load Session Store");
 
         this.sessionStore.connect(sessionRepository);
     }

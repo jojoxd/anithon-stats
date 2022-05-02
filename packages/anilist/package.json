@@ -37,6 +37,7 @@
     "sinon-chai": "3.5.0",
     "supertest": "4.0.2",
     "tslint": "^6.1.1",
+    "tsup": "^5.12.6",
     "typescript": "^4.3.5"
   },
   "scripts": {
@@ -44,7 +45,7 @@
     "clean:package-anilist": "yarn clean",
     "watch:package-anilist": "yarn build:package-anilist --watch",
     "clean": "rm dist -rf && echo 'Cleaned package-anilist'",
-    "tsc": "tsc --project tsconfig.compile.json",
+    "tsc": "tsup index.ts --out-dir dist --format cjs,esm --dts",
     "update-schema": "apollo client:download-schema --endpoint=https://graphql.anilist.co schema.json",
     "apollo:codegen": "apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=src/gql/**/*.ts --tagName=gql --addTypename --outputFlat src/generated/types.ts",
     "test": "yarn test:lint && yarn test:coverage",

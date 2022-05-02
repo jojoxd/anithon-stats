@@ -1,6 +1,7 @@
-import {Column, Entity, Generated, JoinColumn, OneToOne, PrimaryColumn, Unique} from "typeorm";
+import {Column, Entity, Generated, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Unique} from "typeorm";
 import {Property} from "@tsed/schema";
 import {SavedData} from "./SavedData";
+import {AnilistUser} from "./AnilistUser";
 
 @Entity()
 @Unique("UQ_USERLISTS", ["userName", "listName"])
@@ -16,6 +17,11 @@ export class UserList
     @Property()
     public id!: number;
 
+    @Property()
+    @OneToMany(() => AnilistUser, (user) => user.lists)
+    public user!: AnilistUser;
+
+    // @TODO: Change this to AnilistUser
     // Identifying info
     @Property()
     @Column()

@@ -1,7 +1,7 @@
 import {ChunkService} from "./ChunkService";
 import {EntryService} from "./EntryService";
 import {Inject} from "@tsed/di";
-import {UserListRepository} from "../entity/UserListRepository";
+import {USERLIST_REPOSITORY, UserListRepository} from "../entity/repository/UserListRepository";
 import {UserListContainer} from "./ListManager/UserListContainer";
 
 /**
@@ -15,8 +15,8 @@ export class ListManager
     @Inject()
     protected readonly entryService!: EntryService;
 
-    @Inject()
-    protected readonly userListRepository!: UserListRepository;
+    @Inject(USERLIST_REPOSITORY)
+    protected readonly userListRepository!: USERLIST_REPOSITORY;
 
     async getList(user: string, list: string): Promise<UserListContainer>
     {

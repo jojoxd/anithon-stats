@@ -15,6 +15,10 @@
 
   const router = useRouter();
 
+  const oauthUrl = computed(() => {
+    return `/api/oauth?redirect=${encodeURIComponent(window.location.href)}`;
+  });
+
   function goToList() {
     if(user.value && selectedList.value) {
       router.push(`/${user.value}/list/${selectedList.value}`);
@@ -24,6 +28,8 @@
 
 <template>
   <div class="userlist-select">
+
+    <a :href="oauthUrl">Login using Anilist</a>
 
     <div class="stage1">
       <h2>Your username</h2>

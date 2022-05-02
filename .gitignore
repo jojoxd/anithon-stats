@@ -58,3 +58,7 @@ database.sqlite
 !.yarn/build-state.yml
 !.yarn/install-state.gz
 !.yarn/releases
+
+.env
+.env.*
+!.env.default

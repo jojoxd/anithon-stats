@@ -1,12 +1,12 @@
 import {BodyParams, Controller, Get, Inject, PathParams, Post} from "@tsed/common";
 import {IMetadata} from "@anistats/shared";
-import {UserListRepository} from "../../entity/UserListRepository";
+import {USERLIST_REPOSITORY, UserListRepository} from "../../entity/repository/UserListRepository";
 
 @Controller("/:user/list/:list/metadata")
 export class MetadataController
 {
-    @Inject()
-    protected readonly userListRepository!: UserListRepository;
+    @Inject(USERLIST_REPOSITORY)
+    protected readonly userListRepository!: USERLIST_REPOSITORY;
 
     @Get()
     public async get(

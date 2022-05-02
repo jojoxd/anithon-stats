@@ -1,35 +1,58 @@
 "use strict";
 
-import {Service} from "@tsed/di";
+import {ProviderScope, Scope, Service, Env, $log, UseCache, Constant, PlatformContext} from "@tsed/common";
 import {IAnilistApi} from "./IAnilistApi";
 import {ApolloClient} from "apollo-boost";
 import {ApolloClientBuilder} from "../lib/ApolloClientBuilder";
 import getUserLists from "../gql/getUserLists.gql";
 import fetchUserLists from "../gql/fetchUserLists.gql";
-import {
-    MediaListStatus,
-    MediaType,
-    userLists,
-    userLists_MediaListCollection_lists,
-    userListsVariables
-} from "../..";
+import {MediaListStatus, MediaType, userLists, userLists_MediaListCollection_lists, userListsVariables} from "../..";
 import {GraphQLError} from "graphql";
-import {$log, UseCache} from "@tsed/common";
 import {AnilistError} from "../AnilistError";
+import getCurrentUser from "../gql/getCurrentUser";
+import {InjectContext} from "@tsed/di";
 
 @Service()
+@Scope(ProviderScope.REQUEST)
 export class AnilistService implements IAnilistApi
 {
     public static readonly ENDPOINT = "https://graphql.anilist.co";
 
     protected apollo: ApolloClient<any>;
 
+    @Constant("env")
+    protected env!: Env;
+
+    @InjectContext()
+    protected $ctx?: PlatformContext;
+
+    protected get token(): string | null
+    {
+        $log.info("Context:");
+        $log.info(this.$ctx);
+
+        const session: any = this.$ctx?.get("request");
+
+        $log.info("Session:");
+        $log.info(session);
+
+        return null;
+    }
+
     constructor()
     {
         // Setup Apollo Client
         const builder = new ApolloClientBuilder(AnilistService.ENDPOINT);
 
+        builder.withAuth(() => this.token ?? null);
+
         this.apollo = builder.build();
+    }
+
+    protected createError(errors: ReadonlyArray<GraphQLError>)
+    {
+        const errorMessage = errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n");
+        return new AnilistError(errorMessage, errors);
     }
 
     @UseCache({ ttl: 30 })
@@ -50,13 +73,13 @@ export class AnilistService implements IAnilistApi
         });
 
         if (data.errors) {
-            const errorMessage = data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n");
-            throw new AnilistError(errorMessage, data.errors);
+            throw this.createError(data.errors!);
         }
 
-        // @DEBUG
-        const len = new TextEncoder().encode(JSON.stringify(data.data)).byteLength
-        $log.info(`We just nuked anilist to get ~${(len / 1024 / 1024).toFixed(1)}MB of data`);
+        if(this.env === Env.DEV) {
+            const len = new TextEncoder().encode(JSON.stringify(data.data)).byteLength
+            $log.info(`We just nuked anilist to get ~${(len / 1024 / 1024).toFixed(1)}MB of data`);
+        }
 
         return data.data;
     }
@@ -77,8 +100,7 @@ export class AnilistService implements IAnilistApi
         });
 
         if (data.errors) {
-            const errorMessage = data.errors.map((e: GraphQLError) => `GraphQLError/${e.name}: ${e.message}`).join("\n");
-            throw new AnilistError(errorMessage, data.errors);
+            throw this.createError(data.errors!);
         }
 
         return data.data.MediaListCollection?.lists?.map(list => list!.name!) ?? [];
@@ -90,4 +112,38 @@ export class AnilistService implements IAnilistApi
 
         return lists.MediaListCollection?.lists?.find(list => list?.name === name)!;
     }
+
+    async getCurrentUser(): Promise<IAnilistUser | null>
+    {
+        if(!this.token)
+            return null;
+
+        const data = await this.apollo.query<any, any>({
+            query: getCurrentUser,
+        });
+
+        if(data.errors) {
+            throw this.createError(data.errors!);
+        }
+
+        const viewer = data.data.Viewer;
+
+        return {
+            id: viewer.id,
+            name: viewer.name,
+
+            avatar: {
+                large: viewer.avatar.large,
+            },
+        };
+    }
+}
+
+export interface IAnilistUser
+{
+    id: string;
+
+    name: string;
+
+    avatar: { large: string };
 }

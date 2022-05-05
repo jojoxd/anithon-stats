@@ -6,6 +6,8 @@ import {useMetadata} from "../../../composition/useMetadata";
 import {ApiStatus} from "../../../composition/useApi";
 
 import {IOverlayController} from "../../../plugin/overlay";
+import {useUser} from "../../../composition/useUser";
+import {useVModel} from "@vueuse/core";
 
 declare const $overlay: IOverlayController;
 
@@ -21,7 +23,8 @@ declare const $overlay: IOverlayController;
     },
   });
 
-  const { user, list } = reactive(props);
+  const user = useVModel(props, "user");
+  const list = useVModel(props, "list");
   const updating = ref<boolean>(false);
 
   const {
@@ -29,20 +32,24 @@ declare const $overlay: IOverlayController;
     status: chunkStatus,
     responseStatus: chunkResponseStatus,
     reload: reloadChunks
-  } = useChunks(user, list);
+  } = useChunks(user.value, list.value);
 
   const {
     data: entryData,
     status: entryStatus,
     responseStatus: entryResponseStatus,
     reload: reloadEntries,
-  } = useEntries(user, list);
+  } = useEntries(user.value, list.value);
 
   const {
     data: metadata,
     updateMetadata,
     reload: reloadMetadata,
-  } = useMetadata(user, list);
+  } = useMetadata(user.value, list.value);
+
+  const {
+    user: userData
+  } = useUser(user);
 
   const host = computed(() => {
     return `${window.location.protocol}//${window.location.host}`;
@@ -77,8 +84,6 @@ declare const $overlay: IOverlayController;
   }
 
   watch([chunkStatus, entryStatus], () => {
-    console.log("$overlay = ", $overlay);
-
     if(chunkStatus.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
       if(chunkStatus.value === ApiStatus.Failure) {
         $overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
@@ -116,29 +121,19 @@ declare const $overlay: IOverlayController;
     <!-- @TODO: #1 Change :href to fully computed value -->
     <a :href="`${host}/api/${user}/list/${list}/image.png`" target="_blank">Embed</a>
 
-    <div class="form-control update">
+    <div class="form-control update" v-if="userData.isCurrentUser">
       <button @click="update()">Update</button>
     </div>
 
     <div class="dev" v-if="entryData">
       <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
         <template #item="{ item, up, down, index }">
-          <EntryContainer :entry="item" @move-up="up" @move-down="down" :index="index" />
+          <EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :index="index" />
         </template>
       </Sortable>
     </div>
 
-    <!-- @TODO: #6 Change Loading... (apiStatus) to a generalized controller -->
-    <div v-if="status === ApiStatus.Fetching">
-      Loading...
-    </div>
-
-    <!-- @TODO: #6 Change Updating... (updating) to a generalized controller -->
-    <div v-if="updating">
-      Updating...
-    </div>
-
-    <div v-for="(chunk, index) of chunkData.chunks" v-if="status === ApiStatus.Ok">
+    <div v-for="(chunk, index) of chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok">
       <Chunk :chunk="chunk" :index="index" />
     </div>
   </div>

@@ -49,6 +49,7 @@ export class OAuthController
         const redirectResponse = ctx.response.redirect(302, session.oauth_redirect_next);
         delete session.oauth_redirect_next;
 
+        // @TODO: Do we need this onboarding if we have AnilistUserManager?
         // User Onboarding
         const currentUser = await this.anilistService.getCurrentUser();
 
@@ -59,8 +60,16 @@ export class OAuthController
         user.userName = currentUser.name;
         user.anilistUserId = currentUser.id;
 
-        this.anilistUserRepository.updateOrCreate(user);
+        // await this.anilistUserRepository.updateOrCreate(user);
 
         return redirectResponse;
+    }
+
+    @Get("/logout")
+    public async getLogout(@Context() ctx: Context, @QueryParams("redirect") redirectTo: string, @Session() session: any)
+    {
+        await session.destroy();
+
+        return ctx.response.redirect(302, redirectTo);
     }
 }

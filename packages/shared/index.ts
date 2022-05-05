@@ -1,3 +1,4 @@
+export * from './src/IAnilistUserMetadata';
 export * from './src/IChunk';
 export * from './src/IChunkList';
 export * from './src/ICurrentUser';

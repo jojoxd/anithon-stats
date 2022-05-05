@@ -42,6 +42,10 @@ html, body {
           sans-serif;
 }
 
+a {
+  color: $link-text-color;
+}
+
 main.content {
   margin: 0 auto;
   width: 70vw;

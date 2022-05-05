@@ -1,4 +1,4 @@
-import {Column, Entity, Generated, ManyToOne, OneToMany, PrimaryColumn, Unique} from "typeorm";
+import {Column, Entity, Generated, OneToMany, PrimaryColumn, Unique} from "typeorm";
 import {Property} from "@tsed/schema";
 import {UserList} from "./UserList";
 

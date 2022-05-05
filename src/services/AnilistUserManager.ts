@@ -29,7 +29,7 @@ export class AnilistUserManager
     @Inject()
     protected anilistService!: AnilistService;
 
-    async getUserByName(userName: string): Promise<AnilistUser | null>
+    async getUserByName(userName: string, forceUpdate: boolean = false): Promise<AnilistUser | null>
     {
         const mutex = MUTEXES.getMutex(userName);
 
@@ -40,9 +40,12 @@ export class AnilistUserManager
 
             try {
                 user = await this.anilistUserRepository.findUserByName(userName.toLowerCase());
-            } catch(e) { /* @TODO: Do we need error handling? */ }
+            } catch(e) {
+                $log.warn(e);
+            }
 
             if(user === null) {
+                $log.info(`Creating user ${userName}`);
                 user = new AnilistUser();
 
                 const userData = await this.anilistService.getUser(userName);
@@ -52,33 +55,37 @@ export class AnilistUserManager
 
                 user.userName = userName.toLowerCase();
                 user.anilistUserId = userData.id;
+                forceUpdate = true;
             }
 
-            // @TODO: Short-circuit next code on lastUpdated (1 hour ago or smth?)
-            // @TODO: Allow force update
+            const ONE_DAY_IN_MILLISECONDS = 1000 * 60 * 60;
 
-            // Update lists
-            const userLists = await this.anilistService.getUserLists(userName, MediaType.ANIME);
+            if(forceUpdate || (user.lastUpdated && (Number(user.lastUpdated) + ONE_DAY_IN_MILLISECONDS) <= Date.now())) {
+                // Update lists
+                const userLists = await this.anilistService.getUserLists(user.userName, MediaType.ANIME);
 
-            if(!user.lists)
-                user.lists = [];
+                if (!user.lists)
+                    user.lists = [];
 
-            for(const userList of userLists) {
-                let list = user.lists.find(list => list.listName === userList);
+                for (const userList of userLists) {
+                    let list = user.lists.find(list => list.listName === userList);
 
-                if(!list) {
-                    list = new UserList();
-                    list.listName = userList;
+                    if (!list) {
+                        list = new UserList();
+                        list.listName = userList;
 
-                    user.lists.push(list);
+                        user.lists.push(list);
+                    }
+
+                    list.user = user;
                 }
 
-                list.user = user;
+                user.lastUpdated = new Date();
+
+                return this.anilistUserRepository.save(user);
             }
 
-            user.lastUpdated = new Date();
-
-            return this.anilistUserRepository.save(user);
+            return user;
         });
     }
 }

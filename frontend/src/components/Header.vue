@@ -17,7 +17,7 @@
   });
 
   const logoutUri = computed(() => {
-    return '#todo';
+    return `/api/oauth/logout?redirect=${encodeURIComponent(window.location.href)}`;
   });
 </script>
 
@@ -26,6 +26,8 @@
     <div class="title">
       <router-link to="/">AniStats</router-link>
     </div>
+
+    <div class="spacer" />
 
     <div class="language-switcher">
       <LanguageSwitcher />
@@ -68,18 +70,35 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: space-around;
 
-    position: absolute;
+    position: fixed;
     top: 0;
+    z-index: 2000;
 
-    width: 100%;
+    /* offset-x | offset-y | blur-radius | color */
+    box-shadow: 0 5px 5px darken($background-color, 10%);
+
+    $padding-width: 10vw;
+    padding: 0 $padding-width;
+
+    width: calc(100vw - 2 * #{$padding-width});
 
     .title
     {
       @extend %header-item;
 
       font-size: 1.75rem;
+
+      & *, & ::v-deep *
+      {
+        color: $text-color !important;
+        text-decoration: none;
+      }
+    }
+
+    .spacer
+    {
+      flex-grow: 1;
     }
 
     .language-switcher

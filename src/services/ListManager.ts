@@ -33,7 +33,7 @@ export class ListManager
         if(!user)
             throw new Error("Undefined behavior: user is not defined / null");
 
-        const userList = user.lists.find((list) => list.listName === listName);
+        const userList = user.lists?.find((list) => list.listName === listName);
 
         if(!userList)
             throw new Error("User has no such list");

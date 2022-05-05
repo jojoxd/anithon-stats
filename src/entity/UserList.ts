@@ -31,6 +31,6 @@ export class UserList
     public allowChunkMerge!: boolean;
 
     @OneToOne(() => SavedData, { eager: true, cascade: true })
-    @JoinColumn()
-    public savedData: SavedData;
+    @JoinColumn({ name: "savedDataId" })
+    public savedData!: SavedData;
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import {ref, watch, computed} from "vue";
-  import type { IEntry } from "@anistats/shared";
+  import type {IAnilistUserMetadata, IEntry} from "@anistats/shared";
   import type { Ref } from "vue";
   import {useEntryTitle} from "../../composition/entry/useEntryTitle";
   import {useVModel} from "@vueuse/core";
@@ -20,10 +20,16 @@
       required: false,
       default: -1
     },
+
+    user: {
+      type: Object, /* IAnilistUserMetadata */
+      required: true
+    }
   });
 
   const entry = useVModel(props, "entry") as Ref<IEntry>;
   const index = useVModel(props, "index");
+  const user = useVModel(props, "user") as Ref<IAnilistUserMetadata>;
   const title = useEntryTitle(entry);
   const description = useEntryDescription(entry);
   const cover = useEntryCover(entry);
@@ -43,7 +49,7 @@
 </script>
 
 <template>
-  <div class="entry">
+  <div class="entry" :class="{ edit: user?.isCurrentUser ?? false }">
     <div class="entry-order" v-if="index >= 0">
       <span>
         <icon-mdi-chevron-up @click="$emit('move-up')" style="font-size: 1.5rem;" />
@@ -84,7 +90,7 @@
       <span v-html="description" v-if="descriptionShown"></span>
     </div>
 
-    <div class="entry-settings">
+    <div class="entry-settings" v-if="user?.isCurrentUser ?? false">
       <EntrySettings :entry="entry" />
     </div>
   </div>
@@ -98,20 +104,39 @@
 
     @extend %card;
 
+    // Non-edit grid-template
     grid-template:
+      [row1-start] "order image title title"    2rem [row1-end]
+      [row2-start] "order image meta  meta" 2rem [row2-end]
+      [row3-start] "order image desc  desc" calc(#{$image-height}rem - 2rem - 2rem) [row3-end]
+                 /  3rem  #{$image-width}rem  1fr  1fr;
+
+    &.edit {
+      grid-template:
       [row1-start] "order image title title"    2rem [row1-end]
       [row2-start] "order image meta  settings" 2rem [row2-end]
       [row3-start] "order image desc  settings" calc(#{$image-height}rem - 2rem - 2rem) [row3-end]
                  /  3rem  #{$image-width}rem  1fr  1fr;
+    }
 
     @include respond(mobile) {
+      // Non-edit mobile grid-template
       grid-template:
+        [row1-start] "order .     image" calc(#{$image-height}rem + 1rem) [row1-end]
+        [row2-start] "title title title" 1fr [row2-end]
+        [row3-start] "meta  meta  meta" auto [row3-end]
+        [row4-start] "desc  desc  desc" auto [row4-end]
+                   / 2rem   1fr calc(#{$image-width}rem + 1rem);
+
+      &.edit {
+        grid-template:
         [row1-start] "order .     image" calc(#{$image-height}rem + 1rem) [row1-end]
         [row2-start] "title title title" 1fr [row2-end]
         [row3-start] "meta  meta  meta" auto [row3-end]
         [row4-start] "desc  desc  desc" auto [row4-end]
         [row5-start] "settings settings settings" auto [row5-end]
                    / 2rem   1fr calc(#{$image-width}rem + 1rem);
+      }
     }
 
     .entry-order {

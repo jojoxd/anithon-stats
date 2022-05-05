@@ -25,7 +25,7 @@ export class UserListsController
             throw new Error("User does not exist");
 
         return user.lists
-            .map(list => list.listName)
+            ?.map(list => list.listName)
             .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     }
 }

@@ -3,6 +3,7 @@ import {Entry} from "../services/ChunkService/Entry";
 import {MediaListStatus} from "@anime-rss-filter/anilist";
 import axios from "axios";
 import {UserListContainer} from "../services/ListManager/UserListContainer";
+import { UseCache } from "@tsed/common";
 
 export class ListImage
 {
@@ -23,9 +24,11 @@ export class ListImage
         this.container = container;
     }
 
+    @UseCache({ ttl: 3600 })
     protected async fetchImage(url: string): Promise<Buffer>
     {
-        const response = await axios.get(url, { responseType: "arraybuffer" })
+        console.log(`fetchImage(${url})`);
+        const response = await axios.get(url, { responseType: "arraybuffer" });
 
         return Buffer.from(response.data);
     }
@@ -40,12 +43,17 @@ export class ListImage
         const entries = await this.container.toEntries();
         const chunks = await this.container.toChunkList();
 
-        // @TODO: Change imageBox to an entries.length % {entries per line}, and make more lines as neccesary
-        const imageBox: Box = { w: entries.length * 100 + 10, h: 150 };
+        const imagesPerRow = 5;
+        const imageRows = Math.ceil(entries.length / imagesPerRow);
+
+        const imageWidth = 100;
+        const imageHeight = 140;
+
+        const imageBox: Box = { w: imagesPerRow * imageWidth + 10, h: imageRows * imageHeight + (10 * (imageRows - 1)) };
         const textBox: Box = { w: imageBox.w, h: 100 };
 
         const canvas = new CanvasUtil({
-            w: imageBox.w,
+            w: Math.max(imageBox.w, textBox.w),
             h: imageBox.h + textBox.h,
         });
 
@@ -64,67 +72,93 @@ export class ListImage
             });
         });
 
-        // Render main entries
-        await canvas.divide(canvas.size.w, entries, 10, async (x, maxSize, entry) => {
-            await canvas.withRestore(async (ctx) => {
-                await canvas.clipRadius(5, { x, y: textBox.h + 10, w: maxSize, h: imageBox.h - 20 });
+        const entryRows = entries.reduce<Array<Array<Entry|null>>>((map, entry, index) => {
+            const rowIndex = Math.floor(index / imagesPerRow);
+            if(!Array.isArray(map[rowIndex])) {
+                map[rowIndex] = [];
+            }
 
-                await canvas.withRestore(async () => {
+            map[rowIndex]!.push(entry);
+
+            return map;
+        }, []);
+
+        // Pad last row, or divide will not generate correct row
+        const padding = imagesPerRow - (entryRows[entryRows.length - 1]!.length % imagesPerRow);
+
+        if(padding % imagesPerRow !== 0) {
+            for (let pad = 0; pad < padding; pad++) entryRows[entryRows.length - 1]!.push(null);
+        }
+
+        // Render entries
+        await canvas.divide(imageBox.h, entryRows, 0, async (y, maxSizeY, entryRow) => {
+            await canvas.divide(canvas.size.w, entryRow!, 10, async(x, maxSizeX, entry) => {
+                if(entry === null) return; // continue, this is a padding entry
+
+                console.log(`divideX2: (x,y) = (${x}, ${y}) = ${entry!.series.title.romaji}`);
+
+                await canvas.withRestore(async (ctx) => {
+                    await canvas.clipRadius(5, { x, y: textBox.h + y + 10, w: maxSizeX, h: maxSizeY - 20 });
+
+                    await canvas.withRestore(async () => {
+                        // Add a red glow effect if this entry was dropped
+                        if(entry!.data.status === MediaListStatus.DROPPED) {
+                            ctx.filter = "blur(2px) grayscale(100%)";
+                        }
+
+                        await canvas.drawImageCentered(
+                            await this.fetchImage(entry!.data.media!.coverImage!.large!),
+                            { x: x + (maxSizeX / 2), y: textBox.h + y + (maxSizeY / 2) },
+                            { w: maxSizeX, h: maxSizeY }
+                        );
+                    });
+
                     // Add a red glow effect if this entry was dropped
                     if(entry!.data.status === MediaListStatus.DROPPED) {
-                        ctx.filter = "blur(2px) grayscale(100%)";
+                        ctx.globalCompositeOperation = "color";
+
+                        await canvas.fill.withStyle("red", async () => {
+                            await canvas.fill.rect({
+                                x: x,
+                                y: textBox.h + y,
+                                w: maxSizeX,
+                                h: maxSizeY
+                            });
+                        });
                     }
 
-                    await canvas.drawImageCentered(
-                        await this.fetchImage(entry!.data.media!.coverImage!.large!),
-                        { x: x + (maxSize / 2), y: textBox.h + (imageBox.h / 2) },
-                        { w: maxSize, h: imageBox.h - 20 }
-                    );
-                });
+                    // @TODO: Add "Dropped" badge
 
-                // Add a red glow effect if this entry was dropped
-                if(entry!.data.status === MediaListStatus.DROPPED) {
-                    ctx.globalCompositeOperation = "color";
+                    // Draw a sequel badge (+ number) if this entry has sequels
+                    if(entry!.sequel) {
+                        await canvas.fill.withStyle(ListImage.BACKGROUND_COLOR, async (fill) => {
+                            const box: Box = { w: 30, h: 20 };
 
-                    await canvas.fill.withStyle("red", async () => {
-                        await canvas.fill.rect({
-                            x: x,
-                            y: textBox.h,
-                            w: maxSize,
-                            h: imageBox.h
-                        });
-                    });
-                }
+                            await canvas.withRestore(async () => {
+                                await canvas.clipRadius(5, {
+                                    x: x + maxSizeX - box.w - 5,
+                                    y: textBox.h + y + imageHeight - box.h - 10,
+                                    ...box
+                                });
 
-                // Draw a sequel badge (+ number) if this entry has sequels
-                if(entry!.sequel) {
-                    await canvas.fill.withStyle(ListImage.BACKGROUND_COLOR, async (fill) => {
-                        const box: Box = { w: 30, h: 20 };
-
-                        await canvas.withRestore(async () => {
-                            await canvas.clipRadius(5, {
-                                x: x + maxSize - box.w - 5,
-                                y: textBox.h + imageBox.h - box.h - 15,
-                                ...box
+                                await fill.rect({
+                                    x: x + maxSizeX - box.w - 5,
+                                    y: textBox.h + y + imageHeight - box.h - 10,
+                                    ...box
+                                });
                             });
 
-                            await fill.rect({
-                                x: x + maxSize - box.w - 5,
-                                y: textBox.h + imageBox.h - box.h - 15,
-                                ...box
-                            });
-                        });
-
-                        await canvas.text(async (text) => {
-                            await text.withFont('.65rem Arial', 'rgb(159, 173, 189)', () => {
-                                text.write(`+ ${this.getTotalSequels(entry!)}`, {
-                                    x: x + maxSize - box.w + 2,
-                                    y: textBox.h + imageBox.h - box.h - 1,
+                            await canvas.text(async (text) => {
+                                await text.withFont('.65rem Arial', 'rgb(159, 173, 189)', () => {
+                                    text.write(`+ ${this.getTotalSequels(entry!)}`, {
+                                        x: x + maxSizeX - box.w + 2,
+                                        y: textBox.h + y + imageHeight - box.h + 4,
+                                    });
                                 });
                             });
                         });
-                    });
-                }
+                    }
+                });
             });
         });
 

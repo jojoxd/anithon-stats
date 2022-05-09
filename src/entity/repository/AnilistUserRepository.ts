@@ -16,12 +16,66 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         return this.save(current);
     },
 
+    async findUserByAnilistId(anilistUserId: number): Promise<AnilistUser | null>
+    {
+        const user = await this.createQueryBuilder("au")
+            .select()
+            .leftJoinAndSelect("au.lists", "list")
+            .leftJoinAndSelect("list._savedData", "saved_data")
+            .where("au.anilistUserId = :anilistUserId", { anilistUserId })
+            .getOneOrFail();
+
+        // @HACK: TypeORM has no available option to create a backreference to
+        //        user from user.lists.user, so we add it here instead.
+        if(user) {
+            for(const list of user.lists ?? []) {
+                list.user ??= user;
+            }
+        }
+
+        return user;
+    },
+
+    async findByListId(listId: string): Promise<AnilistUser | null>
+    {
+        const qb = this.createQueryBuilder("au");
+
+        const subQuery = qb.subQuery()
+
+
+        const user = await qb
+            .select()
+            .leftJoinAndSelect("au.lists", "list")
+            .leftJoinAndSelect("list._savedData", "saved_data")
+            .where(qb => {
+                const subQuery = qb.subQuery()
+                    .select("inner_user.id")
+                    .from("anilist_user", "inner_user")
+                    .leftJoin("inner_user.lists", "inner_list")
+                    .where("inner_list.id = :listId");
+
+                return `au.id = ${subQuery.getSql()}`;
+            })
+            .setParameter("listId", listId)
+            .getOneOrFail();
+
+        // @HACK: TypeORM has no available option to create a backreference to
+        //        user from user.lists.user, so we add it here instead.
+        if(user) {
+            for(const list of user.lists ?? []) {
+                list.user ??= user;
+            }
+        }
+
+        return user;
+    },
+
     async findUserByName(userName: string): Promise<AnilistUser | null>
     {
         const user = await this.createQueryBuilder("au")
             .select()
             .leftJoinAndSelect("au.lists", "list")
-            .leftJoinAndSelect("list.savedData", "saved_data")
+            .leftJoinAndSelect("list._savedData", "saved_data")
             .where("au.userName = :userName", { userName })
             .getOneOrFail();
 
@@ -34,7 +88,27 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         }
 
         return user;
-    }
+    },
+
+    async findUserByUuid(uuid: string): Promise<AnilistUser | null>
+    {
+        const user = await this.createQueryBuilder("au")
+            .select()
+            .leftJoinAndSelect("au.lists", "list")
+            .leftJoinAndSelect("list._savedData", "saved_data")
+            .where("au.id = :uuid", { uuid })
+            .getOneOrFail();
+
+        // @HACK: TypeORM has no available option to create a backreference to
+        //        user from user.lists.user, so we add it here instead.
+        if(user) {
+            for(const list of user.lists ?? []) {
+                list.user ??= user;
+            }
+        }
+
+        return user;
+    },
 });
 
 export const ANILIST_USER_REPOSITORY = Symbol.for("AnilistUserRepository");

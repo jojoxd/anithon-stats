@@ -1,6 +1,7 @@
 import { get, useTitle as vueUseTitle } from "@vueuse/core";
 import { computed, ref } from "vue";
 
+// @TODO: Change to usePageTitle
 export function useTitle()
 {
     const title = ref<string | null>(null);

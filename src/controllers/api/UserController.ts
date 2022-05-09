@@ -1,7 +1,8 @@
-import {$log, Controller, Inject, PathParams, ProviderScope, QueryParams, Scope, Session} from "@tsed/common";
-import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
+import {$log, Controller, Inject, PathParams, ProviderScope, Scope, Session} from "@tsed/common";
+import {AnilistService} from "@anime-rss-filter/anilist";
 import {ContentType, Get} from "@tsed/schema";
-import {ICurrentUser, IListData} from "@anistats/shared";
+import {ICurrentUser} from "@anistats/shared";
+import {AnilistUserManager} from "../../services/AnilistUserManager";
 
 @Controller("/user")
 @Scope(ProviderScope.REQUEST)
@@ -9,6 +10,9 @@ export class UserController
 {
     @Inject()
     protected anilistService!: AnilistService;
+
+    @Inject()
+    protected anilistUserManager!: AnilistUserManager;
 
     @Get("/@current")
     @ContentType("application/json")
@@ -31,10 +35,12 @@ export class UserController
 
         const currentUser = await this.anilistService.getCurrentUser();
 
-        const user = await this.anilistService.getUser(userName);
+        const user = await this.anilistService.searchUserByName(userName);
 
         if(!user)
             return null;
+
+        this.anilistUserManager.getUserByAnilistId(user.id);
 
         return {
             ...user,

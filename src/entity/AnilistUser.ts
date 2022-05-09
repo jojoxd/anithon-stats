@@ -4,6 +4,7 @@ import {UserList} from "./UserList";
 
 @Entity()
 @Unique("UQ_USER_ANILIST_UID", ["anilistUserId"])
+@Unique("UQ_USER_USERNAME", ["userName"])
 export class AnilistUser
 {
     @PrimaryColumn()

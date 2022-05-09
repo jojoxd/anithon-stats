@@ -7,13 +7,8 @@ import {AnilistUser} from "./AnilistUser";
 @Index("UQ_IDX_USERLIST", ["user", "listName"], { unique: true })
 export class UserList
 {
-    constructor()
-    {
-        this.savedData = new SavedData();
-    }
-
     @PrimaryColumn()
-    @Generated("increment")
+    @Generated("uuid")
     @Property()
     public id!: number;
 
@@ -71,5 +66,15 @@ export class UserList
     // Saved Data
     @OneToOne(() => SavedData, { eager: true, cascade: true })
     @JoinColumn({ name: "savedDataId" })
-    public savedData!: SavedData;
+    public _savedData!: SavedData;
+
+    public get savedData(): SavedData
+    {
+        return this._savedData ?? new SavedData();
+    }
+
+    public set savedData(value: SavedData)
+    {
+        this._savedData = value ?? new SavedData();
+    }
 }

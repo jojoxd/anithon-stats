@@ -1,13 +1,11 @@
 "use strict";
 
-export { AnilistError } from "./src/AnilistError";
-export { AnilistNotAUserError } from "./src/AnilistNotAUserError";
-export { AnilistService, IAnilistUser } from "./src/services/AnilistService";
-export { IAnilistApi } from "./src/services/IAnilistApi";
-export { AnilistOAuthService } from "./src/services/AnilistOAuthService";
-
-export { IFuzzyDate } from "./src/lib/IFuzzyDate";
-
-export { AnilistHelperService } from "./src/services/AnilistHelperService";
-
 export * from "./src/generated/types";
+
+export * from "./src/AnilistError";
+export * from "./src/AnilistNotAUserError";
+export * from "./src/services/AnilistService";
+export * from "./src/services/IAnilistApi";
+export * from "./src/services/AnilistOAuthService";
+export * from "./src/services/AnilistHelperService";
+export * from "./src/lib/IFuzzyDate";

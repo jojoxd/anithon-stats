@@ -1,12 +1,12 @@
 import {ComputedRef, ref, Ref, computed} from "vue";
 import {ApiStatus, useApi} from "./useApi";
 import {debouncedWatch, get} from "@vueuse/core";
-import {IListData} from "@anistats/shared";
+import {IAnilistUserMetadata, IListData} from "@anistats/shared";
 
 /**
  * Creates a wrapper for User Lists (string-version from Anilist API)
  */
-export function useUserLists(user: Ref<string | null>): UseUserListsReturn
+export function useUserLists(user: Ref<IAnilistUserMetadata | null>): UseUserListsReturn
 {
     const endpoint = ref<string | false>(false);
 
@@ -21,7 +21,7 @@ export function useUserLists(user: Ref<string | null>): UseUserListsReturn
             return;
         }
 
-        endpoint.value = `user/${_user}/lists`;
+        endpoint.value = `user/${_user.id}/lists`;
     }, { immediate: true, debounce: 500 });
 
     const { status, data, cancel, reload } = useApi<void, IListData>(endpoint, ref(), true);

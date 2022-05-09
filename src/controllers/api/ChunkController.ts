@@ -1,29 +1,33 @@
-import {$log, Controller, Get, PathParams} from "@tsed/common";
+import {$log, Controller, Get} from "@tsed/common";
 import {Inject} from "@tsed/di";
 import {InternalServerError, NotFound} from "@tsed/exceptions";
 import {Header, Returns} from "@tsed/schema";
 import {ChunkList} from "../../dto/ChunkList";
-import {ListManager} from "../../services/ListManager";
+import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
+import {UserList} from "../../entity/UserList";
+import {UserListContainerManager} from "../../services/UserListContainerManager";
 
-@Controller("/chunks/:user/:list")
+@Controller("/list/:listId")
 export class ChunkController
 {
     @Inject()
-    protected listManager!: ListManager;
+    protected userListContainerManager!: UserListContainerManager;
 
-    @Get()
+    @Get("/chunks")
     @Returns(200, ChunkList).Groups()
     @Header({
         'Cache-Control': 'no-store',
     })
     public async getIndex(
-        @PathParams("user") user: string,
-        @PathParams("list") listName: string
+        @PathParamEntity("listId") list: UserList
     ) {
-        try {
-            const list = await this.listManager.getList(user.toLowerCase(), listName);
+        $log.info(">>>>>>>>>>>>>>>>>>> LIST", list);
 
-            return list.toChunkList();
+        // @TODO: Cleanup
+        try {
+            const listContainer = await this.userListContainerManager.createFromList(list);
+
+            return listContainer.toChunkList();
         } catch(e) {
             if(e instanceof NotFound)
                 throw e;

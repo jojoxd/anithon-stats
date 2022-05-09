@@ -1,6 +1,6 @@
 import {Property} from "@tsed/schema";
 import {
-    userLists_MediaListCollection_lists_entries
+    fetchUserLists_MediaListCollection_lists_entries
 } from "@anime-rss-filter/anilist";
 import {ISeriesData, ISeriesTitle} from "@anistats/shared";
 
@@ -27,7 +27,7 @@ export class SeriesData implements ISeriesData
     @Property()
     public readonly description: string | null;
 
-    constructor(data: userLists_MediaListCollection_lists_entries)
+    constructor(data: fetchUserLists_MediaListCollection_lists_entries)
     {
         this.id = data.media!.id!;
 

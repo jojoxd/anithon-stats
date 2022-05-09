@@ -6,10 +6,15 @@ import {IChunkList} from "@anistats/shared";
 /**
  * Creates a wrapper for chunks API calls
  */
-export function useChunks(user: MaybeRef<string>, list: MaybeRef<string>)
+export function useChunks(listId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
-        return `chunks/${get(user)}/${get(list)}`
+        const _listId = get(listId);
+
+        if(!_listId)
+            return false;
+
+        return `list/${_listId}/chunks`;
     })
 
     return useApi<void, IChunkList>(endpoint, ref());

@@ -11,18 +11,13 @@
         type: String,
         required: true,
       },
-
-      list: {
-        type: String,
-        required: true,
-      }
     },
 
     setup(props, { emit }) {
       const { user: userName } = useVModels(props, emit);
 
       const { user } = useUser(userName);
-      const { lists: listsData, listNames, status } = useUserLists(userName);
+      const { lists: listsData, listNames, status } = useUserLists(user);
 
       return { user, listNames, listsData, userName, status, ApiStatus };
     }
@@ -44,7 +39,7 @@
         </span>
 
         <span class="list-link">
-          <router-link :to="`/${user?.name}/list/${list}`">Go to List</router-link>
+          <router-link :to="`/${user?.id}/list/${list}`">Go to List</router-link>
         </span>
       </div>
     </div>

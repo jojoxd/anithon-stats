@@ -26,6 +26,11 @@ export class UserListContainer
         return this.userList.user.userName;
     }
 
+    get anilistUserId(): number
+    {
+        return this.userList.user.anilistUserId;
+    }
+
     get listName(): string
     {
         return this.userList.listName;

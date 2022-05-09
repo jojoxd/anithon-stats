@@ -8,12 +8,12 @@ import {UserListContainer} from "./ListManager/UserListContainer";
 export class EntryService
 {
     @Inject()
-    protected anilist!: AnilistService;
+    protected anilistService!: AnilistService;
 
     async getEntries(ctx: UserListContainer): Promise<Array<Entry>>
     {
         try {
-            const data = await this.anilist.getUserList(ctx.userName, MediaType.ANIME, ctx.listName);
+            const data = await this.anilistService.getUserList(ctx.anilistUserId, MediaType.ANIME, ctx.listName);
             const savedData = ctx.userList.savedData;
 
             const entries = data.entries!.map(entry => new Entry(entry!, savedData, ctx.userList));

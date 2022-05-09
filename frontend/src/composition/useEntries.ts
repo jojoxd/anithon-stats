@@ -6,16 +6,15 @@ import { MaybeRef, get } from "@vueuse/core";
 /**
  * Creates a wrapper for entry API calls
  */
-export function useEntries(user: MaybeRef<string>, list: MaybeRef<string>)
+export function useEntries(listId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
-        const _user = get(user);
-        const _list = get(list);
+        const _listId = get(listId);
 
-        if(!_user || !_list)
+        if(!_listId)
             return false;
 
-        return `entries/${_user}/${_list}`;
+        return `list/${_listId}/entries`;
     });
 
     return useApi<void, Array<IEntry>>(endpoint, ref());

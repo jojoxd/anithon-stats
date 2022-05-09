@@ -14,11 +14,13 @@
   "workspaces": [
     "packages/anilist",
     "packages/shared",
+    "packages/tsed-entity-mapper",
     "frontend"
   ],
   "dependencies": {
     "@anime-rss-filter/anilist": "workspace:packages/anilist",
     "@anistats/shared": "workspace:packages/shared",
+    "@jojoxd/tsed-entity-mapper": "workspace:packages/tsed-entity-mapper",
     "@tsed/ajv": "^6.114.3",
     "@tsed/cli-core": "^3.20.9",
     "@tsed/common": "^6.114.3",

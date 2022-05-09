@@ -2,8 +2,8 @@ import {gql} from "apollo-boost";
 import {DocumentNode} from "graphql";
 
 export default gql`
-    query getUserLists($username: String!, $type: MediaType!, $statuses: [MediaListStatus!]!) {
-        MediaListCollection(userName: $username, type: $type, status_in: $statuses) {
+    query getUserLists($userId: Int!, $type: MediaType!, $statuses: [MediaListStatus!]!) {
+        MediaListCollection(userId: $userId, type: $type, status_in: $statuses) {
             user {
                 id
             }

@@ -1,29 +1,31 @@
-import {Controller, Get, PathParams} from "@tsed/common";
+import {Controller, Get} from "@tsed/common";
 import {InternalServerError} from "@tsed/exceptions";
 import {Inject} from "@tsed/di";
 import {Header, Returns} from "@tsed/schema";
 import {Entry} from "../../services/ChunkService/Entry";
-import {ListManager} from "../../services/ListManager";
+import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
+import {UserList} from "../../entity/UserList";
+import {UserListContainerManager} from "../../services/UserListContainerManager";
 
-@Controller("/entries/:user/:list")
+@Controller("/list/:listId")
 export class EntryController
 {
     @Inject()
-    protected listManager!: ListManager;
+    protected userListContainerManager!: UserListContainerManager;
 
-    @Get()
+    @Get("/entries")
     @Returns(200, Array).Of(Entry).Groups('deep-entry')
     @Header({
         'Cache-Control': 'no-store',
     })
     public async getIndex(
-        @PathParams("user") user: string,
-        @PathParams("list") listName: string
+        @PathParamEntity("listId") list: UserList,
     ) {
+        // @TODO: Cleanup
         try {
-            const list = await this.listManager.getList(user.toLowerCase(), listName);
+            const listContainer = await this.userListContainerManager.createFromList(list);
 
-            return list.toEntries();
+            return listContainer.toEntries();
         } catch(e) {
             throw new InternalServerError("Something went wrong", e);
         }

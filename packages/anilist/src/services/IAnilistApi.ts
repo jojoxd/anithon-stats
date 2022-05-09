@@ -11,13 +11,13 @@ import {IAnilistUser} from "./AnilistService";
 
 export interface IAnilistApi
 {
-    fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never;
+    fetchUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never;
 
-    getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
+    getUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
 
-    getUserList(username: string, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never;
+    getUserList(userId: number, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never;
 
     getCurrentUser(): Promise<IAnilistUser | null>;
 
-    getUser(username: string): Promise<IAnilistUser | null>;
+    searchUserByName(username: string): Promise<IAnilistUser | null>;
 }

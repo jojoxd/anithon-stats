@@ -2,8 +2,8 @@ import {gql} from "apollo-boost";
 import {DocumentNode} from "graphql";
 
 export default gql`
-    query getUser($name: String!) {
-        User(name: $name) {
+    query getUserById($userId: Int!) {
+        User(id: $userId) {
             id,
             name,
 

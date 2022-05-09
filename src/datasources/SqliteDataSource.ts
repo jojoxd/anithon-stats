@@ -14,7 +14,6 @@ export const SqliteDataSource = new DataSource({
     database: "database.sqlite",
 
     synchronize: true,
-    logging: true, // @TODO: Load env
 
     entities: [
         AnilistUser,

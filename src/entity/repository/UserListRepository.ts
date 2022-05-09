@@ -11,22 +11,22 @@ import {AnilistUser} from "../AnilistUser";
 const findOrCreateMutex = new Mutex();
 
 export const UserListRepository = SqliteDataSource.getRepository(UserList).extend({
-    // @TODO: Migrate to AnilistUser
-    async findOrCreate(user: AnilistUser, listName: string)
-    {
-        return findOrCreateMutex.runExclusive(async () => {
-            try {
-                return await this.findOneOrFail({ where: { user, listName } });
-            } catch(ignored) {
-                let userList = this.create({ user, listName });
-                userList.savedData = new SavedData();
-
-                await this.save(userList);
-
-                return userList;
-            }
-        });
-    }
+    // // @TODO: Migrate to AnilistUser
+    // async findOrCreate(user: AnilistUser, listName: string)
+    // {
+    //     return findOrCreateMutex.runExclusive(async () => {
+    //         try {
+    //             return await this.findOneOrFail({ where: { user, listName } });
+    //         } catch(ignored) {
+    //             let userList = this.create({ user, listName });
+    //             userList.savedData = new SavedData();
+    //
+    //             await this.save(userList);
+    //
+    //             return userList;
+    //         }
+    //     });
+    // }
 });
 
 export const USERLIST_REPOSITORY = Symbol.for("UserListRepository");

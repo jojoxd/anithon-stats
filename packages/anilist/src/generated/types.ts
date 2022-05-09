@@ -251,7 +251,7 @@ export interface fetchUserLists {
 }
 
 export interface fetchUserListsVariables {
-  username: string;
+  userId: number;
   type: MediaType;
   statuses: MediaListStatus[];
 }
@@ -306,10 +306,10 @@ export interface getCurrentUser {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: getUser
+// GraphQL query operation: getUserById
 // ====================================================
 
-export interface getUser_User_avatar {
+export interface getUserById_User_avatar {
   __typename: "UserAvatar";
   /**
    * The avatar of user at its largest size
@@ -321,7 +321,7 @@ export interface getUser_User_avatar {
   medium: string | null;
 }
 
-export interface getUser_User {
+export interface getUserById_User {
   __typename: "User";
   /**
    * The id of the user
@@ -334,18 +334,18 @@ export interface getUser_User {
   /**
    * The user's avatar images
    */
-  avatar: getUser_User_avatar | null;
+  avatar: getUserById_User_avatar | null;
 }
 
-export interface getUser {
+export interface getUserById {
   /**
    * User query
    */
-  User: getUser_User | null;
+  User: getUserById_User | null;
 }
 
-export interface getUserVariables {
-  name: string;
+export interface getUserByIdVariables {
+  userId: number;
 }
 
 /* tslint:disable */
@@ -367,6 +367,10 @@ export interface getUserLists_MediaListCollection_user {
 
 export interface getUserLists_MediaListCollection_lists_entries_media {
   __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
   /**
    * The amount of episodes the anime has when complete
    */
@@ -419,9 +423,57 @@ export interface getUserLists {
 }
 
 export interface getUserListsVariables {
-  username: string;
+  userId: number;
   type: MediaType;
   statuses: MediaListStatus[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: searchUserByName
+// ====================================================
+
+export interface searchUserByName_User_avatar {
+  __typename: "UserAvatar";
+  /**
+   * The avatar of user at its largest size
+   */
+  large: string | null;
+  /**
+   * The avatar of user at medium size
+   */
+  medium: string | null;
+}
+
+export interface searchUserByName_User {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+  /**
+   * The name of the user
+   */
+  name: string;
+  /**
+   * The user's avatar images
+   */
+  avatar: searchUserByName_User_avatar | null;
+}
+
+export interface searchUserByName {
+  /**
+   * User query
+   */
+  User: searchUserByName_User | null;
+}
+
+export interface searchUserByNameVariables {
+  name: string;
 }
 
 /* tslint:disable */

@@ -1,23 +1,24 @@
 import {Inject} from "@tsed/di";
-import {Controller, Get, PathParams, UseCache} from "@tsed/common";
+import {Controller, Get, UseCache} from "@tsed/common";
 import {ContentType} from "@tsed/schema";
 import {ListImage} from "../../util/ListImage";
-import {ListManager} from "../../services/ListManager";
+import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
+import {UserList} from "../../entity/UserList";
+import {UserListContainerManager} from "../../services/UserListContainerManager";
 
-@Controller("/embed")
+@Controller("/list/:listId")
 export class ListImageController
 {
     @Inject()
-    protected listManager!: ListManager;
+    protected userListContainerManager!: UserListContainerManager;
 
-    @Get("/:user/:list.png")
+    @Get("/embed.png")
     @ContentType('image/png')
     @UseCache({ ttl: 300 })
     public async getIndex(
-        @PathParams("user") user: string,
-        @PathParams("list") listName: string
+        @PathParamEntity("listId") list: UserList
     ) {
-        const container = await this.listManager.getList(user.toLowerCase(), listName);
+        const container = await this.userListContainerManager.createFromList(list);
 
         const listImage = new ListImage(container);
 

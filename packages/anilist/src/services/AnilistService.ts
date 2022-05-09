@@ -1,28 +1,33 @@
-"use strict";
-
 import {ProviderScope, Scope, Service, $log, UseCache, Constant, PlatformContext} from "@tsed/common";
-import {IAnilistApi} from "./IAnilistApi";
+import {InjectContext} from "@tsed/di";
+import { Env } from "@tsed/core";
+
 import {ApolloClient} from "apollo-boost";
+import {GraphQLError} from "graphql";
+
+import {IAnilistApi} from "./IAnilistApi";
+import {AnilistNotAUserError} from "../AnilistNotAUserError";
+import {AnilistError} from "../AnilistError";
 import {ApolloClientBuilder} from "../lib/ApolloClientBuilder";
-import getUserListsQuery from "../gql/getUserLists.gql";
-import fetchUserListsQuery from "../gql/fetchUserLists.gql";
+
 import {
     MediaListStatus,
     MediaType
 } from "../..";
-import {GraphQLError} from "graphql";
-import {AnilistError} from "../AnilistError";
+
+import getUserByIdQuery from "../gql/getUserById.gql";
+import searchUserByNameQuery from "../gql/searchUserByName.gql"
 import getCurrentUser from "../gql/getCurrentUser.gql";
-import getUser from "../gql/getUser.gql"
-import {InjectContext} from "@tsed/di";
-import { Env } from "@tsed/core";
-import {AnilistNotAUserError} from "../AnilistNotAUserError";
+import getUserListsQuery from "../gql/getUserLists.gql";
+import fetchUserListsQuery from "../gql/fetchUserLists.gql";
+
 import {
     fetchUserLists,
     fetchUserListsVariables,
     getUserLists,
     getUserListsVariables,
     fetchUserLists_MediaListCollection_lists,
+    searchUserByName, searchUserByNameVariables, getUserById, getUserByIdVariables,
 } from "../generated/types";
 
 @Service()
@@ -41,9 +46,13 @@ export class AnilistService implements IAnilistApi
 
     protected get token(): string | null
     {
-        const session: any = this.$ctx?.getRequest()?.session;
+        try {
+            return this.$ctx?.getRequest?.()?.session?.anilist_token ?? null;
+        } catch(e) {
+            $log.warn(e);
 
-        return session.anilist_token ?? null;
+            return null;
+        }
     }
 
     constructor()
@@ -63,9 +72,9 @@ export class AnilistService implements IAnilistApi
     }
 
     @UseCache({ ttl: 30 })
-    async fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never
+    async fetchUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never
     {
-        $log.info(`AnilistService.fetchUserLists(${username}, ${type}, [${statuses}])`);
+        $log.info(`AnilistService.fetchUserLists(${userId}, ${type}, [${statuses}])`);
 
         // Normalize Statuses
         if (typeof statuses === "undefined")
@@ -77,7 +86,7 @@ export class AnilistService implements IAnilistApi
         // Fetch Data
         const data = await this.apollo.query<fetchUserLists, fetchUserListsVariables>({
             query: fetchUserListsQuery,
-            variables: { username, type, statuses },
+            variables: { userId, type, statuses },
             fetchPolicy: "network-only",
             errorPolicy: "ignore",
         });
@@ -95,9 +104,9 @@ export class AnilistService implements IAnilistApi
         return data.data;
     }
 
-    async getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
+    async getUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
     {
-        $log.info(`AnilistService.getUserLists(${username}, ${type}, [${statuses}])`);
+        $log.info(`AnilistService.getUserLists(${userId}, ${type}, ${statuses})`);
 
         // Normalize Statuses
         if (typeof statuses === "undefined")
@@ -109,7 +118,7 @@ export class AnilistService implements IAnilistApi
         // Fetch Data
         const data = await this.apollo.query<getUserLists, getUserListsVariables>({
             query: getUserListsQuery,
-            variables: { username, type, statuses },
+            variables: { userId, type, statuses },
             fetchPolicy: "network-only",
             errorPolicy: "ignore",
         });
@@ -122,11 +131,11 @@ export class AnilistService implements IAnilistApi
         return data.data;
     }
 
-    async getUserList(username: string, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never
+    async getUserList(userId: number, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never
     {
         $log.info("AnilistService.getUserList()");
 
-        const lists = await this.fetchUserLists(username, type);
+        const lists = await this.fetchUserLists(userId, type);
 
         return lists.MediaListCollection?.lists?.find(list => list?.name === name)!;
     }
@@ -161,10 +170,10 @@ export class AnilistService implements IAnilistApi
         };
     }
 
-    async getUser(userName: string): Promise<IAnilistUser | never>
+    async searchUserByName(userName: string): Promise<IAnilistUser | never>
     {
-        const data = await this.apollo.query<any, any>({
-            query: getUser,
+        const data = await this.apollo.query<searchUserByName, searchUserByNameVariables>({
+            query: searchUserByNameQuery,
             variables: { name: userName },
             fetchPolicy: "network-only",
             errorPolicy: "ignore"
@@ -185,7 +194,36 @@ export class AnilistService implements IAnilistApi
             name: user.name,
 
             avatar: {
-                large: user.avatar.large,
+                large: user!.avatar!.large ?? user!.avatar!.medium!,
+            },
+        };
+    }
+
+    async getUserById(userId: number): Promise<IAnilistUser>
+    {
+        const data = await this.apollo.query<getUserById, getUserByIdVariables>({
+            query: getUserByIdQuery,
+            variables: { userId },
+            fetchPolicy: "network-only",
+            errorPolicy: "ignore"
+        });
+
+        if(data.errors) {
+            $log.error(data.data);
+            throw this.createError(data.errors!);
+        }
+
+        const user = data.data.User;
+
+        if(!user || !user.id)
+            throw new AnilistNotAUserError(`User "${userId}" does not exist on AniList`);
+
+        return {
+            id: user.id,
+            name: user.name,
+
+            avatar: {
+                large: user!.avatar!.large ?? user!.avatar!.medium!,
             },
         };
     }

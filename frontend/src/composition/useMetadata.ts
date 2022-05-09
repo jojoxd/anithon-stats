@@ -6,17 +6,18 @@ import {useAxios} from "./useAxios";
 
 /**
  * Creates a wrapper to manage Metadata for a User List.
+ *
+ * @TODO: Change to useSavedData
  */
-export function useMetadata(user: MaybeRef<string>, list: MaybeRef<string>)
+export function useMetadata(listId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
-        const _user = get(user);
-        const _list = get(list);
+        const _listId = get(listId);
 
-        if(!_user || !_list)
+        if(!_listId)
             return false;
 
-        return `metadata/${_user}/${_list}`;
+        return `list/${_listId}/savedData`;
     });
 
     const api = useApi<void, IMetadata>(endpoint, ref());
@@ -35,7 +36,7 @@ export function useMetadata(user: MaybeRef<string>, list: MaybeRef<string>)
             data: metadata.value
         });
 
-        console.info(`PUT /api/${user}/list/${list}/metadata`, metadata.value);
+        console.info(`PUT ${_endpoint}`, metadata.value);
 
         return response.status;
     }

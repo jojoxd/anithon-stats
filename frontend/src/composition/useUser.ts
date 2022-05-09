@@ -1,17 +1,18 @@
-import {computed, ref, watch} from "vue";
+import {computed, ref} from "vue";
 import {useApi} from "./useApi";
 import {IAnilistUserMetadata} from "@anistats/shared";
 import {MaybeRef, get} from "@vueuse/core";
 
-export function useUser(userName: MaybeRef<string>)
+// @TODO: Change to useUserSearch
+export function useUser(userNameOrId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
-        const _userName = get(userName);
+        const _userNameOrId = get(userNameOrId);
 
-        if(!_userName)
+        if(!_userNameOrId)
             return false;
 
-        return `user/${_userName}`;
+        return `user/${_userNameOrId}`;
     });
 
     const {

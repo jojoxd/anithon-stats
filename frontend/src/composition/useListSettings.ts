@@ -5,24 +5,24 @@ import { MaybeRef, get } from "@vueuse/core";
 import {useAxios} from "./useAxios";
 import {IListMetadata} from "@anistats/shared/src/IListMetadata";
 
-export function useListMetadata(user: MaybeRef<string>, list: MaybeRef<string>)
+// @TODO: Change to useListSettings
+export function useListSettings(listId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
-        const _user = get(user);
-        const _list = get(list);
+        const _listId = get(listId);
 
-        if(!_user || !_list)
+        if(!_listId)
             return false;
 
-        return `user/${_user}/lists/${_list}/metadata`;
+        return `list/${_listId}/settings`;
     });
 
     const api = useApi<void, IListMetadata>(endpoint, ref());
     const axiosInstance = useAxios();
 
-    const metadata = reactive(api.data);
+    const settings = reactive(api.data);
 
-    async function updateListMetadata()
+    async function updateListSettings()
     {
         const _endpoint = get(endpoint);
 
@@ -31,10 +31,10 @@ export function useListMetadata(user: MaybeRef<string>, list: MaybeRef<string>)
             return;
 
         const response = await axiosInstance.put(_endpoint, {
-            data: metadata.value,
+            data: settings.value,
         });
 
-        console.info(`PUT ${_endpoint}`, metadata.value);
+        console.info(`PUT ${_endpoint}`, settings.value);
 
         return response.status;
     }
@@ -42,7 +42,7 @@ export function useListMetadata(user: MaybeRef<string>, list: MaybeRef<string>)
     return {
         ...api,
 
-        data: metadata as Ref<IMetadata | null>,
-        updateListMetadata,
+        listSettings: settings as Ref<IListMetadata | null>,
+        updateListSettings,
     }
 }

@@ -1,14 +1,12 @@
 import { ComputedRef, computed, Ref, ref, watch } from "vue";
 import {useAxios} from "./useAxios";
-import {IOverlayController} from "../plugin/overlay";
 import {AxiosError} from "axios";
-
-declare const $overlay: IOverlayController;
+import {MaybeRef, get} from "@vueuse/core";
 
 /**
  * Creates a data wrapper for using the API while conforming to Vue Reactivity.
  */
-export function useApi<TData = undefined, TReturn = any>(endpoint: string, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
+export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<string>, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
 {
     const axiosInstance = useAxios();
 
@@ -18,17 +16,23 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: string, data:
 
     let _initial = true;
 
-    // @ts-ignore
-    console.log("useApi(): $overlay =", $overlay);
+    let abortController: AbortController | null = null;
 
     async function execute(_status: ApiStatus)
     {
+        // Abort previous request if it exists
+        abortController?.abort();
+
+        abortController = new AbortController();
         status.value = _initial ? ApiStatus.Fetching : _status;
         _initial = false;
 
+        const _endpoint = get(endpoint);
+
         try {
-            let response = await axiosInstance.get<TReturn>(endpoint, {
+            let response = await axiosInstance.get<TReturn>(_endpoint, {
                 params: data.value,
+                signal: abortController.signal,
             });
 
             returnData.value = response.data;
@@ -59,6 +63,8 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: string, data:
         status: computed(() => status.value),
 
         reload: async () => execute(ApiStatus.Reloading),
+
+        cancel: () => abortController?.abort(),
     };
 }
 
@@ -71,6 +77,8 @@ export interface IUseApiReturnData<TReturn>
     status: ComputedRef<ApiStatus>;
 
     reload: () => Promise<void>;
+
+    cancel: () => void;
 }
 
 export enum ApiStatus

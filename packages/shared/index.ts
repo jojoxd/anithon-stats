@@ -3,6 +3,7 @@ export * from './src/IChunk';
 export * from './src/IChunkList';
 export * from './src/ICurrentUser';
 export * from './src/IEntry';
+export * from './src/IListData';
 export * from './src/IMetadata';
 export * from './src/ISavedData';
 export * from './src/ISeriesData';

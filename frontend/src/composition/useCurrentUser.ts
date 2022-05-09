@@ -10,6 +10,6 @@ export function useCurrentUser()
         status,
         reload,
 
-        currentUser: computed(() => data.value ?? null),
+        currentUser: computed<ICurrentUser | null>(() => data.value ?? null),
     }
 }

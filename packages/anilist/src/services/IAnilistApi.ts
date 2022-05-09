@@ -1,20 +1,21 @@
 "use strict";
 
 import {
+    getUserLists,
+    fetchUserLists,
+    fetchUserLists_MediaListCollection_lists,
     MediaListStatus,
     MediaType,
-    userLists,
-    userLists_MediaListCollection_lists
-} from "../..";
+} from "../generated/types";
 import {IAnilistUser} from "./AnilistService";
 
 export interface IAnilistApi
 {
-    fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<userLists> | never;
+    fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never;
 
-    getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<string[]> | never
+    getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
 
-    getUserList(username: string, type: MediaType, name: string): Promise<userLists_MediaListCollection_lists> | never;
+    getUserList(username: string, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never;
 
     getCurrentUser(): Promise<IAnilistUser | null>;
 

@@ -1,55 +1,83 @@
-<script setup lang="ts">
-  import {ref, watch, computed} from "vue";
-  import type {IAnilistUserMetadata, IEntry} from "@anistats/shared";
-  import type { Ref } from "vue";
+<script lang="ts">
+  import {computed, defineComponent, PropType, ref, watch} from "vue";
+  import {IAnilistUserMetadata, IEntry} from "@anistats/shared";
+  import {useVModels} from "@vueuse/core";
   import {useEntryTitle} from "../../composition/entry/useEntryTitle";
-  import {useVModel} from "@vueuse/core";
   import {useEntryDescription} from "../../composition/entry/useEntryDescription";
   import {useEntryCover} from "../../composition/entry/useEntryCover";
-  import {useBreakpoints} from "../../composition/useBreakpoints";
   import {useEntryDuration} from "../../composition/entry/useEntryDuration";
+  import {useBreakpoints} from "../../composition/useBreakpoints";
+  import {useEntry} from "../../composition/useEntry";
 
-  const props = defineProps({
-    entry: {
-      type: Object, /* IEntry */
-      required: true,
+  export default defineComponent({
+    props: {
+      entry: {
+        type: Object as PropType<IEntry>,
+        required: true,
+      },
+
+      index: {
+        type: Number,
+        required: false,
+        default: -1
+      },
+
+      user: {
+        type: Object as PropType<IAnilistUserMetadata>,
+        required: true
+      }
     },
 
-    index: {
-      type: Number,
-      required: false,
-      default: -1
-    },
+    setup(props, { emit })
+    {
+      const { entry, index, user } = useVModels(props, emit);
 
-    user: {
-      type: Object, /* IAnilistUserMetadata */
-      required: true
+      const {
+        title,
+        description,
+        cover,
+        duration: {
+          totalDuration,
+          episodeDuration,
+          episodes
+        },
+      } = useEntry(entry);
+
+      const anilistUrl = computed(() => {
+        return `https://anilist.co/anime/${entry.value!.series.id}`;
+      });
+
+      const { mobile: isMobile } = useBreakpoints();
+
+      const descriptionShown = ref(true);
+
+      watch(isMobile, () => {
+        descriptionShown.value = !isMobile.value;
+      }, { immediate: true });
+
+      // @TODO: Cleanup these returns?
+      return {
+        entry,
+        index,
+        user,
+        title,
+        description,
+        cover,
+        totalDuration,
+        episodeDuration,
+        episodes,
+
+        anilistUrl,
+        isMobile,
+        descriptionShown,
+      }
     }
   });
-
-  const entry = useVModel(props, "entry") as Ref<IEntry>;
-  const index = useVModel(props, "index");
-  const user = useVModel(props, "user") as Ref<IAnilistUserMetadata>;
-  const title = useEntryTitle(entry);
-  const description = useEntryDescription(entry);
-  const cover = useEntryCover(entry);
-  const { totalDuration, episodeDuration, episodes } = useEntryDuration(entry);
-
-  const anilistUrl = computed(() => {
-    return `https://anilist.co/anime/${entry.value!.series.id}`;
-  });
-
-  const { mobile: isMobile } = useBreakpoints();
-
-  const descriptionShown = ref(true);
-
-  watch(isMobile, () => {
-    descriptionShown.value = !isMobile.value;
-  }, { immediate: true });
 </script>
 
 <template>
   <div class="entry" :class="{ edit: user?.isCurrentUser ?? false }">
+    <!-- @TODO: Grey out chevrons if impossible to move that direction instead of fully removing the chevron -->
     <div class="entry-order" v-if="index >= 0">
       <span>
         <icon-mdi-chevron-up @click="$emit('move-up')" style="font-size: 1.5rem;" />

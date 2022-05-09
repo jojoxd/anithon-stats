@@ -1,11 +1,16 @@
 import {useApi} from "./useApi";
-import {ref} from "vue";
+import {ref, watch, computed} from "vue";
 import {IEntry} from "@anistats/shared";
+import { MaybeRef, get } from "@vueuse/core";
 
 /**
  * Creates a wrapper for entry API calls
  */
-export function useEntries(user: string, list: string)
+export function useEntries(user: MaybeRef<string>, list: MaybeRef<string>)
 {
-    return useApi<void, Array<IEntry>>(`${user}/list/${list}/entries`, ref());
+    const endpoint = computed(() => {
+        return `${get(user)}/list/${get(list)}/entries`;
+    });
+
+    return useApi<void, Array<IEntry>>(endpoint, ref());
 }

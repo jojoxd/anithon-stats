@@ -1,4 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
+  import {defineComponent} from "vue";
+
+  export default defineComponent({
+  });
 </script>
 
 <template>
@@ -27,11 +31,6 @@
   @use "sass:color";
   @import "$$component-utils";
 
-  main
-  {
-    margin-top: 6rem;
-  }
-
   main.overlayed
   {
     overflow: hidden !important;
@@ -39,7 +38,7 @@
   }
 
   .overlay {
-    position: absolute;
+    position: fixed;
     display: block;
 
     left: 0;
@@ -53,11 +52,10 @@
     margin-bottom: auto;
 
     .overlay-wrapper {
-      height: 100vh;
-
+      height: 100%;
 
       .overlay-inner {
-        height: 100vh;
+        height: 100%;
 
         display: flex;
 

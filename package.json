@@ -42,12 +42,16 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
+    "jexl": "^2.3.0",
     "method-override": "^3.0.0",
     "moment": "^2.29.1",
     "pug": "^3.0.2",
     "skia-canvas": "^0.9.29",
     "sqlite3": "^5.0.2",
     "typeorm": "^0.3.6"
+  },
+  "resolutions": {
+    "graphql": "^15.8.0"
   },
   "devDependencies": {
     "@jojoxd/tsconfig": "1.1.2",
@@ -59,6 +63,7 @@
     "@types/express-session": "^1.17.4",
     "@types/fs-extra": "^9.0.13",
     "@types/inquirer": "^8.2.0",
+    "@types/jexl": "^2.3.0",
     "@types/method-override": "^0.0.32",
     "@types/multer": "^1.4.7",
     "@types/node": "^17.0.18",

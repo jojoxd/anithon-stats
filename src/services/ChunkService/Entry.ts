@@ -1,5 +1,5 @@
 import {
-    userLists_MediaListCollection_lists_entries
+    fetchUserLists_MediaListCollection_lists_entries
 } from "@anime-rss-filter/anilist";
 import {SavedData} from "../../entity/SavedData";
 import {ChunkService} from "../ChunkService";
@@ -13,12 +13,12 @@ import {IEntry, ISavedData} from "@anistats/shared";
  */
 export class Entry implements IEntry
 {
-    public readonly data: userLists_MediaListCollection_lists_entries;
+    public readonly data: fetchUserLists_MediaListCollection_lists_entries;
 
     @Property()
     public readonly savedData: ISavedData;
 
-    constructor(data: userLists_MediaListCollection_lists_entries, savedData: SavedData)
+    constructor(data: fetchUserLists_MediaListCollection_lists_entries, savedData: SavedData)
     {
         this.data = data;
 

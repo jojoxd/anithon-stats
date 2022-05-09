@@ -1,7 +1,7 @@
 import {$log, Controller, Inject, ProviderScope, QueryParams, Scope, Session} from "@tsed/common";
-import {AnilistService} from "@anime-rss-filter/anilist";
+import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 import {ContentType, Get} from "@tsed/schema";
-import {ICurrentUser} from "@anistats/shared";
+import {ICurrentUser, IListData} from "@anistats/shared";
 
 @Controller("/user")
 @Scope(ProviderScope.REQUEST)
@@ -40,5 +40,28 @@ export class UserController
             ...user,
             isCurrentUser: user.id === currentUser?.id,
         };
+    }
+
+    @Get("/lists/data")
+    @ContentType("application/json")
+    async getLists(@QueryParams("userName") userName: string): Promise<IListData>
+    {
+        const lists = await this.anilistService.getUserLists(userName, MediaType.ANIME);
+
+        return lists.MediaListCollection?.lists?.reduce<IListData>((acc, list) => {
+            if(list === null) return acc;
+
+            const totalDuration = list?.entries?.reduce((acc, entry) => {
+                acc += (entry!.media!.duration ?? 0) * (entry!.media!.episodes ?? 0);
+
+                return acc;
+            }, 0) ?? 0;
+
+            acc[list.name!] = {
+                totalDuration,
+            };
+
+            return acc;
+        }, {}) ?? {};
     }
 }

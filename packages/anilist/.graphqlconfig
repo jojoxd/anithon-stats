@@ -1,0 +1,13 @@
+{
+  "name": "Anilist",
+  "schemaPath": "./schema.graphql",
+  "includes": ["src/gql/**/*.gql.ts"],
+  "extensions": {
+    "endpoints": {
+      "anilist": {
+        "url": "https://graphql.anilist.co",
+        "introspect": true
+      }
+    }
+  }
+}

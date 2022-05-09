@@ -1,30 +1,39 @@
-<script setup lang="ts">
-  import {useVModel} from "@vueuse/core";
-  import {ref, watch} from "vue";
-  import type { Ref } from "vue";
-  import type { IEntry } from "@anistats/shared";
+<script lang="ts">
+  import {defineComponent, PropType, watch, ref} from "vue";
+  import {IEntry} from "@anistats/shared";
+  import {useVModels} from "@vueuse/core";
 
-  const props = defineProps({
-    entry: {
-      type: Object /* IEntry */,
-      required: true,
+  export default defineComponent({
+    props: {
+      entry: {
+        type: Object as PropType<IEntry>,
+        required: true,
+      }
+    },
+
+    setup(props, { emit })
+    {
+      const { entry } = useVModels(props, emit);
+      const autosplit = ref(true);
+
+      watch(autosplit, () => {
+        if(autosplit.value) {
+          entry.value.savedData.split = undefined;
+        } else {
+          entry.value.savedData.split = entry.value.savedData.split ?? 1;
+        }
+      });
+
+      watch(entry, () => {
+        autosplit.value = !entry.value.savedData.split;
+      }, { immediate: true });
+
+      return {
+        entry,
+        autosplit,
+      }
     }
   });
-
-  const autosplit = ref(true);
-  const entry = useVModel(props, 'entry') as Ref<IEntry>;
-
-  watch(autosplit, () => {
-    if(autosplit.value) {
-      entry.value.savedData.split = undefined;
-    } else {
-      entry.value.savedData.split = entry.value.savedData.split ?? 1;
-    }
-  });
-
-  watch(entry, () => {
-    autosplit.value = !entry.value.savedData.split;
-  }, { immediate: true });
 </script>
 
 <template>

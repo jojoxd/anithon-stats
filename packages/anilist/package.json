@@ -12,7 +12,7 @@
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-link-http": "^1.5.16",
     "gql-tag": "^1.0.1",
-    "graphql": "^14.6.0"
+    "graphql": "^15.8.0"
   },
   "devDependencies": {
     "@jojoxd/tsconfig": "1.1.2",
@@ -26,6 +26,7 @@
     "@types/sinon": "7.5.2",
     "@types/sinon-chai": "3.2.3",
     "@types/supertest": "2.0.8",
+    "apollo": "^2.33.11",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "cross-env": "7.0.2",
@@ -40,6 +41,9 @@
     "tsup": "^5.12.6",
     "typescript": "^4.3.5"
   },
+  "resolutions": {
+    "graphql": "^15.8.0"
+  },
   "scripts": {
     "build:package-anilist": "yarn clean && yarn tsc",
     "clean:package-anilist": "yarn clean",
@@ -47,7 +51,7 @@
     "clean": "rm dist -rf && echo 'Cleaned package-anilist'",
     "tsc": "tsup index.ts --out-dir dist --format cjs,esm --dts ",
     "update-schema": "apollo client:download-schema --endpoint=https://graphql.anilist.co schema.json",
-    "apollo:codegen": "apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=src/gql/**/*.ts --tagName=gql --addTypename --outputFlat src/generated/types.ts",
+    "apollo:codegen": "apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=\"src/gql/**/*.gql.ts\" --tagName=gql --addTypename --outputFlat src/generated/types.ts",
     "test": "yarn test:lint && yarn test:coverage",
     "test:unit": "cross-env NODE_ENV=test mocha --reporter=mocha-junit-reporter",
     "test:coverage": "cross-env NODE_ENV=test nyc -- mocha --reporter=mocha-junit-reporter",

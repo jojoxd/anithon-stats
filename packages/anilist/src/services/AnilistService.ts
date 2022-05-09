@@ -4,16 +4,26 @@ import {ProviderScope, Scope, Service, $log, UseCache, Constant, PlatformContext
 import {IAnilistApi} from "./IAnilistApi";
 import {ApolloClient} from "apollo-boost";
 import {ApolloClientBuilder} from "../lib/ApolloClientBuilder";
-import getUserLists from "../gql/getUserLists.gql";
-import fetchUserLists from "../gql/fetchUserLists.gql";
-import {MediaListStatus, MediaType, userLists, userLists_MediaListCollection_lists, userListsVariables} from "../..";
+import getUserListsQuery from "../gql/getUserLists.gql";
+import fetchUserListsQuery from "../gql/fetchUserLists.gql";
+import {
+    MediaListStatus,
+    MediaType
+} from "../..";
 import {GraphQLError} from "graphql";
 import {AnilistError} from "../AnilistError";
-import getCurrentUser from "../gql/getCurrentUser";
+import getCurrentUser from "../gql/getCurrentUser.gql";
 import getUser from "../gql/getUser.gql"
 import {InjectContext} from "@tsed/di";
 import { Env } from "@tsed/core";
 import {AnilistNotAUserError} from "../AnilistNotAUserError";
+import {
+    fetchUserLists,
+    fetchUserListsVariables,
+    getUserLists,
+    getUserListsVariables,
+    fetchUserLists_MediaListCollection_lists,
+} from "../generated/types";
 
 @Service()
 @Scope(ProviderScope.REQUEST)
@@ -53,7 +63,7 @@ export class AnilistService implements IAnilistApi
     }
 
     @UseCache({ ttl: 30 })
-    async fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<userLists> | never
+    async fetchUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never
     {
         $log.info(`AnilistService.fetchUserLists(${username}, ${type}, [${statuses}])`);
 
@@ -65,8 +75,8 @@ export class AnilistService implements IAnilistApi
             statuses = [statuses];
 
         // Fetch Data
-        const data = await this.apollo.query<userLists, userListsVariables>({
-            query: fetchUserLists,
+        const data = await this.apollo.query<fetchUserLists, fetchUserListsVariables>({
+            query: fetchUserListsQuery,
             variables: { username, type, statuses },
             fetchPolicy: "network-only",
             errorPolicy: "ignore",
@@ -85,7 +95,7 @@ export class AnilistService implements IAnilistApi
         return data.data;
     }
 
-    async getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<Array<string>> | never
+    async getUserLists(username: string, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
     {
         $log.info(`AnilistService.getUserLists(${username}, ${type}, [${statuses}])`);
 
@@ -97,8 +107,8 @@ export class AnilistService implements IAnilistApi
             statuses = [statuses];
 
         // Fetch Data
-        const data = await this.apollo.query<userLists, any>({
-            query: getUserLists,
+        const data = await this.apollo.query<getUserLists, getUserListsVariables>({
+            query: getUserListsQuery,
             variables: { username, type, statuses },
             fetchPolicy: "network-only",
             errorPolicy: "ignore",
@@ -109,10 +119,10 @@ export class AnilistService implements IAnilistApi
             throw this.createError(data.errors!);
         }
 
-        return data.data.MediaListCollection?.lists?.map(list => list!.name!) ?? [];
+        return data.data;
     }
 
-    async getUserList(username: string, type: MediaType, name: string): Promise<userLists_MediaListCollection_lists> | never
+    async getUserList(username: string, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never
     {
         $log.info("AnilistService.getUserList()");
 

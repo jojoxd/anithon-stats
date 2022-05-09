@@ -2,6 +2,7 @@ import {BodyParams, Controller, Get, Inject, PathParams, Post} from "@tsed/commo
 import {IMetadata} from "@anistats/shared";
 import {USERLIST_REPOSITORY, UserListRepository} from "../../entity/repository/UserListRepository";
 import {ANILIST_USER_REPOSITORY} from "../../entity/repository/AnilistUserRepository";
+import {CustomAuth} from "../../guards/AuthMiddleware";
 
 @Controller("/:user/list/:list/metadata")
 export class MetadataController
@@ -13,6 +14,7 @@ export class MetadataController
     protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
 
     @Get()
+    @CustomAuth("params.userName === currentUser.name")
     public async get(
         @PathParams("user") userName: string,
         @PathParams("list") list: string

@@ -25,7 +25,7 @@ export class EntryController
 
             return list.toEntries();
         } catch(e) {
-            throw new InternalServerError("Something went wrong", "EntryController::getIndex()");
+            throw new InternalServerError("Something went wrong", e);
         }
     }
 }

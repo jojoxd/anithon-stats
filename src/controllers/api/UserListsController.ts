@@ -3,6 +3,7 @@ import {BadRequest} from "@tsed/exceptions";
 import {Inject} from "@tsed/di";
 import {Header} from "@tsed/schema";
 import {AnilistUserManager} from "../../services/AnilistUserManager";
+import {Deprecated} from "@tsed/core";
 
 @Controller('/user/lists')
 export class UserListsController
@@ -14,6 +15,7 @@ export class UserListsController
     @Header({
         'Cache-Control': 'no-store',
     })
+    @Deprecated("Use UserController instead (/user/lists/data?userName={userName})")
     async getIndex(@QueryParams('user') userName: string)
     {
         if(!userName)

@@ -1,27 +1,26 @@
-<script setup lang="ts">
-  import type {Ref} from "vue";
-  import {computed, ref} from "vue";
-  import {useUserLists} from "../composition/useUserLists";
-  import {ApiStatus} from "../composition/useApi";
-  import {useRouter} from "vue-router";
-  import {useCurrentUser} from "../composition/useCurrentUser";
+<script lang="ts">
+  import {defineComponent, ref, watch} from "vue";
+  import {useTitle} from "../composition/useTitle";
 
-  // @TODO: #1 Fix instantiation of user and selectedList, it should be read from router or something
-  // @TODO: Read username from useCurrentUser()
-  const user: Ref<string> = ref(null);
-  const selectedList: Ref<string> = ref(null);
+  export default defineComponent({
+    setup()
+    {
+      const user = ref<string>(null);
 
-  const { lists, status } = useUserLists(user);
+      const title = useTitle();
 
-  const stage2 = computed(() => status.value === ApiStatus.Ok);
+      watch(user, () => {
+        if(user.value?.length === 0) {
+          title.value = null;
+          return;
+        }
 
-  const router = useRouter();
+        title.value = `Search ${user.value}`;
+      });
 
-  function goToList() {
-    if(user.value && selectedList.value) {
-      router.push(`/${user.value}/list/${selectedList.value}`);
+      return { user };
     }
-  }
+  });
 </script>
 
 <template>
@@ -32,26 +31,9 @@
       <div class="form-control">
         <input v-model="user" placeholder="Username" />
       </div>
-
-      <span v-if="![ApiStatus.Ok, ApiStatus.Initial].includes(status)">
-        {{ status }}
-      </span>
     </div>
 
-    <div class="stage2" v-if="stage2">
-      <h2>Select your list</h2>
-
-      <div class="form-control">
-        <select v-model="selectedList">
-          <option disabled selected :value="null">Select a list</option>
-          <option v-for="list of lists" :value="list" :key="list">{{ list }}</option>
-        </select>
-      </div>
-
-      <div class="form-control goto">
-        <button @click="goToList()">Go To List</button>
-      </div>
-    </div>
+    <UserLists :user="user" />
   </div>
 </template>
 
@@ -65,7 +47,7 @@
     align-content: center;
     flex-wrap: wrap;
 
-    height: 100vh;
+    min-height: calc(100vh - 6rem);
 
     > div {
       width: 100%;

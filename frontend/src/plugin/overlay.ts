@@ -1,4 +1,5 @@
 import { App, Ref, ref } from "vue";
+import {Router} from "vue-router";
 
 class OverlayController implements IOverlayController
 {
@@ -12,8 +13,18 @@ class OverlayController implements IOverlayController
 
     public readonly hasContent: Ref<boolean> = ref(false);
 
-    show(title: string, content: string | null = null, spinner: boolean = false)
+    constructor(router: Router)
     {
+        // Setup router to auto-hide the overlay
+        router.beforeEach(() => {
+            this.hide();
+        });
+    }
+
+    public show(title: string, content: string | null = null, spinner: boolean = false): void
+    {
+        this.setHtmlOverflow("hidden");
+
         this.title.value = title;
         this.content.value = content;
         this.shown.value = true;
@@ -23,9 +34,19 @@ class OverlayController implements IOverlayController
         this.withSpinner.value = spinner;
     }
 
-    hide()
+    public hide(): void
     {
+        this.setHtmlOverflow(null);
         this.shown.value = false;
+    }
+
+    protected setHtmlOverflow(value: "hidden" | null)
+    {
+        const htmlElement = document.querySelector("html");
+
+        if(htmlElement) {
+            htmlElement.style.setProperty("overflow", value);
+        }
     }
 }
 
@@ -41,11 +62,11 @@ export interface IOverlayController
     readonly hasContent: Readonly<Ref<boolean>>;
 }
 
-export default function createOverlayController()
+export default function createOverlayController(router: Router)
 {
     return {
         install: (app: App) => {
-            app.config.globalProperties.$overlay = new OverlayController();
+            app.config.globalProperties.$overlay = new OverlayController(router);
 
             // @ts-ignore TEST
             window.$overlay = app.config.globalProperties.$overlay;

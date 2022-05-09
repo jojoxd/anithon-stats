@@ -1,65 +1,79 @@
-<script setup lang="ts">
-  import {reactive} from "vue";
+<script lang="ts">
+  import { defineComponent } from "vue";
+  import {useVModels} from "@vueuse/core";
 
-  const props = defineProps({
-    items: {
-      type: Array,
-      required: true,
+  export default defineComponent({
+    props: {
+      items: {
+        type: Array,
+        required: true,
+      },
+
+      keys: {
+        type: Function,
+        required: true,
+      },
+
+      propUpdate: {
+        type: Function,
+        required: false,
+      },
     },
 
-    keys: {
-      type: Function,
-      required: true,
-    },
-
-    propUpdate: {
-      type: Function,
-      required: false,
-    },
-  });
-
-  function moveUp(index: number)
-  {
-    return function moveUpInner()
+    setup(props, { emit })
     {
-      console.log('moveUp', index);
+      const { items, keys, propUpdate } = useVModels(props, emit);
 
-      if(index === 0)
-        return;
+      function moveUp(index: number)
+      {
+        return function moveUpInner()
+        {
+          console.log('moveUp', index);
 
-      // Swap Items
-      [items[index - 1], items[index]] = [items[index], items[index - 1]];
+          if(index === 0)
+            return;
 
-      updateProperty();
-    }
-  }
+          // Swap Items
+          [items.value[index - 1], items.value[index]] = [items.value[index], items.value[index - 1]];
 
-  function moveDown(index: number)
-  {
-    return function moveDownInner()
-    {
-      console.log('moveDown', index);
+          updateProperty();
+        }
+      }
 
-      if(index + 1 >= items.length)
-        return;
+      function moveDown(index: number)
+      {
+        return function moveDownInner()
+        {
+          console.log('moveDown', index);
 
-      // Swap Items
-      [items[index + 1], items[index]] = [items[index], items[index + 1]];
+          if(index + 1 >= items.value.length)
+            return;
 
-      updateProperty();
-    }
-  }
+          // Swap Items
+          [items.value[index + 1], items.value[index]] = [items.value[index], items.value[index + 1]];
 
-  function updateProperty()
-  {
-    if(propUpdate) {
-      for(let i = 0; i < items.length; i++) {
-        propUpdate(items[i], i);
+          updateProperty();
+        }
+      }
+
+      function updateProperty()
+      {
+        if(propUpdate.value) {
+          for(let i = 0; i < items.value.length; i++) {
+            propUpdate.value(items.value[i], i);
+          }
+        }
+      }
+
+      return {
+        items,
+        keys,
+
+        moveUp,
+        moveDown,
       }
     }
-  }
-
-  const { items, keys, propUpdate } = reactive(props);
+  });
 </script>
 
 <template>

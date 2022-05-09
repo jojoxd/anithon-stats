@@ -12,9 +12,11 @@ momentDurationFormat(moment);
 
 const app = createApp(App);
 
-app.use(createRouter());
+const router = createRouter();
+app.use(router);
+
 app.use(Popper);
-app.use(createOverlayController());
+app.use(createOverlayController(router));
 
 app.config.globalProperties.$moment = moment;
 

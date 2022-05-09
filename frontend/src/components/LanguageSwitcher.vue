@@ -1,34 +1,49 @@
-<script setup lang="ts">
-  import { useLanguageSwitcher, Language } from "../composition/useLanguageSwitcher";
-  import { watch, ref } from "vue";
+<script lang="ts">
+  import {defineComponent, ref, watch} from "vue";
+  import {Language, useLanguageSwitcher} from "../composition/useLanguageSwitcher";
 
-  const { language, setLanguage } = useLanguageSwitcher();
+  export default defineComponent({
+    setup() {
+      const { language, setLanguage } = useLanguageSwitcher();
 
-  const selection = ref<Language>(Language.English);
+      const selection = ref<Language>(Language.English);
 
-  const indexedLanguage = Object.values(Language).filter(val => typeof val as any === 'string');
+      const indexedLanguage = Object.values(Language).filter(val => typeof val as any === 'string');
 
-  watch(language, () => {
-    selection.value = language.value;
-  }, { immediate: true });
+      watch(language, () => {
+        selection.value = language.value;
+      }, { immediate: true });
 
-  watch(selection, () => {
-    setLanguage(selection.value);
+      watch(selection, () => {
+        setLanguage(selection.value);
+      });
+
+      const open = ref(false);
+
+      function toggleMenu()
+      {
+        open.value = !open.value;
+      }
+
+      function onBlur()
+      {
+        setTimeout(() => {
+          open.value = false;
+        }, 250);
+      }
+
+      return {
+        language,
+        selection,
+        indexedLanguage,
+        open,
+
+        toggleMenu,
+        onBlur,
+      }
+    }
   });
 
-  const open = ref(false);
-
-  function toggleMenu()
-  {
-    open.value = !open.value;
-  }
-
-  function onBlur()
-  {
-    setTimeout(() => {
-      open.value = false;
-    }, 250);
-  }
 </script>
 
 <template>
@@ -40,7 +55,7 @@
     </div>
 
     <div class="menu">
-      <div v-for="(name, idx) in indexedLanguage" class="menu-item" :class="{ selected: language === idx }" @click="setLanguage(idx)">
+      <div v-for="(name, idx) in indexedLanguage" class="menu-item" :class="{ selected: language === idx }" @click="selection = idx">
         {{ name }}
       </div>
     </div>
@@ -53,7 +68,7 @@
   .language-switcher
   {
     width: 3.5rem;
-    height: 2rem;
+    height: 100%;
 
     &.open
     {
@@ -73,9 +88,24 @@
       }
     }
 
+    .control
+    {
+      display: flex;
+      height: 100%;
+
+      justify-content: center;
+      align-content: center;
+
+      & * {
+        margin: auto 0;
+      }
+    }
+
     .menu
     {
       display: none;
+
+      user-select: none;
 
       .menu-item {
         background-color: lighten($background-color, 10%);

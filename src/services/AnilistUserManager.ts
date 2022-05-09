@@ -67,12 +67,12 @@ export class AnilistUserManager
                 if (!user.lists)
                     user.lists = [];
 
-                for (const userList of userLists) {
-                    let list = user.lists.find(list => list.listName === userList);
+                for (const userList of userLists.MediaListCollection!.lists!) {
+                    let list = user.lists.find(list => list.listName === userList!.name!);
 
                     if (!list) {
                         list = new UserList();
-                        list.listName = userList;
+                        list.listName = userList!.name!;
 
                         user.lists.push(list);
                     }

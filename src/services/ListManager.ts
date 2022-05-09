@@ -20,12 +20,6 @@ export class ListManager
     @Inject()
     protected readonly anilistUserManager!: AnilistUserManager;
 
-    @Inject(ANILIST_USER_REPOSITORY)
-    protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
-
-    @Inject(USERLIST_REPOSITORY)
-    protected readonly userListRepository!: USERLIST_REPOSITORY;
-
     async getList(userName: string, listName: string): Promise<UserListContainer>
     {
         const user = await this.anilistUserManager.getUserByName(userName);

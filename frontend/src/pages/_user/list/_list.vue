@@ -1,111 +1,140 @@
-<script setup="{ $overlay }" lang="ts">
-import {useChunks} from "../../../composition/useChunks";
-import {computed, reactive, ref, watch} from "vue";
-import {useEntries} from "../../../composition/useEntries";
-import {useMetadata} from "../../../composition/useMetadata";
-import {ApiStatus} from "../../../composition/useApi";
+<script lang="ts">
+  import {computed, defineComponent, ref, watch} from "vue";
+  import {useChunks} from "../../../composition/useChunks";
+  import {useEntries} from "../../../composition/useEntries";
+  import {useMetadata} from "../../../composition/useMetadata";
+  import {useUser} from "../../../composition/useUser";
+  import {useTitle} from "../../../composition/useTitle";
+  import {ApiStatus} from "../../../composition/useApi";
+  import {useVModels} from "@vueuse/core";
 
-import {IOverlayController} from "../../../plugin/overlay";
-import {useUser} from "../../../composition/useUser";
-import {useVModel} from "@vueuse/core";
+  export default defineComponent({
+    props: {
+      user: {
+        type: String,
+        required: true,
+      },
 
-declare const $overlay: IOverlayController;
-
-  const props = defineProps({
-    user: {
-      type: String,
-      required: true,
+      list: {
+        type: String,
+        required: true,
+      },
     },
 
-    list: {
-      type: String,
-      required: true,
-    },
-  });
+    setup(props, { emit }) {
+      const { user, list } = useVModels(props, emit);
 
-  const user = useVModel(props, "user");
-  const list = useVModel(props, "list");
-  const updating = ref<boolean>(false);
+      const updating = ref<boolean>(false);
 
-  const {
-    data: chunkData,
-    status: chunkStatus,
-    responseStatus: chunkResponseStatus,
-    reload: reloadChunks
-  } = useChunks(user.value, list.value);
+      const {
+        data: chunkData,
+        status: chunkStatus,
+        responseStatus: chunkResponseStatus,
+        reload: reloadChunks
+      } = useChunks(user.value, list.value);
 
-  const {
-    data: entryData,
-    status: entryStatus,
-    responseStatus: entryResponseStatus,
-    reload: reloadEntries,
-  } = useEntries(user.value, list.value);
+      const {
+        data: entryData,
+        status: entryStatus,
+        responseStatus: entryResponseStatus,
+        reload: reloadEntries,
+      } = useEntries(user.value, list.value);
 
-  const {
-    data: metadata,
-    updateMetadata,
-    reload: reloadMetadata,
-  } = useMetadata(user.value, list.value);
+      const {
+        data: metadata,
+        updateMetadata,
+        reload: reloadMetadata,
+      } = useMetadata(user.value, list.value);
 
-  const {
-    user: userData
-  } = useUser(user);
+      const {
+        user: userData
+      } = useUser(user);
 
-  const host = computed(() => {
-    return `${window.location.protocol}//${window.location.host}`;
-  });
+      const host = computed(() => {
+        return `${window.location.protocol}//${window.location.host}`;
+      });
 
-  async function update()
-  {
-    updating.value = true;
+      const embedImageUri = computed(() => {
+        return `${host.value}/api/${user.value}/list/${list.value}/image.png`;
+      });
 
-    for(const entry of entryData.value) {
-      console.log('SD>>', entry.id, entry.series.title.romaji, entry.savedData);
-      metadata.value!.savedData[entry.id] = entry.savedData;
+      const title = useTitle();
 
-      let _sequel = entry.sequel;
-      while(_sequel) {
-        metadata.value!.savedData[_sequel.id] = _sequel.savedData;
+      watch([user, list], () => {
+        title.value = `${user.value} / ${list.value}`;
+      }, { immediate: true });
 
-        _sequel = _sequel.sequel;
-      }
-    }
+      async function update()
+      {
+        updating.value = true;
 
-    await updateMetadata();
+        for(const entry of entryData.value ?? []) {
+          metadata.value!.savedData![entry.id] = entry.savedData;
 
-    await reloadEntries();
-    await reloadChunks();
-    await reloadMetadata();
+          let _sequel = entry.sequel;
+          while(_sequel) {
+            metadata.value!.savedData![_sequel.id] = _sequel.savedData;
 
-    // Make the overlay feel more right (also less flashing)
-    setTimeout(() => {
-      updating.value = false;
-    }, 1000);
-  }
+            _sequel = _sequel.sequel;
+          }
+        }
 
-  watch([chunkStatus, entryStatus], () => {
-    if(chunkStatus.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
-      if(chunkStatus.value === ApiStatus.Failure) {
-        $overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-        return;
+        await updateMetadata();
+
+        await reloadEntries();
+        await reloadChunks();
+        await reloadMetadata();
+
+        // Make the overlay feel more right (also less flashing)
+        setTimeout(() => {
+          updating.value = false;
+        }, 1000);
       }
 
-      if(entryStatus.value === ApiStatus.Failure) {
-        $overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-        return;
+      watch([chunkStatus, entryStatus], () => {
+        if(updating.value)
+          return;
+
+        if(chunkStatus.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
+          if(chunkStatus.value === ApiStatus.Failure) {
+            $overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+            return;
+          }
+
+          if(entryStatus.value === ApiStatus.Failure) {
+            $overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+            return;
+          }
+
+          $overlay.show("Loading", null, true);
+        } else {
+          $overlay.hide();
+        }
+      }, { immediate: true });
+
+      watch(updating, () => {
+        if(updating.value) {
+          $overlay.show("Updating", null, true);
+        } else {
+          $overlay.hide();
+        }
+      });
+
+      return {
+        user,
+        list,
+
+        embedImageUri,
+
+        update,
+
+        userData,
+        entryData,
+        chunkData,
+
+        chunkStatus,
+        ApiStatus,
       }
-
-      $overlay.show("Loading", null, true);
-    } else {
-      $overlay.hide();
-    }
-  }, { immediate: true });
-
-  watch(updating, () => {
-    if(updating.value) {
-      $overlay.show("Updating", null, true);
-    } else {
-      $overlay.hide();
     }
   });
 </script>
@@ -114,14 +143,11 @@ declare const $overlay: IOverlayController;
   <div>
     <h1>{{user}} / {{ list }}</h1>
 
-    <div class="stats">
-      TODO: Update this: EntryTime does not exist anymore, we need something like it for entryData here
-    </div>
+    <ListStats :entries="entryData" />
 
-    <!-- @TODO: #1 Change :href to fully computed value -->
-    <a :href="`${host}/api/${user}/list/${list}/image.png`" target="_blank">Embed</a>
+    <a :href="embedImageUri" target="_blank">Embed</a>
 
-    <div class="form-control update" v-if="userData.isCurrentUser">
+    <div class="form-control update" v-if="userData?.isCurrentUser ?? false">
       <button @click="update()">Update</button>
     </div>
 

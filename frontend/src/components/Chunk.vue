@@ -1,62 +1,69 @@
-<script setup lang="ts">
-  import type {IChunk} from "@anistats/shared";
-  import {computed, reactive, ref, watch} from "vue";
-  import {useEntryTitle} from "../composition/entry/useEntryTitle";
+<script lang="ts">
+  import {computed, ComputedRef, defineComponent, ref, watch, PropType} from "vue";
+  import {IChunk, IEntry} from "@anistats/shared";
+  import {useVModels} from "@vueuse/core";
+  import {useEntry} from "../composition/useEntry";
 
-  const props = defineProps({
-    chunk: {
-      type: Object /* IChunk */,
-      required: true,
+  export default defineComponent({
+    props: {
+      chunk: {
+        type: Object as PropType<IChunk>,
+        required: true,
+      },
+
+      progress: {
+        type: Boolean,
+        default: true
+      },
+
+      index: {
+        type: Number,
+        required: true,
+      },
     },
 
-    progress: {
-      type: Boolean,
-      default: true
-    },
+    setup(props, { emit }) {
+      const { chunk, index, progress } = useVModels(props, emit);
 
-    index: {
-      type: Number,
-      required: true,
-    },
-  });
+      const entry: ComputedRef<IEntry> = computed(() => chunk.value.entry);
+      const { title } = useEntry(entry);
 
-  const {
-    chunk,
-    index,
-    progress
-  } = reactive(props) as {
-    chunk: IChunk,
-    index: number,
-    progress: boolean
-  };
+      const progressElement = ref<HTMLElement | null>(null);
 
-  const entry = computed(() => chunk.entry);
-  const title = useEntryTitle(entry);
+      watch([chunk, progressElement], () => {
+        if(progressElement.value)
+          progressElement.value.style.height = `${(chunk.value.progress ?? 0).toFixed(0)}%`;
+      }, { immediate: true });
 
-  const progressElement = ref<HTMLElement | null>(null);
+      const debug = true;
 
-  watch([chunk, progressElement], () => {
-    if(progressElement.value)
-      progressElement.value.style.height = `${(chunk.progress ?? 0).toFixed(0)}%`;
-  }, { immediate: true });
+      // @TODO: #1 Cleanup data structure into a useX call?
+      const data = computed(() => [
+        ['progress', `${(chunk.value.progress ?? 0).toFixed(1)}%`],
 
-  const debug = true;
+        [
+          chunk.value.end - chunk.value.start > 0 ? 'episodes' : 'episode',
+          chunk.value.end - chunk.value.start > 0 ? `${chunk.value.start} - ${chunk.value.end}` : `${chunk.value.start}`
+        ],
 
-  // @TODO: #1 Cleanup data structure into a useX call?
-  const data = computed(() => [
-      ['progress', `${(chunk.progress ?? 0).toFixed(1)}%`],
-
-      [
-        chunk.end - chunk.start > 0 ? 'episodes' : 'episode',
-        chunk.end - chunk.start > 0 ? `${chunk.start} - ${chunk.end}` : `${chunk.start}`
-      ],
-
-      ...(debug ? [
+        ...(debug ? [
           ['dbg.status', 'TODO'],
 
-          ['dbg.is-joined', chunk.isJoined]
-      ] : []),
-  ]);
+          ['dbg.is-joined', chunk.value.isJoined]
+        ] : []),
+      ]);
+
+      return {
+        chunk,
+        index,
+        progress,
+        entry,
+        title,
+        debug,
+        data,
+      };
+    }
+  });
 </script>
 
 <!-- TODO: #2 Cleanup appearance of Chunk.vue -->

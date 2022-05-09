@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: userLists
+// GraphQL query operation: fetchUserLists
 // ====================================================
 
-export interface userLists_MediaListCollection_user {
+export interface fetchUserLists_MediaListCollection_user {
   __typename: "User";
   /**
    * The id of the user
@@ -15,7 +15,7 @@ export interface userLists_MediaListCollection_user {
   id: number;
 }
 
-export interface userLists_MediaListCollection_lists_entries_startedAt {
+export interface fetchUserLists_MediaListCollection_lists_entries_startedAt {
   __typename: "FuzzyDate";
   /**
    * Numeric Year (2017)
@@ -31,7 +31,7 @@ export interface userLists_MediaListCollection_lists_entries_startedAt {
   day: number | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_completedAt {
+export interface fetchUserLists_MediaListCollection_lists_entries_completedAt {
   __typename: "FuzzyDate";
   /**
    * Numeric Year (2017)
@@ -47,7 +47,7 @@ export interface userLists_MediaListCollection_lists_entries_completedAt {
   day: number | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media_coverImage {
+export interface fetchUserLists_MediaListCollection_lists_entries_media_coverImage {
   __typename: "MediaCoverImage";
   /**
    * The cover image url of the media at a large size
@@ -55,7 +55,7 @@ export interface userLists_MediaListCollection_lists_entries_media_coverImage {
   large: string | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media_startDate {
+export interface fetchUserLists_MediaListCollection_lists_entries_media_startDate {
   __typename: "FuzzyDate";
   /**
    * Numeric Year (2017)
@@ -71,7 +71,7 @@ export interface userLists_MediaListCollection_lists_entries_media_startDate {
   day: number | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media_endDate {
+export interface fetchUserLists_MediaListCollection_lists_entries_media_endDate {
   __typename: "FuzzyDate";
   /**
    * Numeric Year (2017)
@@ -87,7 +87,7 @@ export interface userLists_MediaListCollection_lists_entries_media_endDate {
   day: number | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media_title {
+export interface fetchUserLists_MediaListCollection_lists_entries_media_title {
   __typename: "MediaTitle";
   /**
    * The romanization of the native language title
@@ -103,8 +103,54 @@ export interface userLists_MediaListCollection_lists_entries_media_title {
   native: string | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media {
+export interface fetchUserLists_MediaListCollection_lists_entries_media_relations_edges_node_title {
+  __typename: "MediaTitle";
+  /**
+   * The romanization of the native language title
+   */
+  romaji: string | null;
+  /**
+   * The official english title
+   */
+  english: string | null;
+  /**
+   * Official title in it's native language
+   */
+  native: string | null;
+}
+
+export interface fetchUserLists_MediaListCollection_lists_entries_media_relations_edges_node {
   __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: fetchUserLists_MediaListCollection_lists_entries_media_relations_edges_node_title | null;
+}
+
+export interface fetchUserLists_MediaListCollection_lists_entries_media_relations_edges {
+  __typename: "MediaEdge";
+  /**
+   * The type of relation to the parent model
+   */
+  relationType: MediaRelation | null;
+  node: fetchUserLists_MediaListCollection_lists_entries_media_relations_edges_node | null;
+}
+
+export interface fetchUserLists_MediaListCollection_lists_entries_media_relations {
+  __typename: "MediaConnection";
+  edges: (fetchUserLists_MediaListCollection_lists_entries_media_relations_edges | null)[] | null;
+}
+
+export interface fetchUserLists_MediaListCollection_lists_entries_media {
+  __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
   /**
    * The current releasing status of the media
    */
@@ -118,39 +164,36 @@ export interface userLists_MediaListCollection_lists_entries_media {
    */
   episodes: number | null;
   /**
+   * The general length of each anime episode in minutes
+   */
+  duration: number | null;
+  /**
+   * Short description of the media's story and characters
+   */
+  description: string | null;
+  /**
    * The cover images of the media
    */
-  coverImage: userLists_MediaListCollection_lists_entries_media_coverImage | null;
+  coverImage: fetchUserLists_MediaListCollection_lists_entries_media_coverImage | null;
   /**
    * The first official release date of the media
    */
-  startDate: userLists_MediaListCollection_lists_entries_media_startDate | null;
+  startDate: fetchUserLists_MediaListCollection_lists_entries_media_startDate | null;
   /**
    * The last official release date of the media
    */
-  endDate: userLists_MediaListCollection_lists_entries_media_endDate | null;
+  endDate: fetchUserLists_MediaListCollection_lists_entries_media_endDate | null;
   /**
    * The official titles of the media in various languages
    */
-  title: userLists_MediaListCollection_lists_entries_media_title | null;
-
-  duration: number | null;
-  id: number | null;
-  relations: { edges?: (userLists_MediaListCollection_lists_entries_media_edge | null)[] } | null;
-  description: string | null;
+  title: fetchUserLists_MediaListCollection_lists_entries_media_title | null;
+  /**
+   * Other media in the same or connecting franchise
+   */
+  relations: fetchUserLists_MediaListCollection_lists_entries_media_relations | null;
 }
 
-export interface userLists_MediaListCollection_lists_entries_media_edge {
-  relationType: "SEQUEL" | null;
-
-  node: userLists_MediaListCollection_lists_entries_media_edge_node | null;
-}
-
-export interface userLists_MediaListCollection_lists_entries_media_edge_node {
-  id: number | null;
-}
-
-export interface userLists_MediaListCollection_lists_entries {
+export interface fetchUserLists_MediaListCollection_lists_entries {
   __typename: "MediaList";
   /**
    * The id of the list entry
@@ -171,44 +214,211 @@ export interface userLists_MediaListCollection_lists_entries {
   /**
    * When the entry was started by the user
    */
-  startedAt: userLists_MediaListCollection_lists_entries_startedAt | null;
+  startedAt: fetchUserLists_MediaListCollection_lists_entries_startedAt | null;
   /**
    * When the entry was completed by the user
    */
-  completedAt: userLists_MediaListCollection_lists_entries_completedAt | null;
-  media: userLists_MediaListCollection_lists_entries_media | null;
+  completedAt: fetchUserLists_MediaListCollection_lists_entries_completedAt | null;
+  media: fetchUserLists_MediaListCollection_lists_entries_media | null;
 }
 
-export interface userLists_MediaListCollection_lists {
+export interface fetchUserLists_MediaListCollection_lists {
   __typename: "MediaListGroup";
   name: string | null;
   /**
    * Media list entries
    */
-  entries: (userLists_MediaListCollection_lists_entries | null)[] | null;
+  entries: (fetchUserLists_MediaListCollection_lists_entries | null)[] | null;
 }
 
-export interface userLists_MediaListCollection {
+export interface fetchUserLists_MediaListCollection {
   __typename: "MediaListCollection";
   /**
    * The owner of the list
    */
-  user: userLists_MediaListCollection_user | null;
+  user: fetchUserLists_MediaListCollection_user | null;
   /**
    * Grouped media list entries
    */
-  lists: (userLists_MediaListCollection_lists | null)[] | null;
+  lists: (fetchUserLists_MediaListCollection_lists | null)[] | null;
 }
 
-export interface userLists {
+export interface fetchUserLists {
   /**
-   * Media list collection query, provides list pre-grouped by status & custom
-   * lists. User ID and Media Type arguments required.
+   * Media list collection query, provides list pre-grouped by status & custom lists. User ID and Media Type arguments required.
    */
-  MediaListCollection: userLists_MediaListCollection | null;
+  MediaListCollection: fetchUserLists_MediaListCollection | null;
 }
 
-export interface userListsVariables {
+export interface fetchUserListsVariables {
+  username: string;
+  type: MediaType;
+  statuses: MediaListStatus[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getCurrentUser
+// ====================================================
+
+export interface getCurrentUser_Viewer_avatar {
+  __typename: "UserAvatar";
+  /**
+   * The avatar of user at its largest size
+   */
+  large: string | null;
+  /**
+   * The avatar of user at medium size
+   */
+  medium: string | null;
+}
+
+export interface getCurrentUser_Viewer {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+  /**
+   * The name of the user
+   */
+  name: string;
+  /**
+   * The user's avatar images
+   */
+  avatar: getCurrentUser_Viewer_avatar | null;
+}
+
+export interface getCurrentUser {
+  /**
+   * Get the currently authenticated user
+   */
+  Viewer: getCurrentUser_Viewer | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getUser
+// ====================================================
+
+export interface getUser_User_avatar {
+  __typename: "UserAvatar";
+  /**
+   * The avatar of user at its largest size
+   */
+  large: string | null;
+  /**
+   * The avatar of user at medium size
+   */
+  medium: string | null;
+}
+
+export interface getUser_User {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+  /**
+   * The name of the user
+   */
+  name: string;
+  /**
+   * The user's avatar images
+   */
+  avatar: getUser_User_avatar | null;
+}
+
+export interface getUser {
+  /**
+   * User query
+   */
+  User: getUser_User | null;
+}
+
+export interface getUserVariables {
+  name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getUserLists
+// ====================================================
+
+export interface getUserLists_MediaListCollection_user {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+}
+
+export interface getUserLists_MediaListCollection_lists_entries_media {
+  __typename: "Media";
+  /**
+   * The amount of episodes the anime has when complete
+   */
+  episodes: number | null;
+  /**
+   * The general length of each anime episode in minutes
+   */
+  duration: number | null;
+}
+
+export interface getUserLists_MediaListCollection_lists_entries {
+  __typename: "MediaList";
+  /**
+   * The id of the list entry
+   */
+  id: number;
+  /**
+   * The amount of episodes/chapters consumed by the user
+   */
+  progress: number | null;
+  media: getUserLists_MediaListCollection_lists_entries_media | null;
+}
+
+export interface getUserLists_MediaListCollection_lists {
+  __typename: "MediaListGroup";
+  name: string | null;
+  /**
+   * Media list entries
+   */
+  entries: (getUserLists_MediaListCollection_lists_entries | null)[] | null;
+}
+
+export interface getUserLists_MediaListCollection {
+  __typename: "MediaListCollection";
+  /**
+   * The owner of the list
+   */
+  user: getUserLists_MediaListCollection_user | null;
+  /**
+   * Grouped media list entries
+   */
+  lists: (getUserLists_MediaListCollection_lists | null)[] | null;
+}
+
+export interface getUserLists {
+  /**
+   * Media list collection query, provides list pre-grouped by status & custom lists. User ID and Media Type arguments required.
+   */
+  MediaListCollection: getUserLists_MediaListCollection | null;
+}
+
+export interface getUserListsVariables {
   username: string;
   type: MediaType;
   statuses: MediaListStatus[];
@@ -252,11 +462,31 @@ export enum MediaListStatus {
 }
 
 /**
+ * Type of relation media has to its parent.
+ */
+export enum MediaRelation {
+  ADAPTATION = "ADAPTATION",
+  ALTERNATIVE = "ALTERNATIVE",
+  CHARACTER = "CHARACTER",
+  COMPILATION = "COMPILATION",
+  CONTAINS = "CONTAINS",
+  OTHER = "OTHER",
+  PARENT = "PARENT",
+  PREQUEL = "PREQUEL",
+  SEQUEL = "SEQUEL",
+  SIDE_STORY = "SIDE_STORY",
+  SOURCE = "SOURCE",
+  SPIN_OFF = "SPIN_OFF",
+  SUMMARY = "SUMMARY",
+}
+
+/**
  * The current releasing status of the media
  */
 export enum MediaStatus {
   CANCELLED = "CANCELLED",
   FINISHED = "FINISHED",
+  HIATUS = "HIATUS",
   NOT_YET_RELEASED = "NOT_YET_RELEASED",
   RELEASING = "RELEASING",
 }

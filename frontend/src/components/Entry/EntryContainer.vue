@@ -1,30 +1,42 @@
-<script setup lang="ts">
-  import type {Ref} from "vue";
-  import {useVModel} from "@vueuse/core";
-  import type {IAnilistUserMetadata, IEntry} from "@anistats/shared";
-  import {useSequels} from "../../composition/entry/useSequels";
+<script lang="ts">
+  import { defineComponent, PropType } from "vue";
+  import {IAnilistUserMetadata, IEntry} from "@anistats/shared";
+  import {useVModels} from "@vueuse/core";
+  import {useEntry} from "../../composition/useEntry";
 
-  const props = defineProps({
-    entry: {
-      type: Object, /* IEntry */
-      required: true,
+  export default defineComponent({
+    props: {
+      entry: {
+        type: Object as PropType<IEntry>,
+        required: true,
+      },
+
+      index: {
+        type: Number,
+        required: true,
+      },
+
+      user: {
+        type: Object as PropType<IAnilistUserMetadata>,
+        required: true,
+      }
     },
 
-    index: {
-      type: Number,
-      required: true,
-    },
+    setup(props, { emit })
+    {
+      const { entry, index, user } = useVModels(props, emit);
 
-    user: {
-      type: Object, /* IAnilistUserMetadata */
-      required: true
+      const { sequels } = useEntry(entry);
+
+      return {
+        entry,
+        index,
+        user,
+        sequels,
+      };
     }
-  });
+  })
 
-  const entry = useVModel(props, "entry") as Ref<IEntry>;
-  const index = useVModel(props, "index");
-  const user = useVModel(props, "user") as Ref<IAnilistUserMetadata>;
-  const sequels = useSequels(entry);
 </script>
 
 <template>

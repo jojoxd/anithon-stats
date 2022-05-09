@@ -1,23 +1,41 @@
-<script setup lang="ts">
+<script lang="ts">
+  import {computed, defineComponent} from "vue";
   import {useCurrentUser} from "../composition/useCurrentUser";
-  import {computed} from "vue";
 
-  const { currentUser } = useCurrentUser();
+  export default defineComponent({
+    setup() {
+      const { currentUser } = useCurrentUser();
 
-  const avatarDescription = computed(() => {
-    if(!currentUser.value?.isAuthenticated || true) {
-      return '';
+      const avatarDescription = computed(() => {
+        if(!currentUser.value?.isAuthenticated || true) {
+          return '';
+        }
+
+        return `Profile avatar of anilist user ${currentUser.value?.name}`
+      });
+
+      const oauthUri = computed(() => {
+        return `/api/oauth?redirect=${encodeURIComponent(window.location.href)}`;
+      });
+
+      const logoutUri = computed(() => {
+        return `/api/oauth/logout?redirect=${encodeURIComponent(window.location.href)}`;
+      });
+
+      const userListsUri = computed(() => {
+        return `/${currentUser.value?.name}/lists`;
+      });
+
+      return {
+        currentUser,
+
+        avatarDescription,
+
+        oauthUri,
+        logoutUri,
+        userListsUri,
+      };
     }
-
-    return `Profile avatar of anilist user ${currentUser.value?.name}`
-  });
-
-  const oauthUri = computed(() => {
-    return `/api/oauth?redirect=${encodeURIComponent(window.location.href)}`;
-  });
-
-  const logoutUri = computed(() => {
-    return `/api/oauth/logout?redirect=${encodeURIComponent(window.location.href)}`;
   });
 </script>
 
@@ -37,7 +55,9 @@
       <div class="user-display" v-if="currentUser !== null && currentUser.isAuthenticated">
         <img :src="currentUser?.avatar?.large" :alt="avatarDescription" />
 
-        <div class="username">{{ currentUser.name }}</div>
+        <div class="username">
+          <router-link :to="userListsUri">{{ currentUser.name }}</router-link>
+        </div>
 
         <div class="logout">
           <a :href="logoutUri">Log out</a>
@@ -64,6 +84,8 @@
 
   .header {
     background-color: lighten($background-color, 5%);
+
+    user-select: none;
 
     height: 4rem;
 
@@ -101,9 +123,11 @@
       flex-grow: 1;
     }
 
-    .language-switcher
+    & > .language-switcher
     {
       @extend %header-item;
+
+      margin: .5rem;
     }
 
     .user-controls {

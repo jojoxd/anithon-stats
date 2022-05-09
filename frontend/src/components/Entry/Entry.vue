@@ -28,6 +28,7 @@
         required: false,
         default: true,
       },
+
       downEnabled: {
         type: Boolean,
         required: false,
@@ -128,20 +129,24 @@
     <!-- TODO: #2 Cleanup .entry-meta span appearance -->
     <div class="entry-meta">
       <span class="blue">{{ episodes }}<span v-if="episodes !== entry.series.episodes">&nbsp;(of {{ entry.series.episodes }})</span> episodes</span>
+
       <span class="purple">{{ $moment.duration(episodeDuration, 'minutes').format() }}/episode</span>
 
       <span class="green">{{ $moment.duration(totalDuration, 'minutes').format() }}</span>
+
+      <span class="red" v-if="entry.isDropped">Dropped</span>
+
       <span class="blue"><a :href="anilistUrl" target="_blank">To Anilist</a></span>
     </div>
 
-    <div class="entry-desc">
-      <div class="entry-desc-control" @click="descriptionShown = !descriptionShown">
-        <span class="entry-desc-title">Description</span>
-        <span class="caret" :class="[descriptionShown ? 'open' : 'closed']">
+    <div class="entry-desc-control" @click="descriptionShown = !descriptionShown">
+      <span class="entry-desc-title">Description</span>
+      <span class="caret" :class="[descriptionShown ? 'open' : 'closed']">
           <icon-mdi-chevron-right />
         </span>
-      </div>
+    </div>
 
+    <div class="entry-desc">
       <span v-html="description" v-if="descriptionShown"></span>
     </div>
 
@@ -177,20 +182,20 @@
     @include respond(mobile) {
       // Non-edit mobile grid-template
       grid-template:
-        [row1-start] "order .     image" calc(#{$image-height}rem + 1rem) [row1-end]
-        [row2-start] "title title title" 1fr [row2-end]
-        [row3-start] "meta  meta  meta" auto [row3-end]
+        [row1-start] "title title title" 1fr [row1-end]
+        [row2-start] "order meta  image" calc(#{$image-height}rem + 1rem - 2rem) [row2-end]
+        [row3-start] "desc-control desc-control image" 2rem [row3-end]
         [row4-start] "desc  desc  desc" auto [row4-end]
                    / 2rem   1fr calc(#{$image-width}rem + 1rem);
 
       &.edit {
         grid-template:
-        [row1-start] "order .     image" calc(#{$image-height}rem + 1rem) [row1-end]
-        [row2-start] "title title title" 1fr [row2-end]
-        [row3-start] "meta  meta  meta" auto [row3-end]
-        [row4-start] "desc  desc  desc" auto [row4-end]
-        [row5-start] "settings settings settings" auto [row5-end]
-                   / 2rem   1fr calc(#{$image-width}rem + 1rem);
+          [row1-start] "title title title" 1fr [row1-end]
+          [row2-start] "order meta  image" calc(#{$image-height}rem + 1rem - 2rem) [row2-end]
+          [row3-start] "desc-control desc-control image" 2rem [row3-end]
+          [row4-start] "desc  desc  desc" auto [row4-end]
+          [row5-start] "settings settings settings" auto [row5-end]
+                     / 2rem   1fr calc(#{$image-width}rem + 1rem);
       }
     }
 
@@ -242,6 +247,41 @@
 
       font-size: 1.5rem;
       margin-left: 1rem;
+
+      @include respond(mobile) {
+        margin-left: .5rem;
+      }
+    }
+
+    .entry-desc-control {
+      display: none;
+      grid-area: desc-control;
+
+      @include respond(mobile) {
+        display: flex;
+        font-size: 1.15rem;
+
+        flex-direction: row;
+        align-content: center;
+        justify-content: flex-start;
+        align-items: center;
+
+        margin-left: .5rem;
+
+        .entry-desc-title {
+          margin-top: -.5rem;
+        }
+
+        .caret {
+          transition: transform 500ms;
+          display: inline-block;
+          transform: rotate(90deg);
+
+          &.closed {
+            transform: rotate(0deg);
+          }
+        }
+      }
     }
 
     .entry-desc {
@@ -251,36 +291,10 @@
       overflow-y: auto;
       @include scrollbar(darken($text-color, 20%), $card-background);
 
-      .entry-desc-control {
-        display: none;
-      }
-
       @include respond(mobile) {
         overflow-y: hidden;
 
-        .entry-desc-control {
-          display: flex;
-          font-size: 1.15rem;
-
-          flex-direction: row;
-          align-content: center;
-          justify-content: flex-start;
-          align-items: center;
-
-          .entry-desc-title {
-            margin-top: -.5rem;
-          }
-
-          .caret {
-            transition: transform 500ms;
-            display: inline-block;
-            transform: rotate(90deg);
-
-            &.closed {
-              transform: rotate(0deg);
-            }
-          }
-        }
+        margin-left: .5rem;
       }
     }
 
@@ -293,6 +307,14 @@
       gap: .4rem;
 
       flex-wrap: wrap;
+
+      @include respond(mobile) {
+        justify-content: flex-end;
+        align-content: flex-start;
+        gap: 0;
+
+        left: 0;
+      }
 
       & > span {
         padding: .2rem;
@@ -318,6 +340,15 @@
 
         &.green {
           background-color: rgb(104, 214, 57);
+        }
+
+        &.red {
+          background-color: rgb(232,93,117);
+        }
+
+        @include respond(mobile) {
+          margin-top: .5rem;
+          text-align: right;
         }
       }
     }

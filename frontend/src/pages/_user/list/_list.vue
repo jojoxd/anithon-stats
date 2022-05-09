@@ -163,7 +163,7 @@
     </div>
 
     <div class="dev" v-if="entryData">
-      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="user.isCurrentUser" :prop-update="(entry, idx) => entry.savedData.order = idx">
+      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false" :prop-update="(entry, idx) => entry.savedData.order = idx">
         <template #item="{ item, up, down, index, upEnabled, downEnabled }">
           <EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled" :down-enabled="downEnabled" :index="index" />
         </template>

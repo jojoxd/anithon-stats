@@ -86,6 +86,7 @@
 
         moveUp,
         moveDown,
+        enabled,
       }
     }
   });
@@ -93,6 +94,6 @@
 
 <template>
   <div v-for="(item, index) of items" :key="(_item) => keys(_item)">
-    <slot name="item" :item="item" :index="index" :up="moveUp(index)" :up-enabled="index >= 1" :down="moveDown(index)" :down-enabled="index < (items.length - 1)"/>
+    <slot name="item" :item="item" :index="index" :up="moveUp(index)" :up-enabled="enabled && index >= 1" :down="moveDown(index)" :down-enabled="enabled && index < (items.length - 1)"/>
   </div>
 </template>

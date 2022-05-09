@@ -1,6 +1,4 @@
-import {
-    fetchUserLists_MediaListCollection_lists_entries
-} from "@anime-rss-filter/anilist";
+import {fetchUserLists_MediaListCollection_lists_entries, MediaListStatus} from "@anime-rss-filter/anilist";
 import {SavedData} from "../../entity/SavedData";
 import {ChunkService} from "../ChunkService";
 import {Chunk} from "./Chunk";
@@ -113,6 +111,12 @@ export class Entry implements IEntry
     get totalTime(): number
     {
         return this.data.media!.duration! * this.episodes * this.savedData.mult;
+    }
+
+    @Property()
+    get isDropped(): boolean
+    {
+        return this.data.status === MediaListStatus.DROPPED;
     }
 
     *next(): Generator<Chunk>

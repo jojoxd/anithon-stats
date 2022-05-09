@@ -17,6 +17,8 @@ export interface IEntry
 
     readonly id: number;
 
+    readonly isDropped: boolean;
+
     /**
      * Only defined on the {@see /api/:user/list/:list/entries} endpoint
      */

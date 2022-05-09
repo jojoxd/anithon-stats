@@ -4,7 +4,6 @@
   import {useUser} from "../../composition/useUser";
   import {useUserLists} from "../../composition/useUserLists";
   import {ApiStatus} from "../../composition/useApi";
-  import {useEntries} from "../../composition/useEntries";
 
   export default defineComponent({
     props: {
@@ -23,13 +22,9 @@
       const { user: userName } = useVModels(props, emit);
 
       const { user } = useUser(userName);
-      const { lists, status } = useUserLists(userName);
+      const { lists: listsData, listNames, status } = useUserLists(userName);
 
-      watch(lists, () => {
-        console.log("asdf", lists.value);
-      });
-
-      return { user, lists, userName, status, ApiStatus };
+      return { user, listNames, listsData, userName, status, ApiStatus };
     }
   });
 </script>
@@ -41,11 +36,11 @@
     <img :src="user?.avatar.large" />
 
     <div class="lists" v-if="status === ApiStatus.Ok">
-      <div class="list card-single" v-for="list of lists">
+      <div class="list card-single" v-for="list of listNames">
         <span class="list-name">{{ list }}</span>
 
         <span class="list-stats">
-          <ListStats :user="userName" :list="list" />
+          <ListStats :list="listsData[list]" />
         </span>
 
         <span class="list-link">

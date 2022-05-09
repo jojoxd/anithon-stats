@@ -1,17 +1,16 @@
-import {EntryService} from "../../services/EntryService";
 import {Inject} from "@tsed/di";
 import {Controller, Get, PathParams, UseCache} from "@tsed/common";
 import {ContentType} from "@tsed/schema";
 import {ListImage} from "../../util/ListImage";
 import {ListManager} from "../../services/ListManager";
 
-@Controller("/:user/list/:list/image.png")
+@Controller("/embed")
 export class ListImageController
 {
     @Inject()
     protected listManager!: ListManager;
 
-    @Get()
+    @Get("/:user/:list.png")
     @ContentType('image/png')
     @UseCache({ ttl: 300 })
     public async getIndex(

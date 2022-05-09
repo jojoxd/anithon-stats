@@ -1,31 +1,45 @@
 import {ComputedRef, ref, Ref, computed} from "vue";
 import {ApiStatus, useApi} from "./useApi";
-import {debouncedWatch} from "@vueuse/core";
+import {debouncedWatch, get} from "@vueuse/core";
+import {IListData} from "@anistats/shared";
 
 /**
  * Creates a wrapper for User Lists (string-version from Anilist API)
  */
 export function useUserLists(user: Ref<string | null>): UseUserListsReturn
 {
-    const apiData = ref<FetchUserListsDTO>({ user: null });
+    const endpoint = ref<string | false>(false);
 
     debouncedWatch(user, () => {
         console.log('user changed');
         cancel();
 
-        if(user.value) {
-            apiData.value = {
-                user: user.value
-            };
+        const _user = get(user);
+
+        if(!_user) {
+            endpoint.value = false;
+            return;
         }
+
+        endpoint.value = `user/${_user}/lists`;
     }, { immediate: true, debounce: 500 });
 
-    const { status, data, cancel } = useApi<FetchUserListsDTO, Array<string>>('user/lists', apiData, false);
+    const { status, data, cancel, reload } = useApi<void, IListData>(endpoint, ref(), true);
 
     return {
         status,
 
         lists: computed(() => data.value),
+
+        listNames: computed(() => {
+            if(data.value) {
+                const keys = Object.keys(data.value);
+
+                return keys.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+            }
+
+            return null;
+        })
     };
 }
 
@@ -33,10 +47,7 @@ interface UseUserListsReturn
 {
     status: ComputedRef<ApiStatus>;
 
-    lists: ComputedRef<Array<any> | null>;
-}
+    lists: ComputedRef<IListData | null>;
 
-interface FetchUserListsDTO
-{
-    user: string | null;
+    listNames: ComputedRef<Array<string> | null>;
 }

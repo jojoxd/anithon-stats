@@ -7,6 +7,10 @@
   import {useTitle} from "../../../composition/useTitle";
   import {ApiStatus} from "../../../composition/useApi";
   import {useVModels} from "@vueuse/core";
+  import {useUserList} from "../../../composition/useUserList";
+  import {IOverlayController} from "../../../plugin/overlay";
+
+  declare const $overlay: IOverlayController;
 
   export default defineComponent({
     props: {
@@ -47,6 +51,11 @@
       } = useMetadata(user.value, list.value);
 
       const {
+        list: listData,
+        reload: reloadUserList,
+      } = useUserList(user, list);
+
+      const {
         user: userData
       } = useUser(user);
 
@@ -84,6 +93,7 @@
         await reloadEntries();
         await reloadChunks();
         await reloadMetadata();
+        await reloadUserList();
 
         // Make the overlay feel more right (also less flashing)
         setTimeout(() => {
@@ -123,6 +133,7 @@
       return {
         user,
         list,
+        listData,
 
         embedImageUri,
 
@@ -143,7 +154,7 @@
   <div>
     <h1>{{user}} / {{ list }}</h1>
 
-    <ListStats :entries="entryData" />
+    <ListStats :list="listData" />
 
     <a :href="embedImageUri" target="_blank">Embed</a>
 
@@ -152,9 +163,9 @@
     </div>
 
     <div class="dev" v-if="entryData">
-      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :prop-update="(entry, idx) => entry.savedData.order = idx">
-        <template #item="{ item, up, down, index }">
-          <EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :index="index" />
+      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="user.isCurrentUser" :prop-update="(entry, idx) => entry.savedData.order = idx">
+        <template #item="{ item, up, down, index, upEnabled, downEnabled }">
+          <EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled" :down-enabled="downEnabled" :index="index" />
         </template>
       </Sortable>
     </div>

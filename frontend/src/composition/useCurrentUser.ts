@@ -4,7 +4,7 @@ import {ICurrentUser} from "@anistats/shared";
 
 export function useCurrentUser()
 {
-    const { status, data, reload } = useApi<void, ICurrentUser>(`user/current`, ref());
+    const { status, data, reload } = useApi<void, ICurrentUser>(`user/@current`, ref());
 
     return {
         status,

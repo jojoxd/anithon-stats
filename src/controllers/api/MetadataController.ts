@@ -1,10 +1,11 @@
-import {BodyParams, Controller, Get, Inject, PathParams, Post} from "@tsed/common";
+import {BodyParams, Controller, Get, Inject, PathParams, Post, Put} from "@tsed/common";
 import {IMetadata} from "@anistats/shared";
 import {USERLIST_REPOSITORY, UserListRepository} from "../../entity/repository/UserListRepository";
 import {ANILIST_USER_REPOSITORY} from "../../entity/repository/AnilistUserRepository";
 import {CustomAuth} from "../../guards/AuthMiddleware";
+import {AnilistUserManager} from "../../services/AnilistUserManager";
 
-@Controller("/:user/list/:list/metadata")
+@Controller("/metadata")
 export class MetadataController
 {
     @Inject(USERLIST_REPOSITORY)
@@ -13,17 +14,24 @@ export class MetadataController
     @Inject(ANILIST_USER_REPOSITORY)
     protected readonly anilistUserRepository!: ANILIST_USER_REPOSITORY;
 
-    @Get()
-    @CustomAuth("params.userName === currentUser.name")
+    @Inject()
+    protected readonly anilistUserManager!: AnilistUserManager;
+
+    @Get("/:user/:list")
     public async get(
         @PathParams("user") userName: string,
-        @PathParams("list") list: string
+        @PathParams("list") listName: string
     ): Promise<IMetadata>
     {
-        // @TODO: Fetch user using a manager?
-        const user = await this.anilistUserRepository.findOne({ where: { userName: userName.toLowerCase() } });
+        const user = await this.anilistUserManager.getUserByName(userName);
 
-        const userList = await this.userListRepository.findOrCreate(user!, list);
+        if(!user)
+            throw new Error("No such user");
+
+        const userList = user.lists?.find(list => list.listName === listName);
+
+        if(!userList)
+            throw new Error("No such list");
 
         return {
             allowChunkMerge: userList.allowChunkMerge,
@@ -32,7 +40,8 @@ export class MetadataController
         };
     }
 
-    @Post()
+    @Put("/:user/:list")
+    @CustomAuth("pathParams.user == currentUser.name")
     public async save(
         @PathParams("user") userName: string,
         @PathParams("list") list: string,

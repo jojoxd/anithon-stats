@@ -5,7 +5,7 @@ import {Header, Returns} from "@tsed/schema";
 import {Entry} from "../../services/ChunkService/Entry";
 import {ListManager} from "../../services/ListManager";
 
-@Controller("/:user/list/:list/entries")
+@Controller("/entries/:user/:list")
 export class EntryController
 {
     @Inject()

@@ -1,11 +1,16 @@
 import {useApi} from "./useApi";
-import {ref} from "vue";
+import {ref, computed} from "vue";
+import {MaybeRef, get} from "@vueuse/core";
 import {IChunkList} from "@anistats/shared";
 
 /**
  * Creates a wrapper for chunks API calls
  */
-export function useChunks(user: string, list: string)
+export function useChunks(user: MaybeRef<string>, list: MaybeRef<string>)
 {
-    return useApi<void, IChunkList>(`${user}/list/${list}/chunks`, ref());
+    const endpoint = computed(() => {
+        return `chunks/${get(user)}/${get(list)}`
+    })
+
+    return useApi<void, IChunkList>(endpoint, ref());
 }

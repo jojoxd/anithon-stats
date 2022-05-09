@@ -1,4 +1,4 @@
-import {Middleware, MiddlewareMethods, Req, Context, Session, Inject, UseAuth} from "@tsed/common";
+import {Middleware, MiddlewareMethods, Req, Context, Session, Inject, UseAuth, $log} from "@tsed/common";
 import {AnilistService} from "@anime-rss-filter/anilist";
 import {useDecorators} from "@tsed/core";
 import jexl from "jexl";
@@ -29,6 +29,7 @@ export class AuthMiddleware implements MiddlewareMethods
 
         // If expression is not true
         if(!bool) {
+            $log.warn(`AuthMiddleware jexl expression failed: "${options.expression}"`, { currentUser, ctx, session, pathParams, queryParams })
             throw new Forbidden("Forbidden");
         }
     }

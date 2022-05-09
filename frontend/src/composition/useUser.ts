@@ -1,19 +1,24 @@
-import {computed, Ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {useApi} from "./useApi";
 import {IAnilistUserMetadata} from "@anistats/shared";
+import {MaybeRef, get} from "@vueuse/core";
 
-export function useUser(userName: Ref<string>)
+export function useUser(userName: MaybeRef<string>)
 {
-    const { status, data, reload } = useApi<{ userName: string }, IAnilistUserMetadata>(
-        `user/find`,
-        computed(() => ({ userName: userName.value }))
-    );
+    const endpoint = computed(() => {
+        const _userName = get(userName);
 
-    // @DEBUG
-    watch(data, () => {
-        if(data.value)
-            data.value!.isCurrentUser = true;
-    })
+        if(!_userName)
+            return false;
+
+        return `user/${_userName}`;
+    });
+
+    const {
+        status,
+        data,
+        reload
+    } = useApi<void, IAnilistUserMetadata>(endpoint, ref());
 
     return {
         status,

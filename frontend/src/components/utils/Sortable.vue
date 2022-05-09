@@ -18,16 +18,25 @@
         type: Function,
         required: false,
       },
+
+      enabled: {
+        type: Boolean,
+        required: false,
+        default: true,
+      }
     },
 
     setup(props, { emit })
     {
-      const { items, keys, propUpdate } = useVModels(props, emit);
+      const { items, keys, propUpdate, enabled } = useVModels(props, emit);
 
       function moveUp(index: number)
       {
         return function moveUpInner()
         {
+          if(!enabled.value)
+            return;
+
           console.log('moveUp', index);
 
           if(index === 0)
@@ -44,6 +53,9 @@
       {
         return function moveDownInner()
         {
+          if(!enabled.value)
+            return;
+
           console.log('moveDown', index);
 
           if(index + 1 >= items.value.length)
@@ -58,6 +70,9 @@
 
       function updateProperty()
       {
+        if(!enabled.value)
+          return;
+
         if(propUpdate.value) {
           for(let i = 0; i < items.value.length; i++) {
             propUpdate.value(items.value[i], i);
@@ -78,6 +93,6 @@
 
 <template>
   <div v-for="(item, index) of items" :key="(_item) => keys(_item)">
-    <slot name="item" :item="item" :index="index" :up="moveUp(index)" :down="moveDown(index)" />
+    <slot name="item" :item="item" :index="index" :up="moveUp(index)" :up-enabled="index >= 1" :down="moveDown(index)" :down-enabled="index < (items.length - 1)"/>
   </div>
 </template>

@@ -8,7 +8,6 @@ import {AnilistService} from "@anime-rss-filter/anilist";
 @Controller("/oauth")
 export class OAuthController
 {
-
     @Inject()
     protected readonly anilistOAuthService!: AnilistOAuthService;
 

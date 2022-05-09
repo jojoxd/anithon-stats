@@ -2,10 +2,6 @@
   import {computed, defineComponent, PropType, ref, watch} from "vue";
   import {IAnilistUserMetadata, IEntry} from "@anistats/shared";
   import {useVModels} from "@vueuse/core";
-  import {useEntryTitle} from "../../composition/entry/useEntryTitle";
-  import {useEntryDescription} from "../../composition/entry/useEntryDescription";
-  import {useEntryCover} from "../../composition/entry/useEntryCover";
-  import {useEntryDuration} from "../../composition/entry/useEntryDuration";
   import {useBreakpoints} from "../../composition/useBreakpoints";
   import {useEntry} from "../../composition/useEntry";
 
@@ -25,12 +21,23 @@
       user: {
         type: Object as PropType<IAnilistUserMetadata>,
         required: true
-      }
+      },
+
+      upEnabled: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
+      downEnabled: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
     },
 
     setup(props, { emit })
     {
-      const { entry, index, user } = useVModels(props, emit);
+      const { entry, index, user, upEnabled, downEnabled } = useVModels(props, emit);
 
       const {
         title,
@@ -55,6 +62,20 @@
         descriptionShown.value = !isMobile.value;
       }, { immediate: true });
 
+      const upStyle = computed(() => {
+        if(!upEnabled.value)
+          return { color: "red" };
+
+        return {};
+      });
+
+      const downStyle = computed(() => {
+        if(!downEnabled.value)
+          return { color: "red" };
+
+        return {};
+      });
+
       // @TODO: Cleanup these returns?
       return {
         entry,
@@ -70,6 +91,12 @@
         anilistUrl,
         isMobile,
         descriptionShown,
+
+        upEnabled,
+        upStyle,
+
+        downEnabled,
+        downStyle,
       }
     }
   });
@@ -80,7 +107,7 @@
     <!-- @TODO: Grey out chevrons if impossible to move that direction instead of fully removing the chevron -->
     <div class="entry-order" v-if="index >= 0">
       <span>
-        <icon-mdi-chevron-up @click="$emit('move-up')" style="font-size: 1.5rem;" />
+        <icon-mdi-chevron-up class="chevron" @click="upEnabled && $emit('move-up')" :class="{ disabled: !upEnabled }" />
       </span>
 
       <span class="entry-index">
@@ -88,7 +115,7 @@
       </span>
 
       <span>
-        <icon-mdi-chevron-down @click="$emit('move-down')" style="font-size: 1.5rem;" />
+        <icon-mdi-chevron-down class="chevron" @click="downEnabled && $emit('move-down')" :class="{ disabled: !downEnabled }" />
       </span>
     </div>
 
@@ -181,8 +208,16 @@
 
       width: fit-content;
 
-      &:deep(svg) {
+      .chevron
+      {
         cursor: pointer;
+        color: $text-color;
+        font-size: 1.5rem;
+
+        &.disabled {
+          color: darken($text-color, 30%);
+          cursor: not-allowed;
+        }
       }
 
       .entry-index {
@@ -271,6 +306,10 @@
 
         &.blue {
           background-color: rgb(2, 169, 255);
+
+          & a {
+            color: darken($text-color, 70%) !important;
+          }
         }
 
         &.purple {

@@ -1,4 +1,4 @@
-import { ComputedRef, computed, Ref, ref, watch } from "vue";
+import { ComputedRef, computed, Ref, ref, watch, isRef } from "vue";
 import {useAxios} from "./useAxios";
 import {AxiosError} from "axios";
 import {MaybeRef, get} from "@vueuse/core";
@@ -6,7 +6,7 @@ import {MaybeRef, get} from "@vueuse/core";
 /**
  * Creates a data wrapper for using the API while conforming to Vue Reactivity.
  */
-export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<string>, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
+export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<string | false>, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
 {
     const axiosInstance = useAxios();
 
@@ -23,11 +23,15 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<stri
         // Abort previous request if it exists
         abortController?.abort();
 
+        const _endpoint = get(endpoint);
+
+        // Endpoint is invalid
+        if(_endpoint === false)
+            return;
+
         abortController = new AbortController();
         status.value = _initial ? ApiStatus.Fetching : _status;
         _initial = false;
-
-        const _endpoint = get(endpoint);
 
         try {
             let response = await axiosInstance.get<TReturn>(_endpoint, {
@@ -56,6 +60,12 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<stri
     watch(data, async () => {
         await execute(ApiStatus.Reloading);
     }, { immediate });
+
+    if(isRef(endpoint)) {
+        watch(endpoint, async () => {
+            await execute(ApiStatus.Reloading);
+        });
+    }
 
     return {
         data: returnData,

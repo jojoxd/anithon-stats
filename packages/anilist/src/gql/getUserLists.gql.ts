@@ -14,6 +14,7 @@ export default gql`
                     id
                     progress
                     media {
+                        id,
                         episodes
                         duration
                     }

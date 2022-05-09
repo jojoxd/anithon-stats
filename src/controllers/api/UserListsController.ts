@@ -1,33 +1,71 @@
-import {Controller, Get, QueryParams} from "@tsed/common";
-import {BadRequest} from "@tsed/exceptions";
+import {Controller, Get, PathParams, QueryParams} from "@tsed/common";
 import {Inject} from "@tsed/di";
-import {Header} from "@tsed/schema";
+import {ContentType, Header} from "@tsed/schema";
 import {AnilistUserManager} from "../../services/AnilistUserManager";
-import {Deprecated} from "@tsed/core";
+import {IListData} from "@anistats/shared";
+import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 
-@Controller('/user/lists')
+@Controller('/user/:userName')
 export class UserListsController
 {
     @Inject()
     protected anilistUserManager!: AnilistUserManager;
 
-    @Get()
+    @Inject()
+    protected anilistService!: AnilistService;
+
+    @Get("/lists")
     @Header({
         'Cache-Control': 'no-store',
     })
-    @Deprecated("Use UserController instead (/user/lists/data?userName={userName})")
-    async getIndex(@QueryParams('user') userName: string)
+    @ContentType("application/json")
+    async getLists(@PathParams("userName") userName: string): Promise<IListData>
     {
-        if(!userName)
-            throw new BadRequest('User not defined');
+        // @TODO: Use savedData if it exists?
+        const lists = await this.anilistService.getUserLists(userName, MediaType.ANIME);
 
-        const user = await this.anilistUserManager.getUserByName(userName);
+        const user = await this.anilistUserManager.getUserByName(userName, true);
 
-        if(!user)
-            throw new Error("User does not exist");
+        return lists.MediaListCollection?.lists?.reduce<IListData>((acc, list) => {
+            if(list === null) return acc;
 
-        return user.lists
-            ?.map(list => list.listName)
-            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+            const savedData = user?.lists?.find(_list => _list.listName === list.name)?.savedData;
+
+            const totalDuration = list?.entries?.reduce((acc, entry) => {
+                let entryDuration = (entry!.media!.duration ?? 0) * (entry!.media!.episodes ?? 0);
+
+                if(savedData) {
+                    const mult = savedData.data[entry!.id]?.mult;
+                    const startAt = savedData.data[entry!.id]?.startAt;
+
+                    entryDuration = (entry!.media!.duration! - (startAt ?? 0)) * (entry!.media!.episodes ?? 0) * (mult ?? 1);
+                }
+
+                acc += entryDuration;
+
+                return acc;
+            }, 0) ?? 0;
+
+            acc[list.name!] = {
+                totalDuration,
+            };
+
+            return acc;
+        }, {}) ?? {};
+    }
+
+    @Get("/lists/:listName")
+    @Header({
+        'Cache-Control': 'no-store'
+    })
+    @ContentType("application/json")
+    async getList(
+        @PathParams("userName") userName: string,
+        @PathParams("listName") listName: string
+    ): Promise<IListData["value"]>
+    {
+        const lists = await this.getLists(userName);
+
+        return lists[listName]!;
     }
 }

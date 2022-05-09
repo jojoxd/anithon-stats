@@ -30,6 +30,45 @@ export class UserList
     @Column({ default: true })
     public allowChunkMerge!: boolean;
 
+    /**
+     * The Maximum length a Chunk can be (In Minutes)
+     */
+    @Column({ name: "max_chunk_length", default: UserList.DEFAULT_MAX_CHUNK_LENGTH })
+    protected _maxChunkLength?: number;
+
+    public static DEFAULT_MAX_CHUNK_LENGTH = 2.25 * 60;
+
+    public get maxChunkLength(): number
+    {
+        return this._maxChunkLength ?? UserList.DEFAULT_MAX_CHUNK_LENGTH;
+    }
+
+    public set maxChunkLength(value: number)
+    {
+        this._maxChunkLength = value ?? UserList.DEFAULT_MAX_CHUNK_LENGTH;
+    }
+
+    /**
+     * If the last Chunk of an entry is less than maxChunkJoinLength minutes, merge the last 2 chunks together
+     *
+     * Using this, the last chunk can be as large as maxChunkLength + maxChunkJoinLength
+     */
+    @Column({ name: "max_chunk_join_length", default: UserList.DEFAULT_MAX_CHUNK_JOIN_LENGTH })
+    protected _maxChunkJoinLength?: number;
+
+    public static DEFAULT_MAX_CHUNK_JOIN_LENGTH = 0.75 * 60;
+
+    public get maxChunkJoinLength(): number
+    {
+        return this._maxChunkJoinLength ?? UserList.DEFAULT_MAX_CHUNK_JOIN_LENGTH;
+    }
+
+    public set maxChunkJoinLength(value: number)
+    {
+        this._maxChunkJoinLength = value ?? UserList.DEFAULT_MAX_CHUNK_JOIN_LENGTH;
+    }
+
+    // Saved Data
     @OneToOne(() => SavedData, { eager: true, cascade: true })
     @JoinColumn({ name: "savedDataId" })
     public savedData!: SavedData;

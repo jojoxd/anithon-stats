@@ -1,24 +1,27 @@
 import {fetchUserLists_MediaListCollection_lists_entries, MediaListStatus} from "@anime-rss-filter/anilist";
 import {SavedData} from "../../entity/SavedData";
-import {ChunkService} from "../ChunkService";
 import {Chunk} from "./Chunk";
 import {ForwardGroups, Groups, Property} from "@tsed/schema";
 import {SeriesData} from "./SeriesData";
 import {IEntry, ISavedData} from "@anistats/shared";
+import {UserList} from "../../entity/UserList";
 
 /**
  * Entry Chunk Generation
  */
 export class Entry implements IEntry
 {
+    protected readonly userList: UserList;
+
     public readonly data: fetchUserLists_MediaListCollection_lists_entries;
 
     @Property()
     public readonly savedData: ISavedData;
 
-    constructor(data: fetchUserLists_MediaListCollection_lists_entries, savedData: SavedData)
+    constructor(data: fetchUserLists_MediaListCollection_lists_entries, savedData: SavedData, userList: UserList)
     {
         this.data = data;
+        this.userList = userList;
 
         this.savedData = savedData.data[data.id!] ?? { mult: 1, order: 0, startAt: 0, split: undefined };
     }
@@ -88,7 +91,7 @@ export class Entry implements IEntry
             return Math.floor(this.episodes / this.savedData.split) <= 1;
         }
 
-        return this.totalTime % ChunkService.CUTOFF < (ChunkService.LAST_CUTOFF);
+        return this.totalTime % this.userList.maxChunkLength < (this.userList.maxChunkJoinLength);
     }
 
     @Property()
@@ -101,10 +104,10 @@ export class Entry implements IEntry
 
         if(this.hasJoinedLastChunk) {
             // Join Last Chunk
-            return Math.max(Math.floor(this.totalTime / ChunkService.CUTOFF), 1);
+            return Math.max(Math.floor(this.totalTime / this.userList.maxChunkLength), 1);
         }
 
-        return Math.ceil(this.totalTime / ChunkService.CUTOFF);
+        return Math.ceil(this.totalTime / this.userList.maxChunkLength);
     }
 
     @Property()

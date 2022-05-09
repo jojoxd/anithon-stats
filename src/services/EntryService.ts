@@ -16,7 +16,7 @@ export class EntryService
             const data = await this.anilist.getUserList(ctx.userName, MediaType.ANIME, ctx.listName);
             const savedData = ctx.userList.savedData;
 
-            const entries = data.entries!.map(entry => new Entry(entry!, savedData));
+            const entries = data.entries!.map(entry => new Entry(entry!, savedData, ctx.userList));
 
             // use for loop so we don't reference unknown entries
             for(let i = 0; i < entries.length; i++) {

@@ -9,6 +9,7 @@
   import {useVModels} from "@vueuse/core";
   import {useUserList} from "../../../composition/useUserList";
   import {IOverlayController} from "../../../plugin/overlay";
+  import {useListMetadata} from "../../../composition/useListMetadata";
 
   declare const $overlay: IOverlayController;
 
@@ -56,6 +57,12 @@
       } = useUserList(user, list);
 
       const {
+        data: listMetadata,
+        updateListMetadata,
+        reload: reloadListMetadata,
+      } = useListMetadata(user, list);
+
+      const {
         user: userData
       } = useUser(user);
 
@@ -64,7 +71,7 @@
       });
 
       const embedImageUri = computed(() => {
-        return `${host.value}/api/${user.value}/list/${list.value}/image.png`;
+        return `${host.value}/api/embed/${user.value}/${list.value}.png`;
       });
 
       const title = useTitle();
@@ -89,10 +96,12 @@
         }
 
         await updateMetadata();
+        await updateListMetadata();
 
         await reloadEntries();
         await reloadChunks();
         await reloadMetadata();
+        await reloadListMetadata();
         await reloadUserList();
 
         // Make the overlay feel more right (also less flashing)
@@ -134,6 +143,7 @@
         user,
         list,
         listData,
+        listMetadata,
 
         embedImageUri,
 
@@ -155,6 +165,23 @@
     <h1>{{user}} / {{ list }}</h1>
 
     <ListStats :list="listData" />
+
+    <div class="list-metadata">
+      <div class="form-control list-metadata list-metadata-allow-chunk-merge">
+        <label>Allow Chunk Merge</label>
+        <input type="checkbox" v-model="listMetadata.allowChunkMerge" name="allowChunkMerge" />
+      </div>
+
+      <div class="form-control list-metadata list-metadata-max-chunk-length">
+        <label>Max chunk Length (Minutes)</label>
+        <input type="number" v-model="listMetadata.maxChunkLength" name="maxChunkLength" />
+      </div>
+
+      <div class="form-control list-metadata list-metadata-max-chunk-join-length">
+        <label>Max Chunk Join Length (Minutes)</label>
+        <input type="number" v-model="listMetadata.maxChunkJoinLength" name="maxChunkJoinLength" />
+      </div>
+    </div>
 
     <a :href="embedImageUri" target="_blank">Embed</a>
 

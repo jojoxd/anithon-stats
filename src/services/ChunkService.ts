@@ -13,21 +13,6 @@ import {UserListContainer} from "./ListManager/UserListContainer";
 @Service()
 export class ChunkService
 {
-    /**
-     * The Maximum length a Chunk can be (In Minutes)
-     * @TODO: #7 Change this to a per-list basis (UserList.cutoff)
-     */
-    static CUTOFF = 2.25 * 60;
-
-    /**
-     * If the last Chunk of an entry is less than LAST_CUTOFF minutes, merge the last 2 chunks together
-     *
-     * Using this, the last chunk can be as large as CUTOFF + LAST_CUTOFF
-     *
-     * @TODO: #7 Change this to a per-list basis (Userlist.lastCutoff)
-     */
-    static LAST_CUTOFF = 0.75 * 60;
-
     async chunkize(ctx: UserListContainer): Promise<ChunkList>
     {
         const list = new ChunkList();

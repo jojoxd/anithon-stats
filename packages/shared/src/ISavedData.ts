@@ -7,4 +7,6 @@ export interface ISavedData
     startAt?: number;
 
     split?: number;
+
+    splitSequelEntry?: boolean;
 }

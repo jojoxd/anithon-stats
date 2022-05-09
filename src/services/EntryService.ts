@@ -57,7 +57,18 @@ export class EntryService
 
                         $log.info(`[EntryService] Undid sequelizing for ${entry!.data.media!.title!.romaji!} (REASON: Entry has multiple sequels)`);
                     } else {
-                        if(!entry.setSequel(sequel!)) {
+
+                        // User said that this entry should split sequels
+                        if(entry.savedData.splitSequelEntry) {
+                            entries.push(sequel!);
+
+                            const _sequel = entry.unsetSequel();
+                            if(_sequel) {
+                                entries.push(_sequel);
+                            }
+
+                            entry.lockSequel();
+                        } else if(!entry.setSequel(sequel!)) {
                             // Sequels Locked, re-add sequel to entries
                             entries.push(sequel!);
                         }

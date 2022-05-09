@@ -16,6 +16,8 @@
       const { entry } = useVModels(props, emit);
       const autosplit = ref(true);
 
+      const splitSequelEntry = ref(false);
+
       watch(autosplit, () => {
         if(autosplit.value) {
           entry.value.savedData.split = undefined;
@@ -24,13 +26,19 @@
         }
       });
 
+      watch(splitSequelEntry, () => {
+        entry.value.savedData.splitSequelEntry = splitSequelEntry.value || false;
+      })
+
       watch(entry, () => {
         autosplit.value = !entry.value.savedData.split;
+        splitSequelEntry.value = entry.value.savedData.splitSequelEntry ?? false;
       }, { immediate: true });
 
       return {
         entry,
         autosplit,
+        splitSequelEntry,
       }
     }
   });
@@ -60,6 +68,11 @@
       <label>Split</label>
 
       <input type="number" min="1" :max="entry.episodes" v-model="entry.savedData.split" />
+    </div>
+
+    <div class="form-control split-sequel-entry" v-show="!!entry.sequel || splitSequelEntry === true">
+      <label>Split Sequel</label>
+      <input type="checkbox" v-model="splitSequelEntry" name="SplitSequelEntry" />
     </div>
   </div>
 </template>

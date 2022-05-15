@@ -1,12 +1,12 @@
 import { ComputedRef, computed, Ref, ref, watch, isRef } from "vue";
 import {useAxios} from "./useAxios";
-import {AxiosError} from "axios";
+import {AxiosError, Method} from "axios";
 import {MaybeRef, get} from "@vueuse/core";
 
 /**
  * Creates a data wrapper for using the API while conforming to Vue Reactivity.
  */
-export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<string | false>, data: Ref<TData>, immediate: boolean = true): IUseApiReturnData<TReturn>
+export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<string | false>, data: Ref<TData | null>, immediate: boolean = true, method: Method = "GET"): IUseApiReturnData<TReturn>
 {
     const axiosInstance = useAxios();
 
@@ -24,18 +24,28 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<stri
         abortController?.abort();
 
         const _endpoint = get(endpoint);
+        const _data = get(data);
 
         // Endpoint is invalid
         if(_endpoint === false)
+            return;
+
+        // Invalid Data
+        if(_data === null)
             return;
 
         abortController = new AbortController();
         status.value = _initial ? ApiStatus.Fetching : _status;
         _initial = false;
 
+        // @NOTE: Only POST & PUT methods are assigned as using Body
+        const isBodyMethod = ["post", "put"].includes(method.toLowerCase());
+
         try {
-            let response = await axiosInstance.get<TReturn>(_endpoint, {
-                params: data.value,
+            let response = await axiosInstance.request<TReturn>({
+                url: _endpoint,
+                method,
+                [isBodyMethod ? 'data' : 'params']: _data,
                 signal: abortController.signal,
             });
 

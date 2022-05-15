@@ -8,4 +8,7 @@ export * from './src/IMetadata';
 export * from './src/ISavedData';
 export * from './src/ISeriesData';
 export * from './src/ISeriesTitle';
-export * from './src/IUserData';
+
+// New DTO's
+export * from './src/user/IUserData';
+export * from './src/user/UserIdentifier';

@@ -21,12 +21,14 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var tsed_entity_mapper_exports = {};
 __export(tsed_entity_mapper_exports, {
   BodyParamEntity: () => BodyParamEntity,
+  DeserializerPipe: () => DeserializerPipe,
   ENTITY_MAPPER_REFLECT_DATA_KEY: () => ENTITY_MAPPER_REFLECT_DATA_KEY,
   ENTITY_MAPPER_TYPE: () => ENTITY_MAPPER_TYPE,
   EntityMapper: () => EntityMapper,
   EntityMapperPipe: () => EntityMapperPipe,
   PathParamEntity: () => PathParamEntity,
-  QueryParamEntity: () => QueryParamEntity
+  QueryParamEntity: () => QueryParamEntity,
+  ValidationPipe: () => ValidationPipe
 });
 module.exports = __toCommonJS(tsed_entity_mapper_exports);
 
@@ -101,7 +103,11 @@ EntityMapperPipe = __decorate([
 
 // src/decorators/params/BodyParamEntity.ts
 function BodyParamEntity(expression, options) {
-  return (0, import_core3.useDecorators)((0, import_platform_params.BodyParams)(expression), (0, import_platform_params.UsePipe)(EntityMapperPipe, options));
+  let paramDecorator = (0, import_platform_params.BodyParams)();
+  if (typeof expression !== "undefined") {
+    paramDecorator = (0, import_platform_params.BodyParams)(expression);
+  }
+  return (0, import_core3.useDecorators)(paramDecorator, (0, import_platform_params.UsePipe)(EntityMapperPipe, options));
 }
 __name(BodyParamEntity, "BodyParamEntity");
 
@@ -120,13 +126,69 @@ function QueryParamEntity(expression, options) {
   return (0, import_core5.useDecorators)((0, import_platform_params3.RawQueryParams)(expression), (0, import_platform_params3.UsePipe)(EntityMapperPipe, options));
 }
 __name(QueryParamEntity, "QueryParamEntity");
+
+// src/pipes/ValidationPipe.ts
+var import_platform_params4 = require("@tsed/platform-params");
+var import_di3 = require("@tsed/di");
+var __decorate2 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+    r = Reflect.decorate(decorators, target, key, desc);
+  else
+    for (var i = decorators.length - 1; i >= 0; i--)
+      if (d = decorators[i])
+        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var ValidationPipe = /* @__PURE__ */ __name(class ValidationPipe2 extends import_platform_params4.ValidationPipe {
+  async transform(value, metadata) {
+    const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
+    if (entityMapperPipe) {
+      console.log("VP val ->", value);
+      return value;
+    }
+    return super.transform(value, metadata);
+  }
+}, "ValidationPipe");
+ValidationPipe = __decorate2([
+  (0, import_di3.OverrideProvider)(import_platform_params4.ValidationPipe)
+], ValidationPipe);
+
+// src/pipes/DeserializerPipe.ts
+var import_platform_params5 = require("@tsed/platform-params");
+var import_di4 = require("@tsed/di");
+var __decorate3 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+    r = Reflect.decorate(decorators, target, key, desc);
+  else
+    for (var i = decorators.length - 1; i >= 0; i--)
+      if (d = decorators[i])
+        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var DeserializerPipe = /* @__PURE__ */ __name(class DeserializerPipe2 extends import_platform_params5.DeserializerPipe {
+  async transform(value, metadata) {
+    const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
+    if (entityMapperPipe) {
+      console.log("DP val ->", value);
+      return value;
+    }
+    return super.transform(value, metadata);
+  }
+}, "DeserializerPipe");
+DeserializerPipe = __decorate3([
+  (0, import_di4.OverrideProvider)(import_platform_params5.DeserializerPipe)
+], DeserializerPipe);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   BodyParamEntity,
+  DeserializerPipe,
   ENTITY_MAPPER_REFLECT_DATA_KEY,
   ENTITY_MAPPER_TYPE,
   EntityMapper,
   EntityMapperPipe,
   PathParamEntity,
-  QueryParamEntity
+  QueryParamEntity,
+  ValidationPipe
 });

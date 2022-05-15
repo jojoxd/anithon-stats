@@ -6,6 +6,7 @@ import {UserList} from "../../entity/UserList";
 import {IListMetadata} from "@anistats/shared/src/IListMetadata";
 import {CustomAuth} from "../../guards/AuthMiddleware";
 import {USERLIST_REPOSITORY} from "../../entity/repository/UserListRepository";
+import {UseAuth} from "@jojoxd/tsed-auth";
 
 @Controller("/list/:listId")
 export class UserListSettingsController
@@ -33,7 +34,8 @@ export class UserListSettingsController
     @Put("/settings")
     @ContentType("application/json")
     // @TODO: Fix CustomAuth for PUT /api/:listId/settings
-    @CustomAuth("pathParams.userName == currentUser.name")
+    // @CustomAuth("pathParams.userName == currentUser.name")
+	@UseAuth("pathParams.listId == 0")
     async putMetadata(
         @PathParamEntity("listId") list: UserList,
         @BodyParams("data") data: IListMetadata

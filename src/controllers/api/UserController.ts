@@ -1,8 +1,10 @@
-import {$log, Controller, Inject, PathParams, ProviderScope, Scope, Session} from "@tsed/common";
-import {AnilistService} from "@anime-rss-filter/anilist";
-import {ContentType, Get} from "@tsed/schema";
-import {ICurrentUser} from "@anistats/shared";
+import {$log, Controller, Inject, PathParams, ProviderScope, Scope, Session, UseCache} from "@tsed/common";
+import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
+import {ContentType, Get, Header} from "@tsed/schema";
+import {ICurrentUser, IListData} from "@anistats/shared";
 import {AnilistUserManager} from "../../services/AnilistUserManager";
+import {BodyParamEntity, PathParamEntity} from "@jojoxd/tsed-entity-mapper";
+import {AnilistUser} from "../../entity/AnilistUser";
 
 @Controller("/user")
 @Scope(ProviderScope.REQUEST)
@@ -27,24 +29,94 @@ export class UserController
         return { ...currentUser, isAuthenticated: true, isCurrentUser: true };
     }
 
-    @Get("/:userName")
+    // @Get("/:userName")
+    // @ContentType("application/json")
+    // async getFindUser(@PathParams("userName") userName: string)
+    // {
+    //     $log.info(`Find User: ${userName}`);
+    //
+    //     const currentUser = await this.anilistService.getCurrentUser();
+    //
+    //     const user = await this.anilistService.searchUserByName(userName);
+    //
+    //     if(!user)
+    //         return null;
+    //
+    //     this.anilistUserManager.getUserByAnilistId(user.id);
+    //
+    //     return {
+    //         ...user,
+    //         isCurrentUser: user.id === currentUser?.id,
+    //     };
+    // }
+
+    @Get("/:userName/lists")
+    @Header({
+        'Cache-Control': 'no-store',
+    })
     @ContentType("application/json")
-    async getFindUser(@PathParams("userName") userName: string)
+    @UseCache({ ttl: 60 })
+    async getLists(@PathParamEntity("userName", { options: { type: "anilistUserId" } }) user: AnilistUser): Promise<IListData>
     {
-        $log.info(`Find User: ${userName}`);
+        console.log("USER >>>>>>>>>>>>>>>>>>>>>>>>", user);
 
-        const currentUser = await this.anilistService.getCurrentUser();
+        const lists = await this.anilistService.getUserLists(user.anilistUserId, MediaType.ANIME);
 
-        const user = await this.anilistService.searchUserByName(userName);
+        const listData: Partial<IListData> = {};
 
-        if(!user)
-            return null;
+        listData.lists = lists.MediaListCollection?.lists?.reduce<IListData["lists"]>((acc, list) => {
+            if(list === null) return acc;
 
-        this.anilistUserManager.getUserByAnilistId(user.id);
+            const savedData = user?.lists?.find(_list => _list.listName === list.name)?.savedData;
 
-        return {
-            ...user,
-            isCurrentUser: user.id === currentUser?.id,
-        };
+            const totalDuration = list?.entries?.reduce((acc, entry) => {
+                let entryDuration = (entry!.media!.duration ?? 0) * (entry!.media!.episodes ?? 0);
+
+                if(savedData) {
+                    const mult = savedData.data[entry!.id]?.mult;
+                    const startAt = savedData.data[entry!.id]?.startAt;
+
+                    entryDuration = (entry!.media!.duration! - (startAt ?? 0)) * (entry!.media!.episodes ?? 0) * (mult ?? 1);
+                }
+
+                acc += entryDuration;
+
+                return acc;
+            }, 0) ?? 0;
+
+            const userList = user.lists?.find(userList => userList.listName === list.name!);
+
+            if(!userList)
+                throw new Error("Error: Could not match UserList to AniList Response");
+
+            acc.push({
+                id: userList.id,
+
+                name: list.name!,
+
+                meta: {
+                    totalDuration,
+                },
+            });
+
+            return acc;
+        }, []) ?? [];
+
+        return listData as IListData;
+    }
+
+    @Get("/:userName/lists/:listName")
+    @Header({
+        'Cache-Control': 'no-store'
+    })
+    @ContentType("application/json")
+    async getList(
+        @PathParamEntity("user") user: AnilistUser,
+        @PathParams("listName") listName: string
+    ): Promise<IListData["lists"][0] | null>
+    {
+        const listsData = await this.getLists(user);
+
+        return listsData.lists.find(list => list.name === listName) ?? null;
     }
 }

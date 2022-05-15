@@ -11,7 +11,7 @@ export class UserListMapper implements EntityMapperMethods<UserList>
 
     async map(value: unknown, ctx: EntityMapperMapContext<UserList>): Promise<UserList | undefined>
     {
-        const user = await this.anilistUserManager.findUserByListId(value as string);
+        const user = await this.anilistUserManager.findUserByListUuid(value as string);
 
         return user?.lists?.find((list) => list.id === value) ?? undefined;
     }

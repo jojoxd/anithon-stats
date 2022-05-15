@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import methodOverride from "method-override";
 import cors from "cors";
 import session from "express-session";
+import "@jojoxd/tsed-entity-mapper";
+import "@jojoxd/tsed-auth";
 import "@tsed/ajv";
 import {config, rootDir} from "./config";
 import {TypeormStore} from "connect-typeorm";

@@ -36,12 +36,9 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         return user;
     },
 
-    async findByListId(listId: string): Promise<AnilistUser | null>
+    async findByListUuid(listId: string): Promise<AnilistUser | null>
     {
         const qb = this.createQueryBuilder("au");
-
-        const subQuery = qb.subQuery()
-
 
         const user = await qb
             .select()

@@ -72,7 +72,11 @@ EntityMapperPipe = __decorate([
 
 // src/decorators/params/BodyParamEntity.ts
 function BodyParamEntity(expression, options) {
-  return useDecorators2(BodyParams(expression), UsePipe(EntityMapperPipe, options));
+  let paramDecorator = BodyParams();
+  if (typeof expression !== "undefined") {
+    paramDecorator = BodyParams(expression);
+  }
+  return useDecorators2(paramDecorator, UsePipe(EntityMapperPipe, options));
 }
 __name(BodyParamEntity, "BodyParamEntity");
 
@@ -91,12 +95,68 @@ function QueryParamEntity(expression, options) {
   return useDecorators4(RawQueryParams(expression), UsePipe3(EntityMapperPipe, options));
 }
 __name(QueryParamEntity, "QueryParamEntity");
+
+// src/pipes/ValidationPipe.ts
+import { ValidationPipe as BaseValidationPipe } from "@tsed/platform-params";
+import { OverrideProvider } from "@tsed/di";
+var __decorate2 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+    r = Reflect.decorate(decorators, target, key, desc);
+  else
+    for (var i = decorators.length - 1; i >= 0; i--)
+      if (d = decorators[i])
+        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var ValidationPipe = /* @__PURE__ */ __name(class ValidationPipe2 extends BaseValidationPipe {
+  async transform(value, metadata) {
+    const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
+    if (entityMapperPipe) {
+      console.log("VP val ->", value);
+      return value;
+    }
+    return super.transform(value, metadata);
+  }
+}, "ValidationPipe");
+ValidationPipe = __decorate2([
+  OverrideProvider(BaseValidationPipe)
+], ValidationPipe);
+
+// src/pipes/DeserializerPipe.ts
+import { DeserializerPipe as BaseDeserializerPipe } from "@tsed/platform-params";
+import { OverrideProvider as OverrideProvider2 } from "@tsed/di";
+var __decorate3 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+    r = Reflect.decorate(decorators, target, key, desc);
+  else
+    for (var i = decorators.length - 1; i >= 0; i--)
+      if (d = decorators[i])
+        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var DeserializerPipe = /* @__PURE__ */ __name(class DeserializerPipe2 extends BaseDeserializerPipe {
+  async transform(value, metadata) {
+    const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
+    if (entityMapperPipe) {
+      console.log("DP val ->", value);
+      return value;
+    }
+    return super.transform(value, metadata);
+  }
+}, "DeserializerPipe");
+DeserializerPipe = __decorate3([
+  OverrideProvider2(BaseDeserializerPipe)
+], DeserializerPipe);
 export {
   BodyParamEntity,
+  DeserializerPipe,
   ENTITY_MAPPER_REFLECT_DATA_KEY,
   ENTITY_MAPPER_TYPE,
   EntityMapper,
   EntityMapperPipe,
   PathParamEntity,
-  QueryParamEntity
+  QueryParamEntity,
+  ValidationPipe
 };

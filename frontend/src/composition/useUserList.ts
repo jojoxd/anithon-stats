@@ -1,37 +1,34 @@
 import {ComputedRef, ref, Ref, computed} from "vue";
 import {ApiStatus, useApi} from "./useApi";
-import {debouncedWatch, get} from "@vueuse/core";
-import {IListData} from "@anistats/shared";
+import {debouncedWatch, get, MaybeRef} from "@vueuse/core";
+import {IListData, UserIdentifier} from "@anistats/shared";
+import {ensureUserIdent, MaybeUserIdentifierRef, MaybeUserIdentifierTypeRef} from "./util/ensureUserIdent";
 
 /**
  * Creates a wrapper for User Lists (string-version from Anilist API)
  */
-export function useUserList(user: Ref<string | null>, list: Ref<string | null>): UseUserListReturn
+export function useUserList(user: MaybeUserIdentifierRef, listId: MaybeRef<string | null>, type?: MaybeUserIdentifierTypeRef): UseUserListReturn
 {
-    const endpoint = ref<string | false>(false);
-
-    debouncedWatch(user, () => {
-        console.log('user changed');
-        cancel();
-
+    const endpoint = computed(() => {
         const _user = get(user);
-        const _list = get(list);
+        const _listId = get(listId);
 
-        if(!_user || !_list) {
-            endpoint.value = false;
-            return;
+        if(!_user || !_listId) {
+            return false;
         }
 
-        endpoint.value = `user/${_user}/lists/${_list}`;
-    }, { immediate: true, debounce: 500 });
+        return `user/list/${_listId}`;
+    });
 
-    const { status, data, cancel, reload } = useApi<void, IListData["value"]>(endpoint, ref(), true);
+    const identifier = ensureUserIdent(user, type);
+
+    const { status, data, cancel, reload } = useApi<UserIdentifier, IListData["lists"][0]>(endpoint, identifier, true, "POST");
 
     return {
         status,
         reload,
 
-        list: computed(() => data.value),
+        list: computed(() => data.value ?? null),
     };
 }
 
@@ -41,5 +38,5 @@ interface UseUserListReturn
 
     reload: () => Promise<void>;
 
-    list: ComputedRef<IListData["value"] | null>;
+    list: ComputedRef<IListData["lists"][0] | null>;
 }

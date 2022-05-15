@@ -1,11 +1,12 @@
 <script lang="ts">
-  import {defineComponent, ref, watch} from "vue";
-  import {useVModels} from "@vueuse/core";
-  import {useUser} from "../../composition/useUser";
-  import {useUserLists} from "../../composition/useUserLists";
-  import {ApiStatus} from "../../composition/useApi";
+import {defineComponent} from "vue";
+import {useVModels} from "@vueuse/core";
+import {useUser} from "../../composition/useUser";
+import {useUserLists} from "../../composition/useUserLists";
+import {ApiStatus} from "../../composition/useApi";
+import {UserIdentifierType} from "@anistats/shared";
 
-  export default defineComponent({
+export default defineComponent({
     props: {
       user: {
         type: String,
@@ -16,30 +17,34 @@
     setup(props, { emit }) {
       const { user: userName } = useVModels(props, emit);
 
-      const { user } = useUser(userName);
-      const { lists: listsData, listNames, status } = useUserLists(user);
+      const { user } = useUser(userName, UserIdentifierType.UserName);
+      const { lists, listUser, status } = useUserLists(user);
 
-      return { user, listNames, listsData, userName, status, ApiStatus };
+      return { user, lists, listUser, userName, status, ApiStatus };
     }
   });
 </script>
 
 <template>
   <div class="user-lists">
-    <h2>User Lists of {{ user?.name }}</h2>
+		<div class="user-lists-title">
+			<h2>User Lists of {{ listUser?.name }}</h2>
 
-    <img :src="user?.avatar.large" />
+			<span v-if="listUser?.isCurrentUser">That's you!</span>
+		</div>
+
+    <img :src="listUser?.avatar" />
 
     <div class="lists" v-if="status === ApiStatus.Ok">
-      <div class="list card-single" v-for="list of listNames">
-        <span class="list-name">{{ list }}</span>
+      <div class="list card-single" v-for="(list) in lists" :key="list.name">
+        <span class="list-name">{{ list.name }}</span>
 
         <span class="list-stats">
-          <ListStats :list="listsData[list]" />
+          <ListStats :list="list" />
         </span>
 
         <span class="list-link">
-          <router-link :to="`/${user?.id}/list/${list}`">Go to List</router-link>
+          <router-link :to="`/${list.id}`">Go to List</router-link>
         </span>
       </div>
     </div>

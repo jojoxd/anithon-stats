@@ -1,30 +1,32 @@
-import {computed, ref} from "vue";
+import {computed} from "vue";
 import {useApi} from "./useApi";
-import {IAnilistUserMetadata} from "@anistats/shared";
-import {MaybeRef, get} from "@vueuse/core";
+import {IUserData, UserIdentifier} from "@anistats/shared";
+import {get} from "@vueuse/core";
+import {ensureUserIdent, MaybeUserIdentifierRef, MaybeUserIdentifierTypeRef} from "./util/ensureUserIdent";
 
-// @TODO: Change to useUserSearch
-export function useUser(userNameOrId: MaybeRef<string>)
+export function useUser(ident: MaybeUserIdentifierRef, type?: MaybeUserIdentifierTypeRef)
 {
     const endpoint = computed(() => {
-        const _userNameOrId = get(userNameOrId);
+        const _ident = get(ident);
 
-        if(!_userNameOrId)
+        if(!_ident)
             return false;
 
-        return `user/${_userNameOrId}`;
+        return `user/get`;
     });
+
+    const identifier = ensureUserIdent(ident, type);
 
     const {
         status,
         data,
-        reload
-    } = useApi<void, IAnilistUserMetadata>(endpoint, ref());
+        reload,
+    } = useApi<UserIdentifier, IUserData>(endpoint, identifier, true, "POST");
 
     return {
         status,
         reload,
 
-        user: computed<IAnilistUserMetadata | null>(() => data.value ?? null)
-    }
+        user: computed<IUserData | null>(() => data.value ?? null),
+    };
 }

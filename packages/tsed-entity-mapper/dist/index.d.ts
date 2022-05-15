@@ -2,6 +2,7 @@ import { Type } from '@tsed/core';
 import { ProviderOpts, InjectorService } from '@tsed/di';
 import { PlatformContext } from '@tsed/common';
 import { PipeMethods, JsonParameterStore } from '@tsed/schema';
+import { ValidationPipe as ValidationPipe$1, PipeMethods as PipeMethods$1, DeserializerPipe as DeserializerPipe$1 } from '@tsed/platform-params';
 
 interface EntityParamOptions {
     options: {
@@ -26,7 +27,7 @@ declare function EntityMapper<T>(entity: Type<T>, options?: Partial<Exclude<Prov
 /**
  * Convert a Body Parameter to an Entity
  */
-declare function BodyParamEntity<T>(expression: string, options?: EntityParamOptions): ParameterDecorator;
+declare function BodyParamEntity<T>(expression?: string, options?: EntityParamOptions): ParameterDecorator;
 
 declare function PathParamEntity<T>(expression: string, options?: EntityParamOptions): ParameterDecorator;
 
@@ -43,4 +44,12 @@ declare class EntityMapperPipe<T> implements PipeMethods {
     transform(value: unknown, metadata: JsonParameterStore): Promise<any>;
 }
 
-export { BodyParamEntity, ENTITY_MAPPER_REFLECT_DATA_KEY, ENTITY_MAPPER_TYPE, EntityMapper, EntityMapperMapContext, EntityMapperMethods, EntityMapperPipe, EntityParamOptions, PathParamEntity, QueryParamEntity, ReflectMetadata };
+declare class ValidationPipe extends ValidationPipe$1 implements PipeMethods$1 {
+    transform(value: any, metadata: JsonParameterStore): Promise<any>;
+}
+
+declare class DeserializerPipe extends DeserializerPipe$1 implements PipeMethods$1 {
+    transform(value: any, metadata: JsonParameterStore): Promise<any>;
+}
+
+export { BodyParamEntity, DeserializerPipe, ENTITY_MAPPER_REFLECT_DATA_KEY, ENTITY_MAPPER_TYPE, EntityMapper, EntityMapperMapContext, EntityMapperMethods, EntityMapperPipe, EntityParamOptions, PathParamEntity, QueryParamEntity, ReflectMetadata, ValidationPipe };

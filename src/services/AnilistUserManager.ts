@@ -5,6 +5,7 @@ import {AnilistUser} from "../entity/AnilistUser";
 import {UserList} from "../entity/UserList";
 import { $log } from "@tsed/common";
 import {Mutex} from "async-mutex";
+import {IAnilistUserMetadata, IUserData} from "@anistats/shared";
 
 class MutexManager
 {
@@ -61,9 +62,9 @@ export class AnilistUserManager
         });
     }
 
-    async findUserByListId(listId: string): Promise<AnilistUser | null>
+    async findUserByListUuid(listId: string): Promise<AnilistUser | null>
     {
-        return this.anilistUserRepository.findByListId(listId);
+        return this.anilistUserRepository.findByListUuid(listId);
     }
 
     async getUserByName(userName: string, forceUpdate: boolean = false): Promise<AnilistUser | null>
@@ -124,6 +125,11 @@ export class AnilistUserManager
         });
     }
 
+	async getUserByListUuid(listUuid: string): Promise<AnilistUser | null>
+	{
+		return await this.anilistUserRepository.findByListUuid(listUuid);
+	}
+
     protected async createUser(userData: IAnilistUser): Promise<AnilistUser>
     {
         $log.info(`Creating user (ID:${userData.id})`);
@@ -166,5 +172,25 @@ export class AnilistUserManager
         user.lastUpdated = new Date();
 
         return this.anilistUserRepository.save(user);
+    }
+
+    public async toUserData(user: AnilistUser): Promise<IUserData | null>
+    {
+        const anilistUser = await this.anilistService.getUserById(user.anilistUserId);
+
+        if(!anilistUser)
+            return null;
+
+        const currentUser = await this.anilistService.getCurrentUser();
+
+        return {
+            uuid: user.id,
+            anilistId: user.anilistUserId,
+            name: anilistUser.name,
+
+            avatar: anilistUser.avatar.large,
+
+            isCurrentUser: anilistUser.id === currentUser?.id
+        };
     }
 }

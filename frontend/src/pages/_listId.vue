@@ -1,221 +1,195 @@
 <script lang="ts">
 import {computed, defineComponent, ref, watch} from "vue";
-import {useChunks} from "../composition/useChunks";
-import {useEntries} from "../composition/useEntries";
-import {useMetadata} from "../composition/useMetadata";
-import {useUser} from "../composition/useUser";
 import {useTitle} from "../composition/useTitle";
 import {ApiStatus} from "../composition/useApi";
 import {useVModels} from "@vueuse/core";
-import {useUserList} from "../composition/useUserList";
 import {IOverlayController} from "../plugin/overlay";
-import {useListSettings} from "../composition/useListSettings";
+import {useList} from "../composition/composed/useList";
 
 declare const $overlay: IOverlayController;
 
-export default defineComponent({
-  props: {
-    user: {
-      type: String,
-      required: true,
-    },
+	export default defineComponent({
+		props: {
+			listId: {
+				type: String,
+				required: true,
+			},
+		},
 
-    listId: {
-      type: String,
-      required: true,
-    },
-  },
+		setup(props, {emit}) {
+			const {listId} = useVModels(props, emit);
 
-  setup(props, { emit }) {
-    const { user, listId } = useVModels(props, emit);
+			const updating = ref<boolean>(false);
 
-    const updating = ref<boolean>(false);
+			const {
+				chunkData,
+				chunkStatus,
+				chunkResponseStatus,
 
-    const {
-      data: chunkData,
-      status: chunkStatus,
-      responseStatus: chunkResponseStatus,
-      reload: reloadChunks
-    } = useChunks(listId);
+				entryData,
+				entryStatus,
+				entryResponseStatus,
 
-    const {
-      data: entryData,
-      status: entryStatus,
-      responseStatus: entryResponseStatus,
-      reload: reloadEntries,
-    } = useEntries(listId);
+				user: userData,
 
-    const {
-      data: metadata,
-      updateMetadata,
-      reload: reloadMetadata,
-    } = useMetadata(listId);
+				listSettings,
 
-    const {
-      list: listData,
-      reload: reloadUserList,
-    } = useUserList(user, listId);
+				listData,
 
-    const {
-      listSettings,
-      updateListSettings,
-      reload: reloadListMetadata,
-    } = useListSettings(listId);
+				status,
 
-    const {
-      user: userData
-    } = useUser(user);
+				update: updateList,
+				reload: reloadList,
+			} = useList(listId);
 
-    const host = computed(() => {
-      return `${window.location.protocol}//${window.location.host}`;
-    });
+			const host = computed(() => {
+				return `${window.location.protocol}//${window.location.host}`;
+			});
 
-    const embedImageUri = computed(() => {
-      return `${host.value}/api/embed/${user.value}/${listId.value}.png`;
-    });
+			const embedImageUri = computed(() => {
+				return `${host.value}/api/embed/${userData.value?.name}/${listId.value}.png`;
+			});
 
-    const title = useTitle();
+			const title = useTitle();
 
-    watch([user, listId], () => {
-      title.value = `${user.value} / ${listId.value}`;
-    }, { immediate: true });
+			watch([userData, listData, updating, status], () => {
+				if(status.value === ApiStatus.Failure) {
+					title.value = "Error";
+					return;
+				} else if (status.value !== ApiStatus.Ok) {
+					title.value = "Loading...";
+					return;
+				}
 
-    async function update()
-    {
-      updating.value = true;
+				if(updating.value) {
+					title.value = "Updating...";
+					return;
+				}
 
-      for(const entry of entryData.value ?? []) {
-        metadata.value!.savedData![entry.id] = entry.savedData;
+				if(!userData.value || !listData.value) {
+					title.value = null;
+				} else {
+					title.value = `${userData.value?.name} / ${listData.value?.name}`;
+				}
+			}, {immediate: true});
 
-        let _sequel = entry.sequel;
-        while(_sequel) {
-          metadata.value!.savedData![_sequel.id] = _sequel.savedData;
+			async function update() {
+				updating.value = true;
 
-          _sequel = _sequel.sequel;
-        }
-      }
+				await updateList()
+				await reloadList();
 
-      await updateMetadata();
-      await updateListSettings();
+				// Make the overlay feel more right (also less flashing)
+				setTimeout(() => {
+					updating.value = false;
+				}, 1000);
+			}
 
-      await reloadEntries();
-      await reloadChunks();
-      await reloadMetadata();
-      await reloadListMetadata();
-      await reloadUserList();
+			watch([status], () => {
+				if (updating.value)
+					return;
 
-      // Make the overlay feel more right (also less flashing)
-      setTimeout(() => {
-        updating.value = false;
-      }, 1000);
-    }
+				else if(status.value !== ApiStatus.Ok) {
+					if (chunkStatus.value === ApiStatus.Failure) {
+						$overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+						return;
+					}
 
-    watch([chunkStatus, entryStatus], () => {
-      if(updating.value)
-        return;
+					if (entryStatus.value === ApiStatus.Failure) {
+						$overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
+						return;
+					}
 
-      if(chunkStatus.value !== ApiStatus.Ok || entryStatus.value !== ApiStatus.Ok) {
-        if(chunkStatus.value === ApiStatus.Failure) {
-          $overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-          return;
-        }
+					$overlay.show("Loading", null, true);
+				} else {
+					$overlay.hide();
+				}
+			}, {immediate: true});
 
-        if(entryStatus.value === ApiStatus.Failure) {
-          $overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-          return;
-        }
+			watch(updating, () => {
+				if (updating.value) {
+					$overlay.show("Updating", null, true);
+				} else {
+					$overlay.hide();
+				}
+			});
 
-        $overlay.show("Loading", null, true);
-      } else {
-        $overlay.hide();
-      }
-    }, { immediate: true });
+			return {
+				listId,
+				listData,
+				listSettings,
 
-    watch(updating, () => {
-      if(updating.value) {
-        $overlay.show("Updating", null, true);
-      } else {
-        $overlay.hide();
-      }
-    });
+				embedImageUri,
 
-    return {
-      user,
-      listId,
-      listData,
-      listSettings,
+				update,
 
-      embedImageUri,
+				userData,
+				entryData,
+				chunkData,
 
-      update,
-
-      userData,
-      entryData,
-      chunkData,
-
-      chunkStatus,
-      ApiStatus,
-    }
-  }
-});
+				chunkStatus,
+				ApiStatus,
+			}
+		}
+	});
 </script>
 
 <template>
-  <div>
-    <h1>{{user}} / {{ listId }}</h1>
+	<div>
+		<h1>{{ userData?.name }} / {{ listData?.name }}</h1>
 
-    <ListStats :list="listData" />
+		<ListStats :list="listData"/>
 
-    <div class="list-metadata" v-show="!!listSettings">
-      <div class="form-control list-metadata list-metadata-allow-chunk-merge">
-        <label>Allow Chunk Merge</label>
-        <input type="checkbox" v-model="listSettings.allowChunkMerge" name="allowChunkMerge" />
-      </div>
+		<div class="list-metadata" v-if="listSettings">
+			<div class="form-control list-metadata list-metadata-allow-chunk-merge">
+				<label>Allow Chunk Merge</label>
+				<input type="checkbox" v-model="listSettings.allowChunkMerge" name="allowChunkMerge"/>
+			</div>
 
-      <div class="form-control list-metadata list-metadata-max-chunk-length">
-        <label>Max chunk Length (Minutes)</label>
-        <input type="number" v-model="listSettings.maxChunkLength" name="maxChunkLength" />
-      </div>
+			<div class="form-control list-metadata list-metadata-max-chunk-length">
+				<label>Max chunk Length (Minutes)</label>
+				<input type="number" v-model="listSettings.maxChunkLength" name="maxChunkLength"/>
+			</div>
 
-      <div class="form-control list-metadata list-metadata-max-chunk-join-length">
-        <label>Max Chunk Join Length (Minutes)</label>
-        <input type="number" v-model="listSettings.maxChunkJoinLength" name="maxChunkJoinLength" />
-      </div>
-    </div>
+			<div class="form-control list-metadata list-metadata-max-chunk-join-length">
+				<label>Max Chunk Join Length (Minutes)</label>
+				<input type="number" v-model="listSettings.maxChunkJoinLength" name="maxChunkJoinLength"/>
+			</div>
+		</div>
 
-    <a :href="embedImageUri" target="_blank">Embed</a>
+		<a :href="embedImageUri" target="_blank">Embed</a>
 
-    <div class="form-control update" v-if="userData?.isCurrentUser ?? false">
-      <button @click="update()">Update</button>
-    </div>
+		<div class="form-control update" v-if="userData?.isCurrentUser ?? false">
+			<button @click="update()">Update</button>
+		</div>
 
-    <div class="dev" v-if="entryData">
-      <Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false" :prop-update="(entry, idx) => entry.savedData.order = idx">
-        <template #item="{ item, up, down, index, upEnabled, downEnabled }">
-          <EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled" :down-enabled="downEnabled" :index="index" />
-        </template>
-      </Sortable>
-    </div>
+		<div class="dev" v-if="entryData">
+			<Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false"
+								:prop-update="(entry, idx) => entry.savedData.order = idx">
+				<template #item="{ item, up, down, index, upEnabled, downEnabled }">
+					<EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled"
+													:down-enabled="downEnabled" :index="index"/>
+				</template>
+			</Sortable>
+		</div>
 
-    <div v-for="(chunk, index) of chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok">
-      <Chunk :chunk="chunk" :index="index" />
-    </div>
-  </div>
+		<div v-for="(chunk, index) of chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok">
+			<Chunk :chunk="chunk" :index="index"/>
+		</div>
+	</div>
 </template>
 
 <style scoped lang="scss">
 
-.form-control
-{
-  &.update
-  {
-    grid-template:
+.form-control {
+	&.update {
+		grid-template:
       [row1-start] "input" 1.4rem [row1-end]
                  / 100% !important;
 
-    input, button {
-      width: 100%;
-    }
-  }
+		input, button {
+			width: 100%;
+		}
+	}
 }
 </style>

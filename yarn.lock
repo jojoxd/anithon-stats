@@ -564,6 +564,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jojoxd/tsed-auth@workspace:packages/tsed-auth":
+  version: 0.0.0-use.local
+  resolution: "@jojoxd/tsed-auth@workspace:packages/tsed-auth"
+  dependencies:
+    "@jojoxd/tsconfig": 1.1.2
+    "@swc/core": ^1.2.179
+    tslint: ^6.1.1
+    tsup: ^5.12.6
+    typescript: ^4.3.5
+  peerDependencies:
+    "@tsed/common": ^6.114.8
+    "@tsed/core": ^6.114.8
+    "@tsed/di": ^6.114.8
+    "@tsed/platform-params": ^6.114.8
+    reflect-metadata: ^0.1.13
+  languageName: unknown
+  linkType: soft
+
 "@jojoxd/tsed-entity-mapper@workspace:packages/tsed-entity-mapper":
   version: 0.0.0-use.local
   resolution: "@jojoxd/tsed-entity-mapper@workspace:packages/tsed-entity-mapper"
@@ -574,9 +592,11 @@ __metadata:
     tsup: ^5.12.6
     typescript: ^4.3.5
   peerDependencies:
+    "@tsed/common": ^6.114.8
     "@tsed/core": ^6.114.8
     "@tsed/di": ^6.114.8
     "@tsed/platform-params": ^6.114.8
+    reflect-metadata: ^0.1.13
   languageName: unknown
   linkType: soft
 
@@ -2479,6 +2499,7 @@ __metadata:
     "@anime-rss-filter/anilist": "workspace:packages/anilist"
     "@anistats/shared": "workspace:packages/shared"
     "@jojoxd/tsconfig": 1.1.2
+    "@jojoxd/tsed-auth": "workspace:packages/tsed-auth"
     "@jojoxd/tsed-entity-mapper": "workspace:packages/tsed-entity-mapper"
     "@tsed/ajv": ^6.114.3
     "@tsed/cli-core": ^3.20.9

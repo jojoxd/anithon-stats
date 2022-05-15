@@ -9,7 +9,7 @@ import {useAxios} from "./useAxios";
  *
  * @TODO: Change to useSavedData
  */
-export function useMetadata(listId: MaybeRef<string>)
+export function useSavedData(listId: MaybeRef<string>)
 {
     const endpoint = computed(() => {
         const _listId = get(listId);
@@ -24,7 +24,7 @@ export function useMetadata(listId: MaybeRef<string>)
     const axiosInstance = useAxios();
     const metadata = reactive(api.data);
 
-    async function updateMetadata()
+    async function updateSavedData()
     {
         const _endpoint = get(endpoint);
 
@@ -45,6 +45,6 @@ export function useMetadata(listId: MaybeRef<string>)
         ...api,
 
         data: metadata as Ref<IMetadata | null>,
-        updateMetadata,
+        updateSavedData,
     };
 }

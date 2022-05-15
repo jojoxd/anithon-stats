@@ -10,7 +10,7 @@ export class UserList
     @PrimaryColumn()
     @Generated("uuid")
     @Property()
-    public id!: number;
+    public id!: string;
 
     @Property()
     @Column()

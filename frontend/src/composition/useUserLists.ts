@@ -1,45 +1,49 @@
-import {ComputedRef, ref, Ref, computed} from "vue";
+import {ComputedRef, computed} from "vue";
 import {ApiStatus, useApi} from "./useApi";
-import {debouncedWatch, get} from "@vueuse/core";
-import {IAnilistUserMetadata, IListData} from "@anistats/shared";
+import {get} from "@vueuse/core";
+import {IListData, IUserData, UserIdentifier} from "@anistats/shared";
+import {ensureUserIdent, MaybeUserIdentifierRef, MaybeUserIdentifierTypeRef} from "./util/ensureUserIdent";
 
 /**
  * Creates a wrapper for User Lists (string-version from Anilist API)
  */
-export function useUserLists(user: Ref<IAnilistUserMetadata | null>): UseUserListsReturn
+export function useUserLists(ident: MaybeUserIdentifierRef, type?: MaybeUserIdentifierTypeRef): UseUserListsReturn
 {
-    const endpoint = ref<string | false>(false);
+	const endpoint = computed(() => {
+		const _ident = get(ident);
 
-    debouncedWatch(user, () => {
-        console.log('user changed');
-        cancel();
+		if(!_ident)
+			return false;
 
-        const _user = get(user);
+		return `user/lists`;
+	});
 
-        if(!_user) {
-            endpoint.value = false;
-            return;
-        }
+    const identifier = ensureUserIdent(ident, type)
 
-        endpoint.value = `user/${_user.id}/lists`;
-    }, { immediate: true, debounce: 500 });
-
-    const { status, data, cancel, reload } = useApi<void, IListData>(endpoint, ref(), true);
+    const { status, data, cancel, reload } = useApi<UserIdentifier, IListData>(endpoint, identifier, true, "POST");
 
     return {
         status,
+		reload,
+		cancel,
 
-        lists: computed(() => data.value),
+        lists: computed(() => data.value?.lists ?? null),
+
+		listUser: computed(() => data.value?.user ?? null),
 
         listNames: computed(() => {
-            if(data.value) {
-                const keys = Object.keys(data.value);
+            if(data.value?.lists) {
+                const keys = Object.keys(data.value.lists);
 
-                return keys.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+                return keys.sort((a, b) => {
+                	return a.localeCompare(b, undefined, {
+                		numeric: true
+                	});
+				});
             }
 
             return null;
-        })
+        }),
     };
 }
 
@@ -47,7 +51,13 @@ interface UseUserListsReturn
 {
     status: ComputedRef<ApiStatus>;
 
-    lists: ComputedRef<IListData | null>;
+    reload: () => Promise<void>;
+
+    cancel: () => void;
+
+    lists: ComputedRef<IListData["lists"] | null>;
+
+    listUser: ComputedRef<IUserData | null>;
 
     listNames: ComputedRef<Array<string> | null>;
 }

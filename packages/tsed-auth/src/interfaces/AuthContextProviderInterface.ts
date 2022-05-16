@@ -1,4 +1,6 @@
+import {Context} from "@tsed/platform-params";
+
 export interface AuthContextProviderInterface
 {
-	getContext(): Promise<any>;
+	getContext(context: Context): Promise<any>;
 }

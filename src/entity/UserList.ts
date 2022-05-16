@@ -70,7 +70,9 @@ export class UserList
 
     public get savedData(): SavedData
     {
-        return this._savedData ?? new SavedData();
+        this._savedData = this._savedData ?? new SavedData();
+
+        return this._savedData;
     }
 
     public set savedData(value: SavedData)

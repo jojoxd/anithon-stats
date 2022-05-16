@@ -13,20 +13,13 @@ export class AnilistUserMapper implements EntityMapperMethods<AnilistUser>
 
     async map(value: string | UserIdentifier, context: EntityMapperMapContext<any>): Promise<AnilistUser | undefined>
     {
-        $log.info(`UserMapper: getUserByAnilistId(${value})`);
-
-        // { options: { type: "userName" } }
         let user = null;
 
         if(!value)
             return undefined;
 
-        $log.warn("AUM.value =>", value);
-
         // @TODO: Deprecate using value as a string
         if(isUserIdentifier(value)) {
-
-
             if (isUserIdentifierOfType(value, UserIdentifierType.Uuid)) {
                 user = await this.anilistUserManager.getUserByUuid(value.uuid);
             } else if(isUserIdentifierOfType(value, UserIdentifierType.UserName)) {
@@ -54,8 +47,6 @@ export class AnilistUserMapper implements EntityMapperMethods<AnilistUser>
                 user = await this.anilistUserManager.getUserByAnilistId(Number(value));
                 break;
         }
-
-        $log.info(`UserMapper: ${value} => ${user?.userName}`);
 
         return user ?? undefined;
     }

@@ -39,7 +39,6 @@ import { Middleware, Req, Context, Inject, InjectorService, Logger, Constant } f
 import * as jexl from "jexl";
 import { Forbidden, InternalServerError, Unauthorized } from "@tsed/exceptions";
 import { Env } from "@tsed/core";
-import { inspect } from "util";
 var __decorate = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
@@ -63,16 +62,27 @@ var AuthMiddleware = /* @__PURE__ */ __name(class AuthMiddleware2 {
   constructor() {
     this.expressionEvaluator = new jexl.Jexl();
     this.expressionEvaluator.removeOp("=");
+    this.expressionEvaluator.addTransform("exists", (val) => {
+      return typeof val !== "undefined" && val !== null;
+    });
   }
   get contextProviders() {
     return this.injector.getAll(AUTH_CONTEXT_PROVIDER_TYPE);
   }
-  async buildContext(context) {
+  getProtoName(obj) {
     var _a;
+    if (typeof obj === "undefined")
+      return "undefined";
+    if (obj === null)
+      return "null";
+    return (_a = Object.getPrototypeOf(obj).name) != null ? _a : typeof obj;
+  }
+  async buildContext(context) {
     const contextProviderContext = {};
+    this.logger.info("[AuthMiddleware]: Providers: ", this.contextProviders);
     for (const contextProvider of this.contextProviders) {
-      this.logger.debug(`[AuthMiddleware]: Get Context from ${(_a = Object.getPrototypeOf(contextProvider)) == null ? void 0 : _a.name}`);
-      Object.assign(contextProviderContext, await contextProvider.getContext());
+      this.logger.info(`[AuthMiddleware]: Get Context from ${this.getProtoName(contextProvider)}`);
+      Object.assign(contextProviderContext, await contextProvider.getContext(context));
     }
     return __spreadProps(__spreadValues({}, contextProviderContext), {
       routeParams: context.request.params,
@@ -89,18 +99,18 @@ var AuthMiddleware = /* @__PURE__ */ __name(class AuthMiddleware2 {
     let isAuthenticated = false;
     try {
       const expressionContext = await this.buildContext(ctx);
-      this.logger.info(`[AuthMiddleware]: Inspection of expressionContext:`);
-      this.logger.info(inspect(expressionContext, {
-        depth: 3,
-        colors: true
-      }));
+      this.logger.info(`[AuthMiddleware]: Context build, going to evaluate "${options.expression}"`);
       isAuthenticated = await this.expressionEvaluator.eval(options.expression, expressionContext);
     } catch (e) {
       this.logger.error(e);
       throw new InternalServerError("Could not authorize route", this.env === Env.DEV ? e : null);
     }
-    if (typeof isAuthenticated !== "boolean")
+    if (typeof isAuthenticated !== "boolean") {
+      this.logger.warn(`[AuthMiddleware]: The return value of expression "${options.expression}" on "${ctx.request.url}" was not a boolean (was ${this.getProtoName(isAuthenticated)})`);
+      this.logger.info(`[AuthMiddleware]: Value of expression is:
+`, isAuthenticated);
       throw new Unauthorized((_a = options.unauthorizedMessage) != null ? _a : "");
+    }
     if (!isAuthenticated)
       throw new Forbidden((_b = options.forbiddenMessage) != null ? _b : "");
   }
@@ -140,7 +150,7 @@ function UseAuth(expression, options) {
   var _a, _b;
   let _options = options != null ? options : {};
   _options.expression = expression;
-  return useDecorators2(BaseUseAuth(AuthMiddleware, options), Returns(401, Unauthorized2).Description((_a = _options.unauthorizedMessage) != null ? _a : "Unauthorized"), Returns(403, Forbidden2).Description((_b = _options.forbiddenMessage) != null ? _b : "Forbidden"), Returns(500, InternalServerError2).Description("Internal Server Error"));
+  return useDecorators2(BaseUseAuth(AuthMiddleware, _options), Returns(401, Unauthorized2).Description((_a = _options.unauthorizedMessage) != null ? _a : "Unauthorized"), Returns(403, Forbidden2).Description((_b = _options.forbiddenMessage) != null ? _b : "Forbidden"), Returns(500, InternalServerError2).Description("Internal Server Error"));
 }
 __name(UseAuth, "UseAuth");
 export {

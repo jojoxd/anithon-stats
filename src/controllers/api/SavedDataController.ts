@@ -1,9 +1,9 @@
-import {BodyParams, Controller, Get, Inject, Put} from "@tsed/common";
+import {$log, BodyParams, Controller, Get, Inject, Put} from "@tsed/common";
 import {IMetadata} from "@anistats/shared";
 import {USERLIST_REPOSITORY} from "../../entity/repository/UserListRepository";
-import {CustomAuth} from "../../guards/AuthMiddleware";
 import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {UserList} from "../../entity/UserList";
+import {UseAuth} from "@jojoxd/tsed-auth";
 
 @Controller("/list/:listId")
 export class SavedDataController
@@ -24,20 +24,25 @@ export class SavedDataController
     }
 
     @Put("/savedData")
-    // @TODO: Check CustomAuth access to compiled arguments
-    // @CustomAuth("pathParams.user == currentUser.name")
+	@UseAuth("currentUser|exists && currentUser.lists[.id == pathParams.listId]|exists")
     public async save(
         @PathParamEntity("listId") list: UserList,
         @BodyParams("data") data: IMetadata
     ): Promise<IMetadata>
     {
+		$log.info("List BEFORE UPDATE", list);
+
         if(data.savedData)
             list.savedData.data = data.savedData;
 
         if(data.allowChunkMerge)
             list.allowChunkMerge = data.allowChunkMerge;
 
-        await this.userListRepository.save(list);
+        $log.info("List BEFORE SAVE", list);
+
+        list = await this.userListRepository.save(list);
+
+		$log.info("List AFTER SAVE", list);
 
         return this.get(list);
     }

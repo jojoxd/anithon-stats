@@ -14,7 +14,7 @@ export function UseAuth<T>(expression: string, options?: Omit<AuthMiddlewareOpti
 	_options.expression = expression;
 
 	return useDecorators(
-		BaseUseAuth(AuthMiddleware, options!),
+		BaseUseAuth(AuthMiddleware, _options),
 
 		Returns(401, Unauthorized).Description(_options.unauthorizedMessage ?? "Unauthorized"),
 		Returns(403, Forbidden).Description(_options.forbiddenMessage ?? "Forbidden"),

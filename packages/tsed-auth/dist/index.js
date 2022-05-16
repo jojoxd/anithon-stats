@@ -68,7 +68,6 @@ var import_common = require("@tsed/common");
 var jexl = __toESM(require("jexl"));
 var import_exceptions = require("@tsed/exceptions");
 var import_core2 = require("@tsed/core");
-var import_util = require("util");
 var __decorate = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
@@ -92,16 +91,27 @@ var AuthMiddleware = /* @__PURE__ */ __name(class AuthMiddleware2 {
   constructor() {
     this.expressionEvaluator = new jexl.Jexl();
     this.expressionEvaluator.removeOp("=");
+    this.expressionEvaluator.addTransform("exists", (val) => {
+      return typeof val !== "undefined" && val !== null;
+    });
   }
   get contextProviders() {
     return this.injector.getAll(AUTH_CONTEXT_PROVIDER_TYPE);
   }
-  async buildContext(context) {
+  getProtoName(obj) {
     var _a;
+    if (typeof obj === "undefined")
+      return "undefined";
+    if (obj === null)
+      return "null";
+    return (_a = Object.getPrototypeOf(obj).name) != null ? _a : typeof obj;
+  }
+  async buildContext(context) {
     const contextProviderContext = {};
+    this.logger.info("[AuthMiddleware]: Providers: ", this.contextProviders);
     for (const contextProvider of this.contextProviders) {
-      this.logger.debug(`[AuthMiddleware]: Get Context from ${(_a = Object.getPrototypeOf(contextProvider)) == null ? void 0 : _a.name}`);
-      Object.assign(contextProviderContext, await contextProvider.getContext());
+      this.logger.info(`[AuthMiddleware]: Get Context from ${this.getProtoName(contextProvider)}`);
+      Object.assign(contextProviderContext, await contextProvider.getContext(context));
     }
     return __spreadProps(__spreadValues({}, contextProviderContext), {
       routeParams: context.request.params,
@@ -118,18 +128,18 @@ var AuthMiddleware = /* @__PURE__ */ __name(class AuthMiddleware2 {
     let isAuthenticated = false;
     try {
       const expressionContext = await this.buildContext(ctx);
-      this.logger.info(`[AuthMiddleware]: Inspection of expressionContext:`);
-      this.logger.info((0, import_util.inspect)(expressionContext, {
-        depth: 3,
-        colors: true
-      }));
+      this.logger.info(`[AuthMiddleware]: Context build, going to evaluate "${options.expression}"`);
       isAuthenticated = await this.expressionEvaluator.eval(options.expression, expressionContext);
     } catch (e) {
       this.logger.error(e);
       throw new import_exceptions.InternalServerError("Could not authorize route", this.env === import_core2.Env.DEV ? e : null);
     }
-    if (typeof isAuthenticated !== "boolean")
+    if (typeof isAuthenticated !== "boolean") {
+      this.logger.warn(`[AuthMiddleware]: The return value of expression "${options.expression}" on "${ctx.request.url}" was not a boolean (was ${this.getProtoName(isAuthenticated)})`);
+      this.logger.info(`[AuthMiddleware]: Value of expression is:
+`, isAuthenticated);
       throw new import_exceptions.Unauthorized((_a = options.unauthorizedMessage) != null ? _a : "");
+    }
     if (!isAuthenticated)
       throw new import_exceptions.Forbidden((_b = options.forbiddenMessage) != null ? _b : "");
   }
@@ -169,7 +179,7 @@ function UseAuth(expression, options) {
   var _a, _b;
   let _options = options != null ? options : {};
   _options.expression = expression;
-  return (0, import_core3.useDecorators)((0, import_common2.UseAuth)(AuthMiddleware, options), (0, import_schema.Returns)(401, import_exceptions2.Unauthorized).Description((_a = _options.unauthorizedMessage) != null ? _a : "Unauthorized"), (0, import_schema.Returns)(403, import_exceptions2.Forbidden).Description((_b = _options.forbiddenMessage) != null ? _b : "Forbidden"), (0, import_schema.Returns)(500, import_exceptions2.InternalServerError).Description("Internal Server Error"));
+  return (0, import_core3.useDecorators)((0, import_common2.UseAuth)(AuthMiddleware, _options), (0, import_schema.Returns)(401, import_exceptions2.Unauthorized).Description((_a = _options.unauthorizedMessage) != null ? _a : "Unauthorized"), (0, import_schema.Returns)(403, import_exceptions2.Forbidden).Description((_b = _options.forbiddenMessage) != null ? _b : "Forbidden"), (0, import_schema.Returns)(500, import_exceptions2.InternalServerError).Description("Internal Server Error"));
 }
 __name(UseAuth, "UseAuth");
 // Annotate the CommonJS export names for ESM import in node:

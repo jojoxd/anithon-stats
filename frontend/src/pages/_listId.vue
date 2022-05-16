@@ -159,7 +159,7 @@ declare const $overlay: IOverlayController;
 
 		<a :href="embedImageUri" target="_blank">Embed</a>
 
-		<div class="form-control update" v-if="userData?.isCurrentUser ?? false">
+		<div class="form-control update" v-if="true || (userData?.isCurrentUser ?? false)">
 			<button @click="update()">Update</button>
 		</div>
 

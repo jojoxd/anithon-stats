@@ -11,7 +11,7 @@ export class ValidationPipe extends BaseValidationPipe implements PipeMethods
         const entityMapperPipe = metadata.pipes.find(pipe => pipe === EntityMapperPipe);
 
         if(entityMapperPipe) {
-            console.log("VP val ->", value);
+            // console.log("VP val ->", value);
 
             return value;
         }

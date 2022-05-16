@@ -113,7 +113,6 @@ var ValidationPipe = /* @__PURE__ */ __name(class ValidationPipe2 extends BaseVa
   async transform(value, metadata) {
     const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
     if (entityMapperPipe) {
-      console.log("VP val ->", value);
       return value;
     }
     return super.transform(value, metadata);
@@ -140,7 +139,6 @@ var DeserializerPipe = /* @__PURE__ */ __name(class DeserializerPipe2 extends Ba
   async transform(value, metadata) {
     const entityMapperPipe = metadata.pipes.find((pipe) => pipe === EntityMapperPipe);
     if (entityMapperPipe) {
-      console.log("DP val ->", value);
       return value;
     }
     return super.transform(value, metadata);

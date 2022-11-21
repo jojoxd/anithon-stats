@@ -29,7 +29,7 @@
     "apollo": "^2.33.11",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
-    "cross-env": "7.0.2",
+    "cross-env": "7.0.3",
     "express": "^4.17.1",
     "mocha": "7.1.1",
     "node-fetch": "^3.0.0-beta.4",

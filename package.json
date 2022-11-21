@@ -35,7 +35,7 @@
     "@tsed/schema": "6.133.1",
     "ajv": "^8.10.0",
     "async-mutex": "^0.4.0",
-    "axios": "^0.26.0",
+    "axios": "^0.27.0",
     "body-parser": "^1.19.2",
     "canvas": "^2.9.0",
     "compression": "^1.7.4",

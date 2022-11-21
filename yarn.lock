@@ -2569,7 +2569,7 @@ __metadata:
     "@types/skia-canvas": ^0.9.28
     ajv: ^8.10.0
     async-mutex: ^0.4.0
-    axios: ^0.26.0
+    axios: ^0.27.0
     body-parser: ^1.19.2
     canvas: ^2.9.0
     compression: ^1.7.4
@@ -3314,16 +3314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "axios@npm:0.26.0"
-  dependencies:
-    follow-redirects: ^1.14.8
-  checksum: d7a8b898f4157bedeb2e06c03b16133b91b354c041205bea732ce58b7a21f373d22057b0eea0d482838145ce6ff482b359750d9bcb8dd19d45e3928e3c65c280
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.27.2":
+"axios@npm:^0.27.0, axios@npm:^0.27.2":
   version: 0.27.2
   resolution: "axios@npm:0.27.2"
   dependencies:

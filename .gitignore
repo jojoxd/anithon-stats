@@ -56,9 +56,8 @@ test/**/*.js.map
 database.sqlite
 *.sqlite*
 
-.yarn
+.yarn/*
 !.yarn/build-state.yml
-!.yarn/install-state.gz
 !.yarn/releases
 
 .env

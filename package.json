@@ -81,5 +81,6 @@
   "tsed": {
     "packageManager": "yarn",
     "convention": "default"
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }

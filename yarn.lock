@@ -19,7 +19,7 @@ __metadata:
     "@types/mocha": 7.0.2
     "@types/sinon": 7.5.2
     "@types/sinon-chai": 3.2.3
-    "@types/supertest": 2.0.8
+    "@types/supertest": 2.0.12
     apollo: ^2.33.11
     apollo-boost: ^0.4.7
     apollo-cache-inmemory: ^1.6.5
@@ -2086,12 +2086,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/supertest@npm:2.0.8":
-  version: 2.0.8
-  resolution: "@types/supertest@npm:2.0.8"
+"@types/supertest@npm:2.0.12":
+  version: 2.0.12
+  resolution: "@types/supertest@npm:2.0.12"
   dependencies:
     "@types/superagent": "*"
-  checksum: d9e83a782b0de3a21da196ad3b3adaeb89d7ded4bb5b070bac922628420433b0271f445fa07dfcb0f93d304c776d2a92bd328ff530333aabc1ed055603b5e84e
+  checksum: f0e2b44f86bec2f708d6a3d0cb209055b487922040773049b0f8c6b557af52d4b5fa904e17dfaa4ce6e610172206bbec7b62420d158fa57b6ffc2de37b1730d3
   languageName: node
   linkType: hard
 

@@ -32,7 +32,7 @@ __metadata:
     graphql: ^15.8.0
     mocha: 7.1.1
     node-fetch: ^3.0.0-beta.4
-    nyc: 15.0.0
+    nyc: 15.1.0
     sinon: 9.0.1
     sinon-chai: 3.5.0
     supertest: 4.0.2
@@ -7940,13 +7940,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"istanbul-reports@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "istanbul-reports@npm:3.0.2"
+"istanbul-reports@npm:^3.0.2":
+  version: 3.1.5
+  resolution: "istanbul-reports@npm:3.1.5"
   dependencies:
     html-escaper: ^2.0.0
     istanbul-lib-report: ^3.0.0
-  checksum: c5da63f1f4610f47f3015c525a3bc2fb4c87a8791ae452ee3983546d7a2873f0cf5d5fff7c3735ac52943c5b3506f49c294c92f1837df6ec03312625ccd176d7
+  checksum: 7867228f83ed39477b188ea07e7ccb9b4f5320b6f73d1db93a0981b7414fa4ef72d3f80c4692c442f90fc250d9406e71d8d7ab65bb615cb334e6292b73192b89
   languageName: node
   linkType: hard
 
@@ -9341,7 +9341,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"node-preload@npm:^0.2.0":
+"node-preload@npm:^0.2.1":
   version: 0.2.1
   resolution: "node-preload@npm:0.2.1"
   dependencies:
@@ -9514,9 +9514,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"nyc@npm:15.0.0":
-  version: 15.0.0
-  resolution: "nyc@npm:15.0.0"
+"nyc@npm:15.1.0":
+  version: 15.1.0
+  resolution: "nyc@npm:15.1.0"
   dependencies:
     "@istanbuljs/load-nyc-config": ^1.0.0
     "@istanbuljs/schema": ^0.1.2
@@ -9526,6 +9526,7 @@ fsevents@~2.3.2:
     find-cache-dir: ^3.2.0
     find-up: ^4.1.0
     foreground-child: ^2.0.0
+    get-package-type: ^0.1.0
     glob: ^7.1.6
     istanbul-lib-coverage: ^3.0.0
     istanbul-lib-hook: ^3.0.0
@@ -9533,10 +9534,9 @@ fsevents@~2.3.2:
     istanbul-lib-processinfo: ^2.0.2
     istanbul-lib-report: ^3.0.0
     istanbul-lib-source-maps: ^4.0.0
-    istanbul-reports: ^3.0.0
-    js-yaml: ^3.13.1
+    istanbul-reports: ^3.0.2
     make-dir: ^3.0.0
-    node-preload: ^0.2.0
+    node-preload: ^0.2.1
     p-map: ^3.0.0
     process-on-spawn: ^1.0.0
     resolve-from: ^5.0.0
@@ -9544,11 +9544,10 @@ fsevents@~2.3.2:
     signal-exit: ^3.0.2
     spawn-wrap: ^2.0.0
     test-exclude: ^6.0.0
-    uuid: ^3.3.3
     yargs: ^15.0.2
   bin:
     nyc: bin/nyc.js
-  checksum: 2eacd212559b15394ad165f28e35bf0cd0258bf2ce5048994883de8c3edb12dab99a419d8fadcdb4946a42cae593900d770fdd6d233896b55ac2c97492600eff
+  checksum: 82a7031982df2fd6ab185c9f1b5d032b6221846268007b45b5773c6582e776ab33e96cd22b4231520345942fcef69b4339bd967675b8483f3fa255b56326faef
   languageName: node
   linkType: hard
 

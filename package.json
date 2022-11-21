@@ -34,7 +34,7 @@
     "@tsed/platform-express": "6.114.3",
     "@tsed/schema": "6.114.3",
     "ajv": "^8.10.0",
-    "async-mutex": "^0.3.2",
+    "async-mutex": "^0.4.0",
     "axios": "^0.26.0",
     "body-parser": "^1.19.2",
     "canvas": "^2.9.0",

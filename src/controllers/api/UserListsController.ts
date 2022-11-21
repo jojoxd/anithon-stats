@@ -3,11 +3,11 @@ import {Inject} from "@tsed/di";
 import {AnilistUserManager} from "../../services/AnilistUserManager";
 import {IAnilistUserMetadata, IListData} from "@anistats/shared";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
-import {CustomAuth} from "../../guards/AuthMiddleware";
 import {USERLIST_REPOSITORY} from "../../entity/repository/UserListRepository";
 import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {UserList} from "../../entity/UserList";
 import {UserController} from "./UserController";
+import {UserListMapperDecorator} from "../../services/mapper/UserListMapper";
 
 @Controller('/list/:listId')
 export class UserListsController
@@ -25,6 +25,7 @@ export class UserListsController
     protected userController!: UserController;
 
     @Get("/user")
+	@UserListMapperDecorator()
     async getUserByList(
         @PathParamEntity("listId") list: UserList
     ): Promise<IAnilistUserMetadata | null>

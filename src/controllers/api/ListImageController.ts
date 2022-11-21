@@ -5,6 +5,7 @@ import {ListImage} from "../../util/ListImage";
 import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {UserList} from "../../entity/UserList";
 import {UserListContainerManager} from "../../services/UserListContainerManager";
+import {UserListMapperDecorator} from "../../services/mapper/UserListMapper";
 
 @Controller("/list/:listId")
 export class ListImageController
@@ -15,6 +16,7 @@ export class ListImageController
     @Get("/embed.png")
     @ContentType('image/png')
     @UseCache({ ttl: 300 })
+	@UserListMapperDecorator()
     public async getIndex(
         @PathParamEntity("listId") list: UserList
     ) {

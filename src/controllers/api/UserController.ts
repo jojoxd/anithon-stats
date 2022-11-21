@@ -56,6 +56,7 @@ export class UserController
     })
     @ContentType("application/json")
     @UseCache({ ttl: 60 })
+	// @TODO: Change to POST /user/lists with UserIdentifier
     async getLists(@PathParamEntity("userName", { options: { type: "anilistUserId" } }) user: AnilistUser): Promise<IListData>
     {
         console.log("USER >>>>>>>>>>>>>>>>>>>>>>>>", user);
@@ -110,6 +111,7 @@ export class UserController
         'Cache-Control': 'no-store'
     })
     @ContentType("application/json")
+	// @TODO: Change to UserListMapper
     async getList(
         @PathParamEntity("user") user: AnilistUser,
         @PathParams("listName") listName: string

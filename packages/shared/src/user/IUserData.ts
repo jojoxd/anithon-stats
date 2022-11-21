@@ -1,12 +1,12 @@
 export interface IUserData
 {
-    anilistId: number;
+    readonly anilistId: number;
 
-    uuid: string;
+    readonly uuid: string;
 
-    name: string;
+    readonly name: string;
 
-    avatar: string;
+    readonly avatar: string;
 
-    isCurrentUser: boolean;
+    readonly isCurrentUser: boolean;
 }

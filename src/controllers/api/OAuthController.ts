@@ -1,5 +1,5 @@
 import {Controller, Context, Constant, QueryParams, Session, $log, Inject} from "@tsed/common";
-import {Get} from "@tsed/schema";
+import {Get, Returns} from "@tsed/schema";
 import {AnilistOAuthService} from "@anime-rss-filter/anilist/src/services/AnilistOAuthService";
 import {ANILIST_USER_REPOSITORY, AnilistUserRepository} from "../../entity/repository/AnilistUserRepository";
 import {AnilistUser} from "../../entity/AnilistUser";
@@ -27,6 +27,7 @@ export class OAuthController
 
     // http://localhost:3000/api/oauth?redirect=<last-page>
     @Get("/")
+	@Returns(302).Description("Redirect to AniList")
     public getIndex(@Context() ctx: Context, @QueryParams("redirect") redirect: string, @Session() session: any)
     {
         session.oauth_redirect_next = redirect;
@@ -37,6 +38,7 @@ export class OAuthController
     }
 
     @Get("/redirect")
+	@Returns(302).Description("Redirect to saved session url from GET /")
     public async getRedirect(@Context() ctx: Context, @QueryParams("code") code: string, @Session() session: any)
     {
         if(!session.oauth_redirect_next) {
@@ -65,6 +67,7 @@ export class OAuthController
     }
 
     @Get("/logout")
+	@Returns(302).Description("Redirects back to home page")
     public async getLogout(@Context() ctx: Context, @QueryParams("redirect") redirectTo: string, @Session() session: any)
     {
         await session.destroy();

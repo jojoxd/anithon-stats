@@ -6,6 +6,7 @@ import {UserList} from "../../entity/UserList";
 import {IListMetadata} from "@anistats/shared/src/IListMetadata";
 import {USERLIST_REPOSITORY} from "../../entity/repository/UserListRepository";
 import {UseAuth} from "@jojoxd/tsed-auth";
+import {UserListMapperDecorator} from "../../services/mapper/UserListMapper";
 
 @Controller("/list/:listId")
 export class UserListSettingsController
@@ -18,6 +19,7 @@ export class UserListSettingsController
         'Cache-Control': 'no-store'
     })
     @ContentType("application/json")
+	@UserListMapperDecorator()
     async getMetadata(
         @PathParamEntity("listId") list: UserList
     ): Promise<IListMetadata>
@@ -32,6 +34,7 @@ export class UserListSettingsController
     // @TODO: Return Status or smth?
     @Put("/settings")
     @ContentType("application/json")
+	@UserListMapperDecorator()
 	@UseAuth("currentUser|exists && currentUser.lists[.id == pathParams.listId]|exists")
     async putMetadata(
         @PathParamEntity("listId") list: UserList,

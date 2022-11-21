@@ -6,6 +6,7 @@ import {AnilistUserManager} from "../../../services/AnilistUserManager";
 import {PathParams, UseCache} from "@tsed/common";
 import {IListData, IUserData} from "@anistats/shared";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
+import {AnilistUserMapperDecorator} from "../../../services/mapper/AnilistUserMapper";
 
 @Controller("/user")
 export class UserController
@@ -27,6 +28,7 @@ export class UserController
 		'Cache-Control': 'no-store'
 	})
 	@ContentType("application/json")
+	@AnilistUserMapperDecorator()
 	async getLists(@BodyParamEntity() user: AnilistUser): Promise<IListData>
 	{
 		const currentLists = await this.anilistService.getUserLists(user.anilistUserId, MediaType.ANIME);
@@ -90,6 +92,7 @@ export class UserController
 		'Cache-Control': 'no-store'
 	})
 	@ContentType("application/json")
+	@AnilistUserMapperDecorator()
 	async getList(
 		@BodyParamEntity() user: AnilistUser,
 		@PathParams("listId") listId: string

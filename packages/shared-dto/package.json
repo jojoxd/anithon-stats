@@ -1,0 +1,10 @@
+{
+	"name": "@anistats/shared-dto",
+	"dependencies": {
+		"@anistats/shared": "*",
+		"@tsed/schema": "^6.114.3"
+	},
+
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts"
+}

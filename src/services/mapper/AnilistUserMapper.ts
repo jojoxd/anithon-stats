@@ -4,6 +4,9 @@ import {EntityMapper, EntityMapperMapContext, EntityMapperMethods} from "@jojoxd
 import {Inject} from "@tsed/di";
 import {$log} from "@tsed/common";
 import {isUserIdentifier, isUserIdentifierOfType, UserIdentifier, UserIdentifierType} from "@anistats/shared";
+import {BadRequest, InternalServerError, NotFound} from "@tsed/exceptions";
+import {useDecorators} from "@tsed/core";
+import {Returns} from "@tsed/schema";
 
 @EntityMapper(AnilistUser)
 export class AnilistUserMapper implements EntityMapperMethods<AnilistUser>
@@ -15,39 +18,33 @@ export class AnilistUserMapper implements EntityMapperMethods<AnilistUser>
     {
         let user = null;
 
-        if(!value)
-            return undefined;
+        if(!value || !isUserIdentifier(value))
+        	throw new BadRequest("Validation Failed, not a User Identifier");
 
-        // @TODO: Deprecate using value as a string
-        if(isUserIdentifier(value)) {
-            if (isUserIdentifierOfType(value, UserIdentifierType.Uuid)) {
-                user = await this.anilistUserManager.getUserByUuid(value.uuid);
-            } else if(isUserIdentifierOfType(value, UserIdentifierType.UserName)) {
-                user = await this.anilistUserManager.getUserByName(value.userName);
-            } else if(isUserIdentifierOfType(value, UserIdentifierType.AnilistUserId)) {
-                user = await this.anilistUserManager.getUserByAnilistId(value.anilistUserId);
-            } else if(isUserIdentifierOfType(value, UserIdentifierType.ListUuid)) {
-            	user = await this.anilistUserManager.getUserByListUuid(value.listUuid);
-			}
+		if (isUserIdentifierOfType(value, UserIdentifierType.Uuid)) {
+			user = await this.anilistUserManager.getUserByUuid(value.uuid);
+		} else if(isUserIdentifierOfType(value, UserIdentifierType.UserName)) {
+			user = await this.anilistUserManager.getUserByName(value.userName);
+		} else if(isUserIdentifierOfType(value, UserIdentifierType.AnilistUserId)) {
+			user = await this.anilistUserManager.getUserByAnilistId(value.anilistUserId);
+		} else if(isUserIdentifierOfType(value, UserIdentifierType.ListUuid)) {
+			user = await this.anilistUserManager.getUserByListUuid(value.listUuid);
+		}
 
-            return user ?? undefined;
-        }
+		if(!user)
+			throw new NotFound("User does not exist");
 
-        switch(context.options.type) {
-            case "userName":
-                user = await this.anilistUserManager.getUserByName(value);
-                break;
-
-            case "uuid":
-                user = await this.anilistUserManager.getUserByUuid(value);
-                break;
-
-            case "anilistUserId":
-            default:
-                user = await this.anilistUserManager.getUserByAnilistId(Number(value));
-                break;
-        }
-
-        return user ?? undefined;
+		return user;
     }
+}
+
+export function AnilistUserMapperDecorator()
+{
+	return useDecorators(
+		Returns(400, BadRequest)
+			.Description("Validation Failed, not a User Identifier"),
+
+		Returns(404, NotFound)
+			.Description("User does not exist"),
+	);
 }

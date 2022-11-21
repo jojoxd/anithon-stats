@@ -47,6 +47,7 @@ export function useApi<TData = undefined, TReturn = any>(endpoint: MaybeRef<stri
                 method,
                 [isBodyMethod ? 'data' : 'params']: _data,
                 signal: abortController.signal,
+
             });
 
             returnData.value = response.data;

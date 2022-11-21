@@ -6,6 +6,7 @@ import {Entry} from "../../services/ChunkService/Entry";
 import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {UserList} from "../../entity/UserList";
 import {UserListContainerManager} from "../../services/UserListContainerManager";
+import {UserListMapperDecorator} from "../../services/mapper/UserListMapper";
 
 @Controller("/list/:listId")
 export class EntryController
@@ -18,6 +19,7 @@ export class EntryController
     @Header({
         'Cache-Control': 'no-store',
     })
+	@UserListMapperDecorator()
     public async getIndex(
         @PathParamEntity("listId") list: UserList,
     ) {

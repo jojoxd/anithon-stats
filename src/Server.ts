@@ -10,9 +10,11 @@ import session from "express-session";
 import "@jojoxd/tsed-entity-mapper";
 import "@jojoxd/tsed-auth";
 import "@tsed/ajv";
+import "@tsed/swagger";
 import {config, rootDir} from "./config";
 import {TypeormStore} from "connect-typeorm";
 import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
+import {resolve as resolvePath} from "path";
 
 @Configuration({
     ...config,
@@ -25,6 +27,12 @@ import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
             `${rootDir}/controllers/api/**/*.ts`
         ],
     },
+
+	swagger: [{
+		path: '/api/docs',
+		specVersion: "3.0.1",
+		viewPath: resolvePath(rootDir, "../node_modules", "@jojoxd/tsed-redoc/views/index.ejs"),
+	}],
 
     exclude: [
         "**/*.spec.ts"

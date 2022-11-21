@@ -12,3 +12,5 @@ export * from './src/ISeriesTitle';
 // New DTO's
 export * from './src/user/IUserData';
 export * from './src/user/UserIdentifier';
+
+export * from './src/list/IList';

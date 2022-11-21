@@ -24,7 +24,7 @@
     "@jojoxd/tsed-auth": "workspace:packages/tsed-auth",
     "@jojoxd/tsed-entity-mapper": "workspace:packages/tsed-entity-mapper",
     "@tsed/ajv": "6.114.3",
-    "@tsed/cli-core": "3.20.9",
+    "@tsed/cli-core": "3.26.3",
     "@tsed/common": "6.114.3",
     "@tsed/core": "6.114.3",
     "@tsed/di": "6.114.3",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@jojoxd/tsconfig": "1.1.2",
-    "@tsed/cli-plugin-typeorm": "3.20.9",
+    "@tsed/cli-plugin-typeorm": "3.26.3",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",

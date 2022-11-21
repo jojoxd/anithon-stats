@@ -2,22 +2,22 @@
   "name": "@jojoxd/tsed-auth",
   "version": "0.0.1",
   "description": "Add Authentication to tsed",
-	"dependencies": {
-		"jexl": "^2.3.0"
-	},
-	"peerDependencies": {
+  "dependencies": {
+    "jexl": "^2.3.0"
+  },
+  "peerDependencies": {
     "@tsed/common": "^6.114.8",
     "@tsed/core": "^6.114.8",
     "@tsed/di": "^6.114.8",
-		"@tsed/schema": "^6.114.8",
-		"@tsed/exceptions": "^6.114.8",
+    "@tsed/exceptions": "^6.114.8",
     "@tsed/platform-params": "^6.114.8",
+    "@tsed/schema": "^6.114.8",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@jojoxd/tsconfig": "1.1.2",
-		"@types/jexl": "^2.3.0",
     "@swc/core": "^1.2.179",
+    "@types/jexl": "^2.3.0",
     "tslint": "^6.1.1",
     "tsup": "^5.12.6",
     "typescript": "^4.3.5"

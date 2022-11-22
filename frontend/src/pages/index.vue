@@ -26,17 +26,27 @@
 </script>
 
 <template>
-  <div class="userlist-select">
-    <div class="stage1">
-      <h2>Your username</h2>
+	<v-container fluid>
+		<v-row>
+			<v-col class="d-flex justify-center">
+				<v-card max-width="600" min-width="300" class="flex-fill">
+					<v-card-title>
+						Your Username
+					</v-card-title>
 
-      <div class="form-control">
-        <input v-model="user" placeholder="Username" />
-      </div>
-    </div>
+					<v-text-field v-model="user" label="Username" />
+				</v-card>
+			</v-col>
+		</v-row>
 
-    <UserLists :user="debouncedUser" />
-  </div>
+		<v-row>
+			<v-col>
+				<div v-if="debouncedUser">
+					<UserLists :user="debouncedUser" />
+				</div>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <style scoped lang="scss">

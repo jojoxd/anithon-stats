@@ -1,12 +1,12 @@
 <script lang="ts">
-import {defineComponent} from "vue";
-import {useVModels} from "@vueuse/core";
-import {useUser} from "../../composition/useUser";
-import {useUserLists} from "../../composition/useUserLists";
-import {ApiStatus} from "../../composition/useApi";
-import {UserIdentifierType} from "@anistats/shared";
+  import {defineComponent} from "vue";
+	import {useVModels} from "@vueuse/core";
+	import {useUser} from "../../composition/useUser";
+	import {useUserLists} from "../../composition/useUserLists";
+	import {ApiStatus} from "../../composition/useApi";
+	import {UserIdentifierType} from "@anistats/shared";
 
-export default defineComponent({
+  export default defineComponent({
     props: {
       user: {
         type: String,

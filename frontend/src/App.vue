@@ -6,25 +6,25 @@
 </script>
 
 <template>
-  <div class="page">
-    <Header />
+	<v-app theme="dark">
+		<Header />
 
-    <main class="content" :class="{ 'overlayed': $overlay.shown.value }">
-      <router-view />
+		<v-main>
+			<v-container fluid>
+				<router-view />
+			</v-container>
+		</v-main>
 
-      <div class="overlay" v-if="$overlay.shown.value">
-        <div class="overlay-wrapper">
-          <div class="overlay-inner">
-            <div class="overlay-title">{{ $overlay.title.value }}</div>
-
-            <div class="overlay-content" v-if="$overlay.hasContent.value" v-html="$overlay.content.value"></div>
-
-            <div class="spinner" v-if="$overlay.withSpinner.value"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+<!--			<div class="overlay" v-if="$overlay.shown.value">-->
+<!--				<div class="overlay-wrapper">-->
+<!--					<div class="overlay-inner">-->
+<!--						<div class="overlay-title">{{ $overlay.title.value }}</div>-->
+<!--						<div class="overlay-content" v-if="$overlay.hasContent.value" v-html="$overlay.content.value"></div>-->
+<!--						<div class="spinner" v-if="$overlay.withSpinner.value"></div>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
+	</v-app>
 </template>
 
 <style scoped lang="scss">

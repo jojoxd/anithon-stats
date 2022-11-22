@@ -18,8 +18,8 @@
 </script>
 
 <script lang="ts">
-import {computed, defineComponent} from "vue";
-import {useCurrentUser} from "../composition/useCurrentUser";
+	import {computed, defineComponent} from "vue";
+	import {useCurrentUser} from "../composition/useCurrentUser";
 
   export default defineComponent({
     setup() {
@@ -44,7 +44,6 @@ import {useCurrentUser} from "../composition/useCurrentUser";
       }
     }
   })
-
 </script>
 
 <template>

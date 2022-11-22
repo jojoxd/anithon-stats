@@ -166,6 +166,7 @@ export class AnilistUserManager
 
                 list.savedData = new SavedData();
 
+                $log.info(`Update user "${user.userName}", add list "${list.listName}"`);
                 user.lists.push(list);
             }
 

@@ -3,7 +3,7 @@ import {ChunkService} from "../ChunkService";
 import {EntryService} from "../EntryService";
 import {Entry} from "../ChunkService/Entry";
 import {ChunkList} from "../../dto/ChunkList";
-import {UseCache} from "@tsed/common";
+import {UseCache} from "@tsed/platform-cache";
 
 export class UserListContainer
 {

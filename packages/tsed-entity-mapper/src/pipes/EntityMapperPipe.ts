@@ -1,4 +1,4 @@
-import {Inject, Injectable, InjectContext, InjectorService, ProviderScope} from "@tsed/di";
+import {Inject, Injectable, InjectContext, InjectorService, ProviderScope} from "@tsed/common";
 import {JsonParameterStore, PipeMethods} from "@tsed/schema";
 import {Store} from "@tsed/core";
 import {PlatformContext} from "@tsed/common";
@@ -9,8 +9,7 @@ import {ENTITY_MAPPER_REFLECT_DATA_KEY, ENTITY_MAPPER_TYPE} from "../decorators/
 import {ReflectMetadata} from "../domain/ReflectMetadata";
 import {EntityMapperMapContext} from "../domain/EntityMapperMapContext";
 
-
-@Injectable({ scope: ProviderScope.REQUEST })
+@Injectable({ priority: -10 })
 export class EntityMapperPipe<T> implements PipeMethods
 {
     @Inject()
@@ -26,6 +25,8 @@ export class EntityMapperPipe<T> implements PipeMethods
 
     async transform(value: unknown, metadata: JsonParameterStore): Promise<any>
     {
+    	console.log('EntityMapperPipe::transform', { value });
+
         const paramOptions = metadata.store.get<EntityParamOptions>(EntityMapperPipe) as EntityParamOptions;
 
         const entityMapper = this.entityMappers.find(entityMapper => {

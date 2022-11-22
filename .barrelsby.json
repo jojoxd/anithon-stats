@@ -1,0 +1,8 @@
+{
+	"delete": true,
+
+	"directory": [
+		"src/controllers/api",
+		"src/services"
+	]
+}

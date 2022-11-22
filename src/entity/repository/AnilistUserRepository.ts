@@ -18,10 +18,10 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
 
     async findUserByAnilistId(anilistUserId: number): Promise<AnilistUser | null>
     {
-        const user = await this.createQueryBuilder("au")
+    	const user = await this.createQueryBuilder("au")
             .select()
             .leftJoinAndSelect("au.lists", "list")
-            .leftJoinAndSelect("list._savedData", "saved_data")
+            .leftJoinAndSelect("list._savedData", "sd")
             .where("au.anilistUserId = :anilistUserId", { anilistUserId })
             .getOneOrFail();
 
@@ -43,7 +43,7 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         const user = await qb
             .select()
             .leftJoinAndSelect("au.lists", "list")
-            .leftJoinAndSelect("list._savedData", "saved_data")
+            .leftJoinAndSelect("list._savedData", "sd")
             .where(qb => {
                 const subQuery = qb.subQuery()
                     .select("inner_user.id")
@@ -72,8 +72,8 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         const user = await this.createQueryBuilder("au")
             .select()
             .leftJoinAndSelect("au.lists", "list")
-            .leftJoinAndSelect("list._savedData", "saved_data")
-            .where("au.userName = :userName", { userName })
+            .leftJoinAndSelect("list._savedData", "sd")
+            .where("au.userName LIKE :userName", { userName })
             .getOneOrFail();
 
         // @HACK: TypeORM has no available option to create a backreference to
@@ -92,7 +92,7 @@ export const AnilistUserRepository = SqliteDataSource.getRepository(AnilistUser)
         const user = await this.createQueryBuilder("au")
             .select()
             .leftJoinAndSelect("au.lists", "list")
-            .leftJoinAndSelect("list._savedData", "saved_data")
+            .leftJoinAndSelect("list._savedData", "sd")
             .where("au.id = :uuid", { uuid })
             .getOneOrFail();
 

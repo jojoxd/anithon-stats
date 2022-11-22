@@ -1,11 +1,13 @@
 <script lang="ts">
   import {defineComponent, ref, watch} from "vue";
   import {useTitle} from "../composition/useTitle";
+  import {debouncedRef} from "@vueuse/core";
 
   export default defineComponent({
     setup()
     {
-      const user = ref<string>(null);
+			const user = ref(null);
+      const debouncedUser = debouncedRef<string>(user, 750);
 
       const title = useTitle();
 
@@ -18,7 +20,7 @@
         title.value = `Search ${user.value}`;
       });
 
-      return { user };
+      return { user, debouncedUser };
     }
   });
 </script>
@@ -33,7 +35,7 @@
       </div>
     </div>
 
-    <UserLists :user="user" />
+    <UserLists :user="debouncedUser" />
   </div>
 </template>
 

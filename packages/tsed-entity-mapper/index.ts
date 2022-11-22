@@ -7,5 +7,5 @@ export * from "./src/domain/EntityParamOptions";
 export * from "./src/domain/ReflectMetadata";
 export * from "./src/interfaces/EntityMapperMethods";
 export * from "./src/pipes/EntityMapperPipe";
-export * from "./src/pipes/ValidationPipe";
-export * from "./src/pipes/DeserializerPipe";
+// export * from "./src/pipes/ValidationPipe";
+// export * from "./src/pipes/DeserializerPipe";

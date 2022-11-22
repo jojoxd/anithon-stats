@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "Add Entity Mapping to your Route Functions, like PathParams",
   "peerDependencies": {
-    "@tsed/common": "6.133.1",
-    "@tsed/core": "6.133.1",
-    "@tsed/di": "6.133.1",
-    "@tsed/platform-params": "6.133.1",
+    "@tsed/common": "7.5.2",
+    "@tsed/core": "7.5.2",
+    "@tsed/di": "7.5.2",
+    "@tsed/platform-params": "7.5.2",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

@@ -10,7 +10,7 @@ __metadata:
   resolution: "@anime-rss-filter/anilist@workspace:packages/anilist"
   dependencies:
     "@jojoxd/tsconfig": 1.1.3
-    "@tsed/cli-plugin-mocha": 3.26.3
+    "@tsed/cli-plugin-mocha": 4.2.3
     "@tsed/common": 7.5.2
     "@tsed/di": 7.5.2
     "@tsed/platform-cache": 7.5.2
@@ -1274,12 +1274,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsed/cli-core@npm:3.26.3":
-  version: 3.26.3
-  resolution: "@tsed/cli-core@npm:3.26.3"
+"@tsed/cli-core@npm:4.2.3":
+  version: 4.2.3
+  resolution: "@tsed/cli-core@npm:4.2.3"
   dependencies:
     "@npmcli/run-script": 3.0.1
     "@tsed/logger": ">=6.1.1"
+    "@types/fs-extra": ^9.0.13
+    "@types/inquirer": ^8.2.4
     ajv: 8.11.0
     axios: 0.26.1
     chalk: 4.1.2
@@ -1298,7 +1300,7 @@ __metadata:
     inquirer: 8.2.4
     inquirer-autocomplete-prompt: 2.0.0
     js-yaml: 4.1.0
-    listr2: 4.0.5
+    listr2: 5.0.5
     module-alias: 2.2.2
     normalize-path: 3.0.0
     read-pkg-up: 7.0.1
@@ -1311,28 +1313,28 @@ __metadata:
     update-notifier: 5.1.0
     url-parse: 1.5.10
   peerDependencies:
-    "@tsed/core": ">=6.95.1"
-    "@tsed/di": ">=6.95.1"
-  checksum: 1cd22fdc17ddea77d4c8d448e2d248688e30565b7a5789f205e39c7e5f9da81e4e808b0470f3885535093fca15625998008e36c1ca651e35c9e8e9a39c3d40f6
+    "@tsed/core": ">=7.0.0"
+    "@tsed/di": ">=7.0.0"
+  checksum: 7de6615ceda6fb50f1a3d891a98d0fe63301bf6822dfb322dec2dffc6d7e942cc42d7cfa706c34e8a61655b4c4d9e6a8663aacad19457a3dfc3986e62d49ed1f
   languageName: node
   linkType: hard
 
-"@tsed/cli-plugin-mocha@npm:3.26.3":
-  version: 3.26.3
-  resolution: "@tsed/cli-plugin-mocha@npm:3.26.3"
+"@tsed/cli-plugin-mocha@npm:4.2.3":
+  version: 4.2.3
+  resolution: "@tsed/cli-plugin-mocha@npm:4.2.3"
   dependencies:
     tslib: 2.3.1
-  checksum: 2ab749ed09d36daf72c11c368451ee742e1c8f2462e0240161051e1f8cb2f1d182b3077a5cc4721d182bbef373c6c8ae5932163ff5e4ef21142ed3fbeba59e9c
+  checksum: 89ee46cfc0451f4264cb2d8dc9304f2dc4a5732233b8c78c0fc28fd8384f46a4069e3c60325cd199c2969e39703aa5e8ea148de4ddcaf78972f88a708a0fe675
   languageName: node
   linkType: hard
 
-"@tsed/cli-plugin-typeorm@npm:3.26.3":
-  version: 3.26.3
-  resolution: "@tsed/cli-plugin-typeorm@npm:3.26.3"
+"@tsed/cli-plugin-typeorm@npm:4.2.3":
+  version: 4.2.3
+  resolution: "@tsed/cli-plugin-typeorm@npm:4.2.3"
   dependencies:
     change-case: 4.1.2
     tslib: 2.3.1
-  checksum: 5983ef21ceadbb3df2f576ccc7c2603cda0cdbf8b46d0c1c43ee16d130ffd6e269b095d365a3e3a1348fd65d9690c1d5ccbede649078acbf88c9445965752eae
+  checksum: 6f24472dc8dbdcb56597133bdbd05529aaa7bc1d574d2cc3c8d256d7fa88833d6d057a4e7540f2524b6e0aa40de2eeb78bd7bf5dae19a68ce50d94251c1190ce
   languageName: node
   linkType: hard
 
@@ -1894,6 +1896,15 @@ __metadata:
     "@types/through": "*"
     rxjs: ^7.2.0
   checksum: bb4b550ca01e892bab9483dfc8f8122dc4eb3291e8b9e1d038fbb6d883335f6ff61692331ae90af452e878c0335b119269ad9909c1ba4b6ec10da6fcf1568011
+  languageName: node
+  linkType: hard
+
+"@types/inquirer@npm:^8.2.4":
+  version: 8.2.5
+  resolution: "@types/inquirer@npm:8.2.5"
+  dependencies:
+    "@types/through": "*"
+  checksum: 932c432e634697bcff5d50fdc9e64f90d2e31c5ebcda909f2e9704d0433b5ec608b6ece985c6e57a283f3b62434f1cd3619b64ca61433d7c3bdb41d3c5f27586
   languageName: node
   linkType: hard
 
@@ -2583,8 +2594,8 @@ __metadata:
     "@jojoxd/tsed-auth": "workspace:packages/tsed-auth"
     "@jojoxd/tsed-entity-mapper": "workspace:packages/tsed-entity-mapper"
     "@tsed/ajv": 7.5.2
-    "@tsed/cli-core": 3.26.3
-    "@tsed/cli-plugin-typeorm": 3.26.3
+    "@tsed/cli-core": 4.2.3
+    "@tsed/cli-plugin-typeorm": 4.2.3
     "@tsed/common": 7.5.2
     "@tsed/core": 7.5.2
     "@tsed/di": 7.5.2
@@ -4279,10 +4290,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^2.0.16":
-  version: 2.0.16
-  resolution: "colorette@npm:2.0.16"
-  checksum: cd55596a3a2d1071c1a28eee7fd8a5387593ff1bd10a3e8d0a6221499311fe34a9f2b9272d77c391e0e003dcdc8934fb2f8d106e7ef1f7516f8060c901d41a27
+"colorette@npm:^2.0.19":
+  version: 2.0.19
+  resolution: "colorette@npm:2.0.19"
+  checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
   languageName: node
   linkType: hard
 
@@ -8011,16 +8022,16 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"listr2@npm:4.0.5":
-  version: 4.0.5
-  resolution: "listr2@npm:4.0.5"
+"listr2@npm:5.0.5":
+  version: 5.0.5
+  resolution: "listr2@npm:5.0.5"
   dependencies:
     cli-truncate: ^2.1.0
-    colorette: ^2.0.16
+    colorette: ^2.0.19
     log-update: ^4.0.0
     p-map: ^4.0.0
     rfdc: ^1.3.0
-    rxjs: ^7.5.5
+    rxjs: ^7.5.6
     through: ^2.3.8
     wrap-ansi: ^7.0.0
   peerDependencies:
@@ -8028,7 +8039,7 @@ fsevents@~2.3.2:
   peerDependenciesMeta:
     enquirer:
       optional: true
-  checksum: 7af31851abe25969ef0581c6db808117e36af15b131401795182427769d9824f451ba9e8aff6ccd25b6a4f6c8796f816292caf08e5f1f9b1775e8e9c313dc6c5
+  checksum: 71c44eb648405d2725f248747ef8d5e192dd16938ec81df854c4a7e74ff1b3f4c3149461b1cff31c761bfbdf110f7f2603c9957c908294a1c6db299c9168608c
   languageName: node
   linkType: hard
 
@@ -10680,7 +10691,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.5.4, rxjs@npm:^7.5.5":
+"rxjs@npm:^7.5.4, rxjs@npm:^7.5.5, rxjs@npm:^7.5.6":
   version: 7.5.7
   resolution: "rxjs@npm:7.5.7"
   dependencies:

@@ -21,11 +21,11 @@ export class AnilistUserMapper implements EntityMapperMethods<AnilistUser>
         // @TODO: Deprecate using value as a string
         if(isUserIdentifier(value)) {
             if (isUserIdentifierOfType(value, UserIdentifierType.Uuid)) {
-                user = await this.anilistUserManager.getUserByUuid(value.uuid);
+                user = await this.anilistUserManager.getUserByUuid(value.uuid, true);
             } else if(isUserIdentifierOfType(value, UserIdentifierType.UserName)) {
-                user = await this.anilistUserManager.getUserByName(value.userName);
+                user = await this.anilistUserManager.getUserByName(value.userName, true);
             } else if(isUserIdentifierOfType(value, UserIdentifierType.AnilistUserId)) {
-                user = await this.anilistUserManager.getUserByAnilistId(value.anilistUserId);
+                user = await this.anilistUserManager.getUserByAnilistId(value.anilistUserId, true);
             } else if(isUserIdentifierOfType(value, UserIdentifierType.ListUuid)) {
             	user = await this.anilistUserManager.getUserByListUuid(value.listUuid);
 			}

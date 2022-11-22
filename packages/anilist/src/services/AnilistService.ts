@@ -1,6 +1,7 @@
-import {ProviderScope, Scope, Service, $log, UseCache, Constant, PlatformContext} from "@tsed/common";
+import {ProviderScope, Scope, Service, $log, Constant, PlatformContext} from "@tsed/common";
 import {InjectContext} from "@tsed/di";
 import { Env } from "@tsed/core";
+import { UseCache } from "@tsed/platform-cache";
 
 import {ApolloClient} from "apollo-boost";
 import {GraphQLError} from "graphql";
@@ -201,6 +202,8 @@ export class AnilistService implements IAnilistApi
 
     async getUserById(userId: number): Promise<IAnilistUser>
     {
+    	$log.info("Fetching user by userId", { userId, stack: new Error().stack });
+
         const data = await this.apollo.query<getUserById, getUserByIdVariables>({
             query: getUserByIdQuery,
             variables: { userId },

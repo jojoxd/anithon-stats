@@ -1,4 +1,5 @@
-import {$log, Controller, Inject, PathParams, ProviderScope, Scope, Session, UseCache} from "@tsed/common";
+import {$log, Controller, Inject, PathParams, ProviderScope, Scope, Session} from "@tsed/common";
+import {UseCache} from "@tsed/platform-cache";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 import {ContentType, Get, Header} from "@tsed/schema";
 import {ICurrentUser, IListData} from "@anistats/shared";
@@ -8,7 +9,7 @@ import {AnilistUser} from "../../entity/AnilistUser";
 
 @Controller("/user")
 @Scope(ProviderScope.REQUEST)
-export class UserController
+export class UserControllerOld
 {
     @Inject()
     protected anilistService!: AnilistService;

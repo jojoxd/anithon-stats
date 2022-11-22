@@ -3,7 +3,8 @@ import {BodyParamEntity, PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {AnilistUser} from "../../../entity/AnilistUser";
 import {ContentType, Get, Header, Post} from "@tsed/schema";
 import {AnilistUserManager} from "../../../services/AnilistUserManager";
-import {PathParams, UseCache} from "@tsed/common";
+import {PathParams} from "@tsed/common";
+import {UseCache} from "@tsed/platform-cache";
 import {IListData, IUserData} from "@anistats/shared";
 import {AnilistService, MediaType} from "@anime-rss-filter/anilist";
 

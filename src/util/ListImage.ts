@@ -3,7 +3,7 @@ import {Entry} from "../services/ChunkService/Entry";
 import {MediaListStatus} from "@anime-rss-filter/anilist";
 import axios from "axios";
 import {UserListContainer} from "../services/ListManager/UserListContainer";
-import { UseCache } from "@tsed/common";
+import { UseCache } from "@tsed/platform-cache";
 
 export class ListImage
 {

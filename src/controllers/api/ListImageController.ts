@@ -1,5 +1,6 @@
 import {Inject} from "@tsed/di";
-import {Controller, Get, UseCache} from "@tsed/common";
+import {Controller, Get} from "@tsed/common";
+import { UseCache } from "@tsed/platform-cache";
 import {ContentType} from "@tsed/schema";
 import {ListImage} from "../../util/ListImage";
 import {PathParamEntity} from "@jojoxd/tsed-entity-mapper";

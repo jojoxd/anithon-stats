@@ -1,18 +1,22 @@
+import "@jojoxd/tsed-entity-mapper";
 import {Configuration, Constant, Inject, InjectorService} from "@tsed/di";
 import {$log, PlatformApplication} from "@tsed/common";
-import "@tsed/platform-express";
 import bodyParser from "body-parser";
 import compress from "compression";
 import cookieParser from "cookie-parser";
 import methodOverride from "method-override";
 import cors from "cors";
 import session from "express-session";
-import "@jojoxd/tsed-entity-mapper";
 import "@jojoxd/tsed-auth";
 import "@tsed/ajv";
-import {config, rootDir} from "./config";
+import {config} from "./config";
 import {TypeormStore} from "connect-typeorm";
 import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
+import "@tsed/platform-express";
+import "@tsed/platform-cache";
+
+import * as apiControllers from "./controllers/api";
+import "./services";
 
 @Configuration({
     ...config,
@@ -22,13 +26,9 @@ import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
 
     mount: {
         "/api": [
-            `${rootDir}/controllers/api/**/*.ts`
+			...Object.values(apiControllers),
         ],
     },
-
-    exclude: [
-        "**/*.spec.ts"
-    ]
 })
 export class Server
 {

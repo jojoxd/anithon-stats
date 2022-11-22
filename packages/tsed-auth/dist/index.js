@@ -96,7 +96,7 @@ var AuthMiddleware = /* @__PURE__ */ __name(class AuthMiddleware2 {
     });
   }
   get contextProviders() {
-    return this.injector.getAll(AUTH_CONTEXT_PROVIDER_TYPE);
+    return this.injector.getMany(AUTH_CONTEXT_PROVIDER_TYPE);
   }
   getProtoName(obj) {
     var _a;

@@ -42,7 +42,7 @@ export class AuthMiddleware implements MiddlewareMethods
 
 	get contextProviders(): Array<AuthContextProviderInterface>
 	{
-		return this.injector.getAll(AUTH_CONTEXT_PROVIDER_TYPE);
+		return this.injector.getMany(AUTH_CONTEXT_PROVIDER_TYPE);
 	}
 
 	protected getProtoName(obj: any): string

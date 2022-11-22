@@ -21,7 +21,7 @@ export class EntityMapperPipe<T> implements PipeMethods
 
     get entityMappers(): Array<EntityMapperMethods<any>>
     {
-        return this.injector.getAll(ENTITY_MAPPER_TYPE);
+        return this.injector.getMany(ENTITY_MAPPER_TYPE);
     }
 
     async transform(value: unknown, metadata: JsonParameterStore): Promise<any>

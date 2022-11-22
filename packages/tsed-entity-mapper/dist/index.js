@@ -72,7 +72,7 @@ var __metadata = function(k, v) {
 };
 var EntityMapperPipe = /* @__PURE__ */ __name(class EntityMapperPipe2 {
   get entityMappers() {
-    return this.injector.getAll(ENTITY_MAPPER_TYPE);
+    return this.injector.getMany(ENTITY_MAPPER_TYPE);
   }
   async transform(value, metadata) {
     const paramOptions = metadata.store.get(EntityMapperPipe2);

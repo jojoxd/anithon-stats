@@ -6,12 +6,12 @@
     "jexl": "^2.3.0"
   },
   "peerDependencies": {
-    "@tsed/common": "^6.114.8",
-    "@tsed/core": "^6.114.8",
-    "@tsed/di": "^6.114.8",
-    "@tsed/exceptions": "^6.114.8",
-    "@tsed/platform-params": "^6.114.8",
-    "@tsed/schema": "^6.114.8",
+    "@tsed/common": "6.133.1",
+    "@tsed/core": "6.133.1",
+    "@tsed/di": "6.133.1",
+    "@tsed/exceptions": "6.133.1",
+    "@tsed/platform-params": "6.133.1",
+    "@tsed/schema": "6.133.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

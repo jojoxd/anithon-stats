@@ -202,7 +202,7 @@ export class AnilistService implements IAnilistApi
 
     async getUserById(userId: number): Promise<IAnilistUser>
     {
-    	$log.info("Fetching user by userId", { userId, stack: new Error().stack });
+    	$log.info("Fetching user by userId", { userId });
 
         const data = await this.apollo.query<getUserById, getUserByIdVariables>({
             query: getUserByIdQuery,

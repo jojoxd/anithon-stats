@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { defineComponent, toRefs } from "vue";
+	import { defineComponent, toRefs, PropType } from "vue";
 	import {IChunk} from "@anistats/shared";
 	import { get } from "@vueuse/core";
 

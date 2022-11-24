@@ -45,36 +45,51 @@
 </script>
 
 <template>
-  <div class="entry-control">
+	<div>
 
-    <div class="form-control">
-      <label>Multiplier</label>
+		<v-text-field
+			type="number"
+			min="1"
+			max="2"
+			step="0.2"
+			label="Multiplier"
+			variant="underlined"
+			v-model="entry.savedData.mult"
+		></v-text-field>
 
-      <input type="number" min="1" max="2" step="0.1" v-model="entry.savedData.mult" />
-    </div>
+		<v-text-field
+			type="number"
+			min="0"
+			:max="entry.series.episodes - 1"
+			step="1"
+			label="Start At"
+			variant="underlined"
+			v-model="entry.savedData.startAt"
+		></v-text-field>
 
-    <div class="form-control start-at" v-show="entry.episodes > 1">
-      <label>Start At</label>
+		<v-checkbox
+			v-if="entry.episodes > 1"
+			v-model="autosplit"
+			label="Autosplit"
+		></v-checkbox>
 
-      <input type="number" v-model="entry.savedData.startAt" min="0" :max="entry.series.episodes - 1" />
-    </div>
+		<v-text-field
+			v-show="entry.episodes > 1 && !autosplit"
+			type="number"
+			min="1"
+			:max="entry.episodes"
+			step="1"
+			v-model="entry.savedData.split"
+			variant="underlined"
+			label="Split"
+		></v-text-field>
 
-    <div class="form-control autosplit" v-show="entry.episodes > 1">
-      <label>Auto Split</label>
-      <input type="checkbox" v-model="autosplit" name="AutoSplit" />
-    </div>
-
-    <div class="form-control split" v-show="entry.episodes > 1 && !autosplit">
-      <label>Split</label>
-
-      <input type="number" min="1" :max="entry.episodes" v-model="entry.savedData.split" />
-    </div>
-
-    <div class="form-control split-sequel-entry" v-show="!!entry.sequel || splitSequelEntry === true">
-      <label>Split Sequel</label>
-      <input type="checkbox" v-model="splitSequelEntry" name="SplitSequelEntry" />
-    </div>
-  </div>
+		<v-checkbox
+			v-if="!!entry.sequel || splitSequelEntry === true"
+			v-model="splitSequelEntry"
+			label="Split Sequel"
+		></v-checkbox>
+	</div>
 </template>
 
 <style scoped lang="scss">

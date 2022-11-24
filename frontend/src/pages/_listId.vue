@@ -1,12 +1,13 @@
 <script lang="ts">
-import {computed, defineComponent, ref, watch} from "vue";
-import {useTitle} from "../composition/useTitle";
-import {ApiStatus} from "../composition/useApi";
-import {useVModels} from "@vueuse/core";
-import {IOverlayController} from "../plugin/overlay";
-import {useList} from "../composition/composed/useList";
+	import {computed, defineComponent, ref, watch} from "vue";
+	import {useTitle} from "../composition/useTitle";
+	import {ApiStatus} from "../composition/useApi";
+	import {useVModels} from "@vueuse/core";
+	import {IOverlayController} from "../plugin/overlay";
+	import {useList} from "../composition/composed/useList";
+	import {mdiContentSave} from "@mdi/js";
 
-declare const $overlay: IOverlayController;
+	declare const $overlay: IOverlayController;
 
 	export default defineComponent({
 		props: {
@@ -129,6 +130,8 @@ declare const $overlay: IOverlayController;
 
 				chunkStatus,
 				ApiStatus,
+
+				mdiContentSave,
 			}
 		}
 	});
@@ -140,28 +143,18 @@ declare const $overlay: IOverlayController;
 
 		<ListStats :list="listData"/>
 
-		<div class="list-metadata" v-if="listSettings">
-			<div class="form-control list-metadata list-metadata-allow-chunk-merge">
-				<label>Allow Chunk Merge</label>
-				<input type="checkbox" v-model="listSettings.allowChunkMerge" name="allowChunkMerge"/>
-			</div>
+		<list-settings-card v-model="listSettings" v-if="listSettings" />
 
-			<div class="form-control list-metadata list-metadata-max-chunk-length">
-				<label>Max chunk Length (Minutes)</label>
-				<input type="number" v-model="listSettings.maxChunkLength" name="maxChunkLength"/>
-			</div>
+		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>
 
-			<div class="form-control list-metadata list-metadata-max-chunk-join-length">
-				<label>Max Chunk Join Length (Minutes)</label>
-				<input type="number" v-model="listSettings.maxChunkJoinLength" name="maxChunkJoinLength"/>
-			</div>
-		</div>
-
-		<a :href="embedImageUri" target="_blank">Embed</a>
-
-		<div class="form-control update" v-if="true || (userData?.isCurrentUser ?? false)">
-			<button @click="update()">Update</button>
-		</div>
+		<template v-if="userData?.isCurrentUser ?? false">
+			<v-btn
+				variant="tonal"
+				color="success"
+				:prepend-icon="mdiContentSave"
+				@click.prevent="update"
+			>Update</v-btn>
+		</template>
 
 		<div class="dev" v-if="entryData">
 			<Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false"
@@ -173,23 +166,6 @@ declare const $overlay: IOverlayController;
 			</Sortable>
 		</div>
 
-		<div v-for="(chunk, index) of chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok">
-			<Chunk :chunk="chunk" :index="index"/>
-		</div>
+		<chunk-list :chunks="chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok" />
 	</div>
 </template>
-
-<style scoped lang="scss">
-
-.form-control {
-	&.update {
-		grid-template:
-      [row1-start] "input" 1.4rem [row1-end]
-                 / 100% !important;
-
-		input, button {
-			width: 100%;
-		}
-	}
-}
-</style>

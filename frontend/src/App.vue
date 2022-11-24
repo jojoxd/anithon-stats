@@ -6,126 +6,34 @@
 </script>
 
 <template>
-  <div class="page">
-    <Header />
+	<v-app>
+		<Header />
 
-    <main class="content" :class="{ 'overlayed': $overlay.shown.value }">
-      <router-view />
+		<v-main>
+			<v-container fluid>
+				<router-view />
+			</v-container>
+		</v-main>
 
-      <div class="overlay" v-if="$overlay.shown.value">
-        <div class="overlay-wrapper">
-          <div class="overlay-inner">
-            <div class="overlay-title">{{ $overlay.title.value }}</div>
+		<v-overlay
+			:model-value="$overlay.shown.value"
+			class="align-center justify-center"
+		>
+			<div>
+				{{ $overlay.title.value }}
+			</div>
 
-            <div class="overlay-content" v-if="$overlay.hasContent.value" v-html="$overlay.content.value"></div>
+			<div v-if="$overlay.hasContent.value" v-html="$overlay.content.value"></div>
 
-            <div class="spinner" v-if="$overlay.withSpinner.value"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+			<v-progress-circular
+				v-if="$overlay.withSpinner.value"
+				indeterminate
+				size="64"
+				color="primary"
+			></v-progress-circular>
+		</v-overlay>
+	</v-app>
 </template>
 
 <style scoped lang="scss">
-  @use "sass:color";
-  @import "$$component-utils";
-
-  main.overlayed
-  {
-    overflow: hidden !important;
-    height: 100vh;
-  }
-
-  .overlay {
-    position: fixed;
-    display: block;
-
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-
-    background-color: color.change(darken($background-color, 5%), $alpha: 0.9);
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    .overlay-wrapper {
-      height: 100%;
-
-      .overlay-inner {
-        height: 100%;
-
-        display: flex;
-
-        margin-top: auto;
-        margin-bottom: auto;
-
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        vertical-align: center;
-
-        $spinner-scale: 0.25;
-
-        .overlay-title {
-          font-size: 2rem;
-        }
-
-        .overlay-content {
-          font-size: 1rem;
-          margin-top: 2rem;
-        }
-
-        .spinner {
-          color: #ffffff;
-          font-size: #{90 * $spinner-scale}px;
-          text-indent: -9999em;
-          overflow: hidden;
-          width: 1em;
-          height: 1em;
-          border-radius: 50%;
-          margin: 72px auto;
-          position: relative;
-          transform: translateZ(0);
-          animation: spinner 1.7s infinite ease, round 1.7s infinite ease;
-        }
-      }
-    }
-  }
-
-  @keyframes spinner {
-    0% {
-      box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-    }
-    5%,
-    95% {
-      box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-    }
-    10%,
-    59% {
-      box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
-    }
-    20% {
-      box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
-    }
-    38% {
-      box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, -0.82em -0.09em 0 -0.477em;
-    }
-    100% {
-      box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-    }
-  }
-
-  @keyframes round {
-    0% {
-      -webkit-transform: rotate(0deg);
-      transform: rotate(0deg);
-    }
-    100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg);
-    }
-  }
 </style>

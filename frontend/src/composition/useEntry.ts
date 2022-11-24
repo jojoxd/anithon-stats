@@ -80,7 +80,6 @@ export function useEntry(entry: MaybeRef<IEntry>): IUseEntryReturnData
         return episodes.value * episodeDuration.value;
     });
 
-
     return {
         title,
 

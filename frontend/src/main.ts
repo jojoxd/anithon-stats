@@ -6,6 +6,7 @@ import momentDurationFormat from "moment-duration-format";
 
 import createRouter from './plugin/router';
 import createOverlayController from "./plugin/overlay";
+import vuetify from "./plugin/vuetify";
 
 // @ts-ignore TS2345 This is correct
 momentDurationFormat(moment);
@@ -14,6 +15,8 @@ const app = createApp(App);
 
 const router = createRouter();
 app.use(router);
+
+app.use(vuetify);
 
 app.use(Popper);
 app.use(createOverlayController(router));

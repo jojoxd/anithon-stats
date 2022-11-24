@@ -1,9 +1,9 @@
-import {ProviderScope, Scope, Service, $log, Constant, PlatformContext} from "@tsed/common";
+import {ProviderScope, Scope, Service, $log, Constant, PlatformContext, Inject} from "@tsed/common";
 import {InjectContext} from "@tsed/di";
 import { Env } from "@tsed/core";
-import { UseCache } from "@tsed/platform-cache";
+import {PlatformCache, UseCache} from "@tsed/platform-cache";
 
-import {ApolloClient} from "apollo-boost";
+import {ApolloClient, DocumentNode} from "apollo-boost";
 import {GraphQLError} from "graphql";
 
 import {IAnilistApi} from "./IAnilistApi";
@@ -31,6 +31,9 @@ import {
     searchUserByName, searchUserByNameVariables, getUserById, getUserByIdVariables,
 } from "../generated/types";
 
+import { createHash } from "crypto";
+import {Mutexes} from "../lib/MutexManager";
+
 @Service()
 @Scope(ProviderScope.REQUEST)
 export class AnilistService implements IAnilistApi
@@ -42,8 +45,27 @@ export class AnilistService implements IAnilistApi
     @Constant("env")
     protected env!: Env;
 
+    // @TODO: Inject Cache Config (TTL)
+	protected get cacheConfig() {
+		return {
+			ttl: {
+				searchUserByName: 600,
+				getUserById: 600,
+
+				fetchUserLists: 180,
+				getUserLists: 180,
+
+				currentUser: 3600,
+			},
+		};
+	}
+
+
     @InjectContext()
     protected $ctx?: PlatformContext;
+
+    @Inject()
+    protected cache!: PlatformCache;
 
     protected get token(): string | null
     {
@@ -72,7 +94,6 @@ export class AnilistService implements IAnilistApi
         return new AnilistError(errorMessage, errors);
     }
 
-    @UseCache({ ttl: 30 })
     async fetchUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<fetchUserLists> | never
     {
         $log.info(`AnilistService.fetchUserLists(${userId}, ${type}, [${statuses}])`);
@@ -84,25 +105,22 @@ export class AnilistService implements IAnilistApi
         if (!Array.isArray(statuses))
             statuses = [statuses];
 
-        // Fetch Data
-        const data = await this.apollo.query<fetchUserLists, fetchUserListsVariables>({
-            query: fetchUserListsQuery,
-            variables: { userId, type, statuses },
-            fetchPolicy: "network-only",
-            errorPolicy: "ignore",
-        });
+        return this.query<fetchUserLists, fetchUserListsVariables>({
+			query: fetchUserListsQuery,
+			variables: { userId, type, statuses },
+			key: 'fetchUserLists',
+			ttl: this.cacheConfig.ttl.fetchUserLists,
 
-        if (data.errors) {
-            $log.error(data.data);
-            throw this.createError(data.errors!);
-        }
+			// @hack: using a convert function to log some data is not very semantic
+			convert: (data) => {
+				if(this.env === Env.DEV) {
+					const len = new TextEncoder().encode(JSON.stringify(data)).byteLength
+					$log.info(`We just nuked anilist to get ~${(len / 1024 / 1024).toFixed(1)}MB of data`);
+				}
 
-        if(this.env === Env.DEV) {
-            const len = new TextEncoder().encode(JSON.stringify(data.data)).byteLength
-            $log.info(`We just nuked anilist to get ~${(len / 1024 / 1024).toFixed(1)}MB of data`);
-        }
-
-        return data.data;
+				return data;
+			},
+		});
     }
 
     async getUserLists(userId: number, type: MediaType, statuses?: MediaListStatus | Array<MediaListStatus>): Promise<getUserLists> | never
@@ -116,20 +134,12 @@ export class AnilistService implements IAnilistApi
         if (!Array.isArray(statuses))
             statuses = [statuses];
 
-        // Fetch Data
-        const data = await this.apollo.query<getUserLists, getUserListsVariables>({
-            query: getUserListsQuery,
-            variables: { userId, type, statuses },
-            fetchPolicy: "network-only",
-            errorPolicy: "ignore",
-        });
-
-        if (data.errors) {
-            $log.error(data.data);
-            throw this.createError(data.errors!);
-        }
-
-        return data.data;
+        return this.query<getUserLists, getUserListsVariables>({
+			query: getUserListsQuery,
+			variables: { userId, type, statuses },
+			key: 'getUserLists',
+			ttl: this.cacheConfig.ttl.getUserLists,
+		});
     }
 
     async getUserList(userId: number, type: MediaType, name: string): Promise<fetchUserLists_MediaListCollection_lists> | never
@@ -148,18 +158,14 @@ export class AnilistService implements IAnilistApi
 
         $log.info("AnilistService.getCurrentUser()");
 
-        const data = await this.apollo.query<any, any>({
-            query: getCurrentUser,
-            fetchPolicy: "network-only",
-            errorPolicy: "ignore",
-        });
-
-        if(data.errors) {
-            $log.error(data.data);
-            throw this.createError(data.errors!);
-        }
-
-        const viewer = data.data.Viewer;
+		// @TODO: Fix typing
+		const viewer = await this.query<any, any, any>({
+			query: getCurrentUser,
+			key: 'currentUser',
+			hash: this.token,
+			ttl: this.cacheConfig.ttl.currentUser,
+			convert: (data) => data.Viewer,
+		});
 
         return {
             id: viewer.id,
@@ -173,19 +179,13 @@ export class AnilistService implements IAnilistApi
 
     async searchUserByName(userName: string): Promise<IAnilistUser | never>
     {
-        const data = await this.apollo.query<searchUserByName, searchUserByNameVariables>({
-            query: searchUserByNameQuery,
-            variables: { name: userName },
-            fetchPolicy: "network-only",
-            errorPolicy: "ignore"
-        });
-
-        if(data.errors) {
-            $log.error(data.data);
-            throw this.createError(data.errors!);
-        }
-
-        const user = data.data.User;
+		const user = await this.query<searchUserByName, searchUserByNameVariables, searchUserByName['User']>({
+			query: searchUserByNameQuery,
+			variables: { name: userName },
+			key: 'searchUserByName',
+			ttl: this.cacheConfig.ttl.searchUserByName,
+			convert: (data) => data.User,
+		});
 
         if(!user || !user.id)
             throw new AnilistNotAUserError(`User "${userName}" does not exist on AniList`);
@@ -204,19 +204,13 @@ export class AnilistService implements IAnilistApi
     {
     	$log.info("Fetching user by userId", { userId });
 
-        const data = await this.apollo.query<getUserById, getUserByIdVariables>({
-            query: getUserByIdQuery,
-            variables: { userId },
-            fetchPolicy: "network-only",
-            errorPolicy: "ignore"
-        });
-
-        if(data.errors) {
-            $log.error(data.data);
-            throw this.createError(data.errors!);
-        }
-
-        const user = data.data.User;
+    	const user = await this.query<getUserById, getUserByIdVariables, getUserById['User']>({
+			query: getUserByIdQuery,
+			variables: { userId },
+			key: 'getUserById',
+			ttl: this.cacheConfig.ttl.getUserById,
+			convert: (data) => data.User,
+		});
 
         if(!user || !user.id)
             throw new AnilistNotAUserError(`User "${userId}" does not exist on AniList`);
@@ -230,6 +224,54 @@ export class AnilistService implements IAnilistApi
             },
         };
     }
+
+    protected hashObject(namespace: string, obj: any): string
+	{
+		const hash = createHash('md5')
+			.update(JSON.stringify(obj))
+			.digest('hex');
+
+		return `${namespace}:${hash}`;
+	}
+
+	protected async query<T, Q, S = T>(settings: { query: DocumentNode, variables?: Q, key: string, hash?: any, ttl?: number, convert?: (val: T) => S }): Promise<S> | never
+	{
+		const queryFn = async () => {
+			const { data, errors } = await this.apollo.query<T, Q>({
+				query: settings.query,
+				variables: settings.variables,
+
+				fetchPolicy: "network-only",
+				errorPolicy: "ignore"
+			});
+
+			if(errors) {
+				$log.error(data);
+				throw this.createError(errors!);
+			}
+
+			if (settings.convert) {
+				return settings.convert(data);
+			}
+
+			return data as unknown as S;
+		};
+
+		if (settings.variables ?? settings.hash) {
+			// Can use a cache key
+			const cacheKey = this.hashObject(settings.key, settings.variables ?? settings.hash);
+
+			const mut = Mutexes.getMutex(cacheKey);
+
+			return mut.runExclusive(async () => {
+				return this.cache.wrap(cacheKey, () => {
+					return queryFn();
+				}, settings.ttl ?? 30);
+			});
+		}
+
+		return queryFn();
+	}
 }
 
 export interface IAnilistUser

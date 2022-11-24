@@ -22,12 +22,9 @@
 </script>
 
 <template>
-	<div class="stats">
-		<div class="total-duration">
-			<span>Total Duration</span>
-			<span>{{ $moment.duration(list?.meta.totalDuration, 'minutes').format() }}</span>
-		</div>
-	</div>
+	<v-chip-group disabled>
+		<v-chip>{{ $moment.duration(list?.meta.totalDuration, 'minutes').format() }}</v-chip>
+	</v-chip-group>
 </template>
 
 <style scoped lang="scss">

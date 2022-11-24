@@ -2,8 +2,9 @@
 import {computed, defineComponent, ref} from "vue";
 	import {useCurrentUser} from "../composition/useCurrentUser";
 	import {mdiLogoutVariant} from "@mdi/js";
-import {useDebug} from "../composition/useDebug";
 import {useTheme} from "vuetify";
+import {storeToRefs} from "pinia";
+import {useAppStore} from "../composition/store/app-store";
 
 	export default defineComponent({
 		setup() {
@@ -19,7 +20,7 @@ import {useTheme} from "vuetify";
 			const theme = useTheme();
 			theme.global.name.value = "anilist-like";
 
-			const { isDebugEnabled } = useDebug();
+			const { isDebugEnabled } = storeToRefs(useAppStore());
 
 			return {
 				menuOpen,

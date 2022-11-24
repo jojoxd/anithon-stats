@@ -1,25 +1,27 @@
 <script lang="ts">
-	import {defineComponent, computed} from "vue";
+	import {defineComponent} from "vue";
 	import {useTheme} from "vuetify";
+	import {storeToRefs} from "pinia";
+	import {Theme, useAppStore} from "../../../composition/store/app-store";
+
+	const Themes: Record<Theme, string> = {
+		[Theme.Light]: 'Light',
+		[Theme.Dark]: 'Dark',
+		[Theme.AnilistLike]: 'Like Anilist',
+	};
 
 	export default defineComponent({
 		setup() {
-			const vuetifyTheme = useTheme();
+			const {
+				theme
+			} = storeToRefs(useAppStore());
 
 			return {
-				theme: vuetifyTheme.global.name,
-				themes: computed(() => {
-					return Object.keys(vuetifyTheme.themes.value);
-				}),
+				theme,
+				themes: Object.keys(Themes),
 
 				mapThemeName: (themeName: string) => {
-					const themeNameMap = {
-						'dark': 'Dark',
-						'light': 'Light',
-						'anilist-like': 'Like AniList',
-					};
-
-					return themeName in themeNameMap ? themeNameMap[themeName] : themeName;
+					return themeName in Themes ? Themes[themeName] : themeName;
 				}
 			};
 		},

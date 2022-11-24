@@ -1,23 +1,17 @@
 <script lang="ts">
   import {defineComponent, ref, watch} from "vue";
-  import {Language, useLanguageSwitcher} from "../composition/useLanguageSwitcher";
 	import {mdiTranslate} from "@mdi/js";
+	import {storeToRefs} from "pinia";
+	import {Language, useAppStore} from "../composition/store/app-store";
 
   export default defineComponent({
     setup() {
-      const { language, setLanguage } = useLanguageSwitcher();
-
-      const selection = ref<Language>(language.value);
-
-      watch(selection, () => {
-      	setLanguage(selection.value);
-			});
+      const { language } = storeToRefs(useAppStore());
 
       const languages = Object.values(Language).filter(key => typeof key === "string").map((key) => ({ key, value: Language[key] }));
 
       return {
         language,
-        selection,
 				languages,
 
 				mdiTranslate
@@ -30,7 +24,7 @@
 	<v-select
 		label="Title Translations"
 		variant="underlined"
-		v-model="selection"
+		v-model="language"
 		:items="languages"
 		item-title="key"
 		item-value="value"

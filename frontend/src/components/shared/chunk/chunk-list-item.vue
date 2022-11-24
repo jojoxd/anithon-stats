@@ -4,7 +4,8 @@
 	import {IChunk} from "@anistats/shared";
 	import {mdiAbacus, mdiCheck, mdiChevronDoubleRight, mdiClose, mdiPlay, mdiTimelineQuestionOutline} from "@mdi/js";
 	import {useEntry} from "../../../composition/useEntry";
-	import {useDebug} from "../../../composition/useDebug";
+	import {storeToRefs} from "pinia";
+	import {useAppStore} from "../../../composition/store/app-store";
 
 	export default defineComponent({
 		props: {
@@ -31,7 +32,7 @@
 				hasProgressAfter,
 			} = toRefs(props);
 
-			const { isDebugEnabled } = useDebug();
+			const { isDebugEnabled } = storeToRefs(useAppStore());
 
 			const entry = computed(() => chunk.value.entry);
 

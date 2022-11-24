@@ -1,12 +1,21 @@
 <script lang="ts">
   import {defineComponent} from "vue";
+	import {storeToRefs} from "pinia";
+	import {useAppStore} from "./composition/store/app-store";
 
   export default defineComponent({
+		setup() {
+			const { theme } = storeToRefs(useAppStore());
+
+			return {
+				theme,
+			};
+		},
   });
 </script>
 
 <template>
-	<v-app>
+	<v-app :theme="theme">
 		<Header />
 
 		<v-main>

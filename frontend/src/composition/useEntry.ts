@@ -1,14 +1,15 @@
 import {MaybeRef, get} from "@vueuse/core";
 import {computed, ComputedRef} from "vue";
 import {IEntry} from "@anistats/shared";
-import {Language, useLanguageSwitcher} from "./useLanguageSwitcher";
+import {storeToRefs} from "pinia";
+import {Language, useAppStore} from "./store/app-store";
 
 const FALLBACK_COVER = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/default.jpg";
 
 export function useEntry(entry: MaybeRef<IEntry>): IUseEntryReturnData
 {
     // Title
-    const { language } = useLanguageSwitcher();
+    const { language } = storeToRefs(useAppStore());
 
     const title = computed(() => {
         const _entry = get(entry);

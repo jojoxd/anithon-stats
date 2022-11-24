@@ -69,6 +69,7 @@ export class ApolloClientBuilder
             const response = forward(operation);
 
             // After
+			$log.info(`GQL REQUEST COMPLETE "${operation.operationName}"`);
 
             return response;
         });

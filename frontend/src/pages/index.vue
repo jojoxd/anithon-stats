@@ -50,45 +50,4 @@
 </template>
 
 <style scoped lang="scss">
-  @import "$$component-utils";
-
-  .userlist-select {
-    text-align: center;
-
-    display: flex;
-    align-content: center;
-    flex-wrap: wrap;
-
-    min-height: calc(100vh - 6rem);
-
-    > div {
-      width: 100%;
-    }
-
-    .form-control {
-      display: block;
-
-      input,
-      select,
-      button {
-        width: 10% !important;
-
-        min-width: 200px;
-
-        @include respond(mobile) {
-          width: 80vw !important;
-        }
-      }
-
-      button {
-        margin: 1rem;
-      }
-    }
-
-    @include respond(mobile) {
-      background-color: red;
-
-      text-align: left !important;
-    }
-  }
 </style>

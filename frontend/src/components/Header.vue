@@ -54,35 +54,4 @@
 			</v-btn>
 		</div>
 	</v-app-bar>
-
-
-<!--  <div class="header">-->
-<!--    <div class="title">-->
-<!--      <router-link to="/">AniStats</router-link>-->
-<!--    </div>-->
-
-<!--    <div class="spacer" />-->
-
-<!--    <div class="language-switcher">-->
-<!--      <LanguageSwitcher />-->
-<!--    </div>-->
-
-<!--    <div class="user-controls">-->
-<!--      <div class="user-display" v-if="currentUser !== null && currentUser.isAuthenticated">-->
-<!--        <img :src="currentUser?.avatar?.large" :alt="avatarDescription" />-->
-
-<!--        <div class="username">-->
-<!--          <router-link :to="userListsUri">{{ currentUser.name }}</router-link>-->
-<!--        </div>-->
-
-<!--        <div class="logout">-->
-<!--          <a :href="logoutUri">Log out</a>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="user-login" v-if="currentUser === null || !currentUser.isAuthenticated">-->
-<!--        <a :href="oauthUri">Log in</a>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 </template>

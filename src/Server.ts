@@ -29,6 +29,11 @@ import "./services";
 			...Object.values(apiControllers),
         ],
     },
+
+	cache: {
+    	ttl: 300,
+		store: "memory",
+	},
 })
 export class Server
 {

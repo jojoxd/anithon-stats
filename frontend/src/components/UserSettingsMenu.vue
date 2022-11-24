@@ -2,6 +2,8 @@
 import {computed, defineComponent, ref} from "vue";
 	import {useCurrentUser} from "../composition/useCurrentUser";
 	import {mdiLogoutVariant} from "@mdi/js";
+import {useDebug} from "../composition/useDebug";
+import {useTheme} from "vuetify";
 
 	export default defineComponent({
 		setup() {
@@ -14,10 +16,17 @@ import {computed, defineComponent, ref} from "vue";
 				return `/api/oauth/logout?redirect=${encodeURIComponent(window.location.href)}`;
 			});
 
+			const theme = useTheme();
+			theme.global.name.value = "anilist-like";
+
+			const { isDebugEnabled } = useDebug();
+
 			return {
 				menuOpen,
 				currentUser,
 				language,
+
+				isDebugEnabled,
 
 				logoutUri,
 				mdiLogoutVariant
@@ -59,7 +68,26 @@ import {computed, defineComponent, ref} from "vue";
 				<v-divider />
 
 				<v-list>
-					<v-list-item class="text-center">
+					<v-list-item>
+						<language-switcher />
+					</v-list-item>
+
+					<v-list-item>
+						<v-switch
+							v-model="isDebugEnabled"
+							label="Debug Mode"
+						></v-switch>
+					</v-list-item>
+
+					<v-list-item>
+						<theme-switcher />
+					</v-list-item>
+				</v-list>
+
+				<v-divider />
+
+				<v-list>
+					<v-list-item>
 						<v-btn
 							:append-icon="mdiLogoutVariant"
 							variant="plain"
@@ -67,10 +95,6 @@ import {computed, defineComponent, ref} from "vue";
 						>
 							Log out
 						</v-btn>
-					</v-list-item>
-
-					<v-list-item>
-						<language-switcher />
 					</v-list-item>
 				</v-list>
 			</v-card>

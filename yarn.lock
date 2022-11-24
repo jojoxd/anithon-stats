@@ -25,6 +25,7 @@ __metadata:
     apollo-boost: ^0.4.7
     apollo-cache-inmemory: ^1.6.5
     apollo-link-http: ^1.5.16
+    async-mutex: 0.4.0
     chai: 4.3.7
     chai-as-promised: 7.1.1
     cross-env: 7.0.3
@@ -63,6 +64,7 @@ __metadata:
     include-media: ^1.4.10
     moment: ^2.29.3
     moment-duration-format: ^2.3.2
+    pinia: ^2.0.26
     sass: ^1.51.0
     typescript: ^4.6.4
     unplugin-icons: ^0.14.3
@@ -2373,6 +2375,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vue/devtools-api@npm:^6.4.5":
+  version: 6.4.5
+  resolution: "@vue/devtools-api@npm:6.4.5"
+  checksum: 40c5adc8788cb283972ce09ba7ce105fa894f4decec9168829cc8e6211462763402442e6c31be76f9da62b0e74ae724971b924571367b4ac89b94dc6894e2d07
+  languageName: node
+  linkType: hard
+
 "@vue/reactivity-transform@npm:3.2.33":
   version: 3.2.33
   resolution: "@vue/reactivity-transform@npm:3.2.33"
@@ -3389,7 +3398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-mutex@npm:^0.4.0":
+"async-mutex@npm:0.4.0, async-mutex@npm:^0.4.0":
   version: 0.4.0
   resolution: "async-mutex@npm:0.4.0"
   dependencies:
@@ -10240,6 +10249,25 @@ fsevents@~2.3.2:
   version: 4.0.1
   resolution: "pify@npm:4.0.1"
   checksum: 9c4e34278cb09987685fa5ef81499c82546c033713518f6441778fbec623fc708777fe8ac633097c72d88470d5963094076c7305cafc7ad340aae27cfacd856b
+  languageName: node
+  linkType: hard
+
+"pinia@npm:^2.0.26":
+  version: 2.0.26
+  resolution: "pinia@npm:2.0.26"
+  dependencies:
+    "@vue/devtools-api": ^6.4.5
+    vue-demi: "*"
+  peerDependencies:
+    "@vue/composition-api": ^1.4.0
+    typescript: ">=4.4.4"
+    vue: ^2.6.14 || ^3.2.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+    typescript:
+      optional: true
+  checksum: 0d38cc0efc6572436c439491491df0e989182bad342fc3828d8865a42db6c6580c8f86663fcc47955bfeca5baf6e7f95e61b9b3f795ba161c19ef86fdc9b2841
   languageName: node
   linkType: hard
 

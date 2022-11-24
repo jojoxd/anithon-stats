@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {defineComponent} from "vue";
-	import {useTheme} from "vuetify";
 	import {storeToRefs} from "pinia";
 	import {Theme, useAppStore} from "../../../composition/store/app-store";
 

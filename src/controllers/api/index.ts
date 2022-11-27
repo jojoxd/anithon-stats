@@ -7,6 +7,7 @@ export * from "./EntryController";
 export * from "./ListImageController";
 export * from "./OAuthController";
 export * from "./SavedDataController";
+export * from "./SearchController";
 export * from "./UserController";
 export * from "./UserListSettingsController";
 export * from "./UserListsController";

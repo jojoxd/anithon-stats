@@ -5,28 +5,28 @@
 
   export default defineComponent({
     props: {
-      user: {
+      userName: {
         type: String,
         required: true,
       }
     },
 
     setup(props, { emit }) {
-      const { user } = useVModels(props, emit);
+      const { userName } = useVModels(props, emit);
 
       const title = useTitle();
 
-      watch(user, () => {
-        title.value = `Userlist of ${user.value}`;
+      watch(userName, () => {
+        title.value = `Userlist of ${userName.value}`;
       }, { immediate: true });
 
-      return { user };
+      return { userName };
     }
   });
 </script>
 
 <template>
-  <UserLists :user="user" />
+  <UserLists :user-name="userName" />
 </template>
 
 <style scoped lang="scss">

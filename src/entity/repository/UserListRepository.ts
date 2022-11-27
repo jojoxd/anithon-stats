@@ -27,6 +27,15 @@ export const UserListRepository = SqliteDataSource.getRepository(UserList).exten
     //         }
     //     });
     // }
+
+	async search(anilistUserId: number, query: string) {
+		return this.createQueryBuilder('l')
+			.leftJoin(AnilistUser, 'u', 'u.id = l.userId')
+			.where('u.anilistUserId = :anilistUserId', { anilistUserId })
+			.andWhere('l.listName LIKE :query', { query: `%${query}%` })
+			.limit(10)
+			.getMany();
+	},
 });
 
 export const USERLIST_REPOSITORY = Symbol.for("UserListRepository");

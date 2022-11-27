@@ -29,7 +29,7 @@
 
 			const { list } = useUserList(userId, listId, UserIdentifierType.Uuid);
 
-			const listUri = computed(() => `/${listId.value}`);
+			const listUri = computed(() => `/l/${listId.value}`);
 
 			return {
 				listId,

@@ -32,6 +32,8 @@
 		</v-app-bar-title>
 
 
+		<search />
+
 		<v-btn to="/" variant="plain" :prepend-icon="mdiHome">
 			Home
 		</v-btn>

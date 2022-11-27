@@ -12,8 +12,10 @@ import {AnilistError} from "../AnilistError";
 import {ApolloClientBuilder} from "../lib/ApolloClientBuilder";
 
 import {
-    MediaListStatus,
-    MediaType
+	findUsersByName_Page_users,
+
+	MediaListStatus,
+	MediaType
 } from "../..";
 
 import getUserByIdQuery from "../gql/getUserById.gql";
@@ -21,14 +23,15 @@ import searchUserByNameQuery from "../gql/searchUserByName.gql"
 import getCurrentUser from "../gql/getCurrentUser.gql";
 import getUserListsQuery from "../gql/getUserLists.gql";
 import fetchUserListsQuery from "../gql/fetchUserLists.gql";
+import findUsersByNameQuery from "../gql/findUsersByName.gql";
 
 import {
-    fetchUserLists,
-    fetchUserListsVariables,
-    getUserLists,
-    getUserListsVariables,
-    fetchUserLists_MediaListCollection_lists,
-    searchUserByName, searchUserByNameVariables, getUserById, getUserByIdVariables,
+    fetchUserLists, fetchUserListsVariables,
+    getUserLists, getUserListsVariables,
+	findUsersByName, findUsersByNameVariables,
+    searchUserByName, searchUserByNameVariables,
+	getUserById, getUserByIdVariables,
+	fetchUserLists_MediaListCollection_lists,
 } from "../generated/types";
 
 import { createHash } from "crypto";
@@ -56,6 +59,7 @@ export class AnilistService implements IAnilistApi
 				getUserLists: 180,
 
 				currentUser: 3600,
+				findUsersByName: 3600,
 			},
 		};
 	}
@@ -224,6 +228,28 @@ export class AnilistService implements IAnilistApi
             },
         };
     }
+
+    async findUsersByName(username: string): Promise<Array<IAnilistUser>>
+	{
+		const users = await this.query<findUsersByName, findUsersByNameVariables, Array<null | findUsersByName_Page_users>>({
+			query: findUsersByNameQuery,
+			variables: { query: username, page: 0, perPage: 10 },
+			key: 'findUsersByName',
+			ttl: this.cacheConfig.ttl.findUsersByName,
+			convert: (data) => data!.Page!.users!,
+		});
+
+		return users.map((gqlUser) => {
+			return {
+				id: gqlUser!.id,
+				name: gqlUser!.name,
+
+				avatar: {
+					large: gqlUser!.avatar!.large! ?? gqlUser!.avatar!.medium!,
+				},
+			};
+		});
+	}
 
     protected hashObject(namespace: string, obj: any): string
 	{

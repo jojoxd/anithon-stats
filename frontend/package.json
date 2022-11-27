@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@anistats/shared": "workspace:packages/shared",
-    "@vueuse/core": "^8.4.2",
+    "@vueuse/core": "9",
     "axios": "^1.0.0",
     "include-media": "^1.4.10",
     "moment": "^2.29.3",

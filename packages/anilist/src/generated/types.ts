@@ -262,6 +262,62 @@ export interface fetchUserListsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: findUsersByName
+// ====================================================
+
+export interface findUsersByName_Page_users_avatar {
+  __typename: "UserAvatar";
+  /**
+   * The avatar of user at its largest size
+   */
+  large: string | null;
+  /**
+   * The avatar of user at medium size
+   */
+  medium: string | null;
+}
+
+export interface findUsersByName_Page_users {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+  /**
+   * The name of the user
+   */
+  name: string;
+  /**
+   * The user's avatar images
+   */
+  avatar: findUsersByName_Page_users_avatar | null;
+  /**
+   * The user's banner images
+   */
+  bannerImage: string | null;
+}
+
+export interface findUsersByName_Page {
+  __typename: "Page";
+  users: (findUsersByName_Page_users | null)[] | null;
+}
+
+export interface findUsersByName {
+  Page: findUsersByName_Page | null;
+}
+
+export interface findUsersByNameVariables {
+  query: string;
+  page: number;
+  perPage: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getCurrentUser
 // ====================================================
 
@@ -335,6 +391,10 @@ export interface getUserById_User {
    * The user's avatar images
    */
   avatar: getUserById_User_avatar | null;
+  /**
+   * The user's banner images
+   */
+  bannerImage: string | null;
 }
 
 export interface getUserById {
@@ -463,6 +523,10 @@ export interface searchUserByName_User {
    * The user's avatar images
    */
   avatar: searchUserByName_User_avatar | null;
+  /**
+   * The user's banner images
+   */
+  bannerImage: string | null;
 }
 
 export interface searchUserByName {
@@ -474,6 +538,47 @@ export interface searchUserByName {
 
 export interface searchUserByNameVariables {
   name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: UserData
+// ====================================================
+
+export interface UserData_avatar {
+  __typename: "UserAvatar";
+  /**
+   * The avatar of user at its largest size
+   */
+  large: string | null;
+  /**
+   * The avatar of user at medium size
+   */
+  medium: string | null;
+}
+
+export interface UserData {
+  __typename: "User";
+  /**
+   * The id of the user
+   */
+  id: number;
+  /**
+   * The name of the user
+   */
+  name: string;
+  /**
+   * The user's avatar images
+   */
+  avatar: UserData_avatar | null;
+  /**
+   * The user's banner images
+   */
+  bannerImage: string | null;
 }
 
 /* tslint:disable */

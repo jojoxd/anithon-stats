@@ -1,8 +1,7 @@
 <script lang="ts">
-  import {computed, defineComponent, PropType, ref, watch} from "vue";
+  import {computed, defineComponent, PropType, ref} from "vue";
   import {IAnilistUserMetadata, IEntry} from "@anistats/shared";
   import {useVModels} from "@vueuse/core";
-  import {useBreakpoints} from "../../composition/useBreakpoints";
   import {useEntry} from "../../composition/useEntry";
 	import {mdiDeleteOutline, mdiLinkVariant} from "@mdi/js";
 

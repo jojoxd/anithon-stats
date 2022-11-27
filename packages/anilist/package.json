@@ -12,8 +12,8 @@
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-link-http": "^1.5.16",
     "async-mutex": "0.4.0",
-    "gql-tag": "^1.0.1",
-    "graphql": "^15.8.0"
+    "graphql": "^15.8.0",
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "@jojoxd/tsconfig": "1.1.3",

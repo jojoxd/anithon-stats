@@ -1,10 +1,10 @@
 <script lang="ts">
 	import {computed, defineComponent, ref, watch} from "vue";
-	import {useTitle} from "../composition/useTitle";
-	import {ApiStatus} from "../composition/useApi";
+	import {useTitle} from "../../composition/useTitle";
+	import {ApiStatus} from "../../composition/useApi";
 	import {useVModels} from "@vueuse/core";
-	import {IOverlayController} from "../plugin/overlay";
-	import {useList} from "../composition/composed/useList";
+	import {IOverlayController} from "../../plugin/overlay";
+	import {useList} from "../../composition/composed/useList";
 	import {mdiContentSave} from "@mdi/js";
 
 	declare const $overlay: IOverlayController;

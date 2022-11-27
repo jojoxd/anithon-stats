@@ -20,4 +20,6 @@ export interface IAnilistApi
     getCurrentUser(): Promise<IAnilistUser | null>;
 
     searchUserByName(username: string): Promise<IAnilistUser | null>;
+
+    findUsersByName(username: string): Promise<Array<IAnilistUser>>;
 }

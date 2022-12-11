@@ -1,0 +1,1 @@
+{"version":3,"file":"AnilistError.d.ts","sourceRoot":"","sources":["AnilistError.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,YAAY,EAAC,MAAM,SAAS,CAAC;AAErC,qBAAa,YAAa,SAAQ,KAAK;gBAEvB,OAAO,CAAC,EAAE,MAAM,EAAE,aAAa,CAAC,EAAE,aAAa,CAAC,YAAY,CAAC;IAOzE,SAAgB,aAAa,EAAE,aAAa,CAAC,YAAY,CAAC,GAAG,SAAS,CAAC;CAC1E"}

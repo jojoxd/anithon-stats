@@ -63,5 +63,3 @@ database.sqlite
 .env
 .env.*
 !.env.default
-
-tmp

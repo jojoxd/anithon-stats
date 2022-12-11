@@ -95,7 +95,7 @@
 <template>
 	<v-dialog v-model="dialogOpen" :fullscreen="isDialogFullscreen" :width="dialogWidth">
 		<template #activator="{ props }">
-			<v-btn :icon="mdiMagnify" v-bind="props"></v-btn>
+			<v-btn variant="plain" :icon="mdiMagnify" v-bind="props"></v-btn>
 		</template>
 
 		<v-row>

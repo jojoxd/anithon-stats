@@ -14,7 +14,6 @@
     "@vitejs/plugin-vue": "^4.0.0-alpha.1",
     "@vue/compiler-sfc": "^3.2.33",
     "sass": "^1.51.0",
-    "typescript": "^4.6.4",
     "unplugin-icons": "^0.14.3",
     "unplugin-vue-components": "0.22.11",
     "vite": "^3.2.4",

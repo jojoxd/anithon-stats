@@ -41,7 +41,7 @@
 		<div v-if="currentUser?.isAuthenticated">
 			<user-settings-menu>
 				<template #activator="{ props }">
-					<v-btn icon v-bind="props">
+					<v-btn icon variant="plain" v-bind="props">
 						<v-avatar :image="currentUser?.avatar?.large" />
 					</v-btn>
 				</template>
@@ -51,6 +51,7 @@
 			<v-btn
 				:prepend-icon="mdiLoginVariant"
 				:href="oauthUri"
+        variant="plain"
 			>
 				Log in
 			</v-btn>

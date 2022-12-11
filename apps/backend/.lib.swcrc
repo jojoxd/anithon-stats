@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "module": {
+  	"type": "commonjs"
+  },
+  "jsc": {
+  	"externalHelpers": false,
+    "target": "es5",
+    "parser": {
+      "syntax": "typescript",
+      "jsx": false,
+      "decorators": true
+    },
+    "transform": {
+			"legacyDecorator": true,
+			"decoratorMetadata": true
+    },
+    "preserveAllComments": true,
+    "loose": false,
+    "minify": {
+      "compress": false,
+      "mangle": false
+    }
+  },
+  "sourceMaps": true,
+  "minify": false
+}

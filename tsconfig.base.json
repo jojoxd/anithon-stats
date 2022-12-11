@@ -1,0 +1,23 @@
+{
+  "extends": "@jojoxd/tsconfig/config/base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "ES6",
+    "baseUrl": ".",
+    "paths": {
+      "@anistats/anilist": [
+        "libs/anilist/src/index.ts"
+      ],
+      "@anistats/shared": [
+        "libs/shared/src/index.ts"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
+}

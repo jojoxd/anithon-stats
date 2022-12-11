@@ -6956,7 +6956,7 @@ __metadata:
     vue: ^3.2.33
     vue-router: ^4.0.15
     vue3-popper: ^1.4.2
-    vuetify: 3.0.1
+    vuetify: 3.0.4
   languageName: unknown
   linkType: soft
 
@@ -23696,9 +23696,9 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"vuetify@npm:3.0.1":
-  version: 3.0.1
-  resolution: "vuetify@npm:3.0.1"
+"vuetify@npm:3.0.4":
+  version: 3.0.4
+  resolution: "vuetify@npm:3.0.4"
   peerDependencies:
     vite-plugin-vuetify: ^1.0.0-alpha.12
     vue: ^3.2.0
@@ -23711,7 +23711,7 @@ fsevents@~2.1.1:
       optional: true
     webpack-plugin-vuetify:
       optional: true
-  checksum: 520fddba9200b27419a6f7dda697cef47547e2fa9b00564f76103e830e136063ed4e60e664832ce2b63e9cda81e5c65d23da11bbb0dc095626e0c2607cb1ccb6
+  checksum: 2b9901f8960d44844959cc26c7cc71c3aa5571f9cb917b15397138ca4ed7df65f5a1652816ec6796e9a5a50c8ac760e35bc70e88adaab459869aa671bc943dc8
   languageName: node
   linkType: hard
 

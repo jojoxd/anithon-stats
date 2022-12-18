@@ -149,7 +149,7 @@
 						</v-col>
 
 						<v-col cols="12" md="6" v-show="user?.isCurrentUser || true">
-							<EntrySettings :entry="entry" />
+							<EntrySettings v-model:entry="entry" />
 						</v-col>
 					</v-row>
 				</v-card-text>

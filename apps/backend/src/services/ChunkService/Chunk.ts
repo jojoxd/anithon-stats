@@ -1,14 +1,13 @@
 import {Entry} from "./Entry";
 import {MediaListStatus} from "@anistats/anilist";
 import {Deprecated, Description, Enum, ForwardGroups, Property} from "@tsed/schema";
-import {IChunk} from "@anistats/shared";
-import { $log } from "@tsed/common";
-import {ChunkStateEnum} from "@anistats/shared";
+import {ChunkDto, ChunkStateEnum} from "@anistats/shared";
+import {$log} from "@tsed/common";
 
 /**
  * Data Class
  */
-export class Chunk implements IChunk
+export class Chunk implements ChunkDto
 {
     @Property()
     @ForwardGroups()
@@ -50,7 +49,13 @@ export class Chunk implements IChunk
 	@Description("Progress (in Episodes) of this chunk")
     get progress(): number
     {
-    	return Math.max(0, this.entry.data.progress! - this.start + 1);
+		const progress = Math.min(Math.max(this.start, this.entry.data.progress ?? 0), this.end) - this.start;
+
+		if (this.state === ChunkStateEnum.NotStarted) {
+			return progress;
+		}
+
+		return progress + 1;
     }
 
     @Property()
@@ -58,6 +63,20 @@ export class Chunk implements IChunk
 	@Enum(ChunkStateEnum)
     get state(): ChunkStateEnum
 	{
+		if (this.entry.isDropped) {
+			if (this.entry.progress >= this.start && this.entry.progress <= this.end) {
+				return ChunkStateEnum.Dropped;
+			}
+		}
+
+		if (this.entry.progress >= this.end) {
+			return ChunkStateEnum.Complete;
+		}
+
+		if (this.entry.progress >= this.start && this.entry.progress <= this.end) {
+			return ChunkStateEnum.Started;
+		}
+
 		return ChunkStateEnum.NotStarted;
 	}
 

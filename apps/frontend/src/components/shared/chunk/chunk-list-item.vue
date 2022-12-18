@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { defineComponent, toRefs, computed, PropType } from "vue";
 	import { get } from "@vueuse/core";
-	import {IChunk} from "@anistats/shared";
-	import {mdiCheck, mdiChevronDoubleRight, mdiClose, mdiPlay} from "@mdi/js";
+  import {ChunkDto, ChunkStateEnum} from "@anistats/shared";
+  import {mdiCheck, mdiChevronDoubleRight, mdiClose, mdiPageNext, mdiPlay} from "@mdi/js";
 	import {useEntry} from "../../../composition/useEntry";
 	import {storeToRefs} from "pinia";
 	import {useAppStore} from "../../../composition/store/app-store";
@@ -10,7 +10,7 @@
 	export default defineComponent({
 		props: {
 			chunk: {
-				type: Object as PropType<IChunk>,
+				type: Object as PropType<ChunkDto>,
 				required: true,
 			},
 
@@ -22,7 +22,12 @@
 			hasProgressAfter: {
 				type: Boolean,
 				default: false,
-			}
+			},
+
+      isLastChunk: {
+        type: Boolean,
+        default: false,
+      },
 		},
 
 		setup(props) {
@@ -30,6 +35,7 @@
 				chunk,
 				index,
 				hasProgressAfter,
+        isLastChunk,
 			} = toRefs(props);
 
 			const { isDebugEnabled } = storeToRefs(useAppStore());
@@ -41,26 +47,33 @@
 			} = useEntry(entry);
 
 			const timelineData = computed(() => {
-				const _chunk = get(chunk) as IChunk;
+				const _chunk = get(chunk) as ChunkDto;
 				const _hasProgressAfter = get(hasProgressAfter);
+        const _isLastChunk = get(isLastChunk);
 
-				// @TODO(#21): Need user progress (in episodes) to accurately define what chunk was the first to be dropped
-				if(_chunk.entry.isDropped) {
-				// if(_chunk.entry.isDropped && _chunk.start < _chunk.entry.episodes && _chunk.progress === 0) {
-					return { icon: mdiClose, color: 'error' };
-				}
+        switch(_chunk.state) {
+          case ChunkStateEnum.NotStarted:
+            if (_hasProgressAfter && !_isLastChunk) {
+              return { icon: mdiChevronDoubleRight, color: 'warning', };
+            }
 
-				// @TODO(#22): We currently can't accurately pinpoint the currently playing anime,
-				//             so mdiPlay case will be in this as well
-				if(!_chunk.isComplete && (_chunk.progress === 0 || _hasProgressAfter)) {
-					return { icon: mdiChevronDoubleRight, color: 'warning' };
-				}
+            return { icon: mdiPageNext, color: 'info', };
 
-				if (_chunk.isComplete) {
-					return { icon: mdiCheck, color: 'success' };
-				}
+          case ChunkStateEnum.Started:
+            if (_hasProgressAfter) {
+              return { icon: mdiChevronDoubleRight, color: 'warning', };
+            }
 
-				return { icon: mdiPlay, color: 'success' };
+            return { icon: mdiPlay, color: 'success', };
+
+          case ChunkStateEnum.Complete:
+            return { icon: mdiCheck, color: 'success', };
+
+          case ChunkStateEnum.Dropped:
+            return { icon: mdiClose, color: 'error', };
+        }
+
+        throw new Error(`ChunkStates exhausted: ${_chunk.state}`);
 			});
 
 			return {
@@ -84,7 +97,7 @@
 		<v-card :title="title">
 			<v-card-text>
 				<!-- TODO(#21): Add episode Progress of current chunk instead of percentage -->
-				Progress: {{ (chunk?.progress ?? 0).toFixed(1) }}%
+				{{ chunk?.progress }} / {{ chunk.end - chunk.start + 1 }} watched
 				<v-divider />
 				<template v-if="chunk.end - chunk.start > 1">
 					Episodes {{ chunk.start }} - {{ chunk.end }}
@@ -95,7 +108,7 @@
 
 				<template v-if="isDebugEnabled">
 					<v-divider />
-					Status: TODO
+					{{ chunk.state }}
 					<br/>
 					Is Joined: {{ chunk.isJoined ? 'Yes' : 'No' }}
 				</template>

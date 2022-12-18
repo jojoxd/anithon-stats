@@ -89,6 +89,7 @@ export class ChunkService
         $log.info('[ChunkService] chunks', chunks.map(ch => `[\n\t${ch.map(c => `"${c.entry.data.media!.title!.romaji!}" ${c.start} - ${c.end}`).join("],\n\t[")}]`).join("\n"));
 
         const episodes = chunks.filter(chunk => {
+			$log.info(`[ChunkService] ${chunk[0]!.entry.data!.media!.title!.romaji!}: mediaFormat = ${chunk[0]!.entry.data!.media!.format}, chunks = ${chunk[0]!.entry.chunks}`);
             return chunk[0]!.entry.data!.media!.format! !== MediaFormat.MOVIE && chunk[0]!.entry.chunks > 1;
         });
 
@@ -97,7 +98,7 @@ export class ChunkService
             return chunk[0]!.entry.data!.media!.format! === MediaFormat.MOVIE || chunk[0]!.entry.chunks === 1;
         });
 
-        $log.debug("[ChunkService] Episodes & Movies", {episodes, movies});
+        $log.info("[ChunkService] Episodes & Movies", {episodes, movies});
 
         let episodeStack = new StackManager(episodes, 3);
         let moviesStack = new StackManager(movies, movies.length);
@@ -109,15 +110,15 @@ export class ChunkService
 
         let i = 0;
         while(!episodeStack.done || !moviesStack.done) {
-            $log.debug('[ChunkService] i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
+            $log.info('[ChunkService] i = %s, movieInterval = %s, epi# = %s, mov# = %s', i, movieInterval, episodes.length, movies.length);
 
-            $log.debug('[ChunkService] emit episodeChunk');
+            $log.info('[ChunkService] emit episodeChunk');
             let episodeChunk = episodeGenerator.next().value;
             if(episodeChunk)
                 yield episodeChunk;
 
             if(i % movieInterval === 0) {
-                $log.debug('[ChunkService] emit movieChunk');
+                $log.info('[ChunkService] emit movieChunk');
                 let movieChunk = movieGenerator.next().value;
 
                 if(movieChunk)

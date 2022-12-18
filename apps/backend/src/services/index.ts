@@ -6,6 +6,7 @@ export * from "./AnilistUserManager";
 export * from "./AuthContextProvider";
 export * from "./ChunkService";
 export * from "./EntryService";
+export * from "./PlatformExceptionFilter";
 export * from "./UserListContainerManager";
 export * from "./ChunkService/Chunk";
 export * from "./ChunkService/Entry";

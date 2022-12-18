@@ -1,9 +1,9 @@
-/**
- * A single Chunk
- */
 import {ChunkStateEnum} from "./chunk-state.enum";
 import {EntryDto} from "../entry/entry.dto";
 
+/**
+ * A single Chunk
+ */
 export interface ChunkDto
 {
 	readonly entry: EntryDto;

@@ -30,27 +30,6 @@ export class UserControllerOld
         return { ...currentUser, isAuthenticated: true, isCurrentUser: true };
     }
 
-    // @Get("/:userName")
-    // @ContentType("application/json")
-    // async getFindUser(@PathParams("userName") userName: string)
-    // {
-    //     $log.info(`Find User: ${userName}`);
-    //
-    //     const currentUser = await this.anilistService.getCurrentUser();
-    //
-    //     const user = await this.anilistService.searchUserByName(userName);
-    //
-    //     if(!user)
-    //         return null;
-    //
-    //     this.anilistUserManager.getUserByAnilistId(user.id);
-    //
-    //     return {
-    //         ...user,
-    //         isCurrentUser: user.id === currentUser?.id,
-    //     };
-    // }
-
     @Get("/:userName/lists")
     @Header({
         'Cache-Control': 'no-store',

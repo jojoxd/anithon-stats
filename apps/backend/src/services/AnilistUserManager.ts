@@ -5,7 +5,7 @@ import {AnilistUser} from "../entity/AnilistUser";
 import {UserList} from "../entity/UserList";
 import { $log } from "@tsed/common";
 import {Mutex} from "async-mutex";
-import {IAnilistUserMetadata, IUserData} from "@anistats/shared";
+import {IUserData} from "@anistats/shared";
 import {SavedData} from "../entity/SavedData";
 
 class MutexManager

@@ -11,6 +11,10 @@
       }
     },
 
+    emits: [
+        'update:entry'
+    ],
+
     setup(props, { emit })
     {
       const { entry } = useVModels(props, emit);
@@ -58,6 +62,7 @@
 		></v-text-field>
 
 		<v-text-field
+      v-if="entry.series.episodes > 1"
 			type="number"
 			min="0"
 			:max="entry.series.episodes - 1"

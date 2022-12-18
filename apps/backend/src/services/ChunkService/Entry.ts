@@ -3,13 +3,14 @@ import {SavedData} from "../../entity/SavedData";
 import {Chunk} from "./Chunk";
 import {Description, ForwardGroups, Groups, Property} from "@tsed/schema";
 import {SeriesData} from "./SeriesData";
-import {IEntry, ISavedData} from "@anistats/shared";
+import {EntryDto} from "@anistats/shared";
 import {UserList} from "../../entity/UserList";
+import {SavedDataDto} from "../../dto/SavedDataDto";
 
 /**
  * Entry Chunk Generation
  */
-export class Entry implements IEntry
+export class Entry implements EntryDto
 {
     protected readonly userList: UserList;
 
@@ -17,14 +18,14 @@ export class Entry implements IEntry
 
     @Property(SavedData)
 	@Description("Saved Data")
-    public readonly savedData: ISavedData;
+    public readonly savedData: SavedDataDto;
 
     constructor(data: fetchUserLists_MediaListCollection_lists_entries, savedData: SavedData, userList: UserList)
     {
         this.data = data;
         this.userList = userList;
 
-        this.savedData = savedData.data[data.id!] ?? { mult: 1, order: 0, startAt: 0, split: undefined };
+		this.savedData = new SavedDataDto(savedData.data[data.id!]);
     }
 
     @Property()

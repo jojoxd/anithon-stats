@@ -8,7 +8,7 @@ import {IListData, IUserData} from "@anistats/shared";
 import {AnilistService, MediaType} from "@anistats/anilist";
 
 @Controller("/user")
-export class UserController
+export class UserListController
 {
     @Inject()
     protected readonly anilistUserManager!: AnilistUserManager;

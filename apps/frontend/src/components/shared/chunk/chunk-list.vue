@@ -35,7 +35,7 @@
 <template>
 	<v-timeline side="end">
 		<template v-for="(chunk, idx) in chunks" :key="idx">
-			<chunk-list-item :chunk="chunk" :index="idx" :has-progress-after="hasProgressAfter(idx)" />
+			<chunk-list-item :chunk="chunk" :index="idx" :has-progress-after="hasProgressAfter(idx)" :is-last-chunk="idx === chunks.length" />
 		</template>
 	</v-timeline>
 </template>

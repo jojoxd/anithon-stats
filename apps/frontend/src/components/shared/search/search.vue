@@ -49,13 +49,15 @@
 
 				if(item.type === "user") {
 					router.push(`/u/${item.name}`);
+          return;
 				}
 
 				if (item.type === "list") {
 					router.push(`/l/${item.uuid}`);
+          return;
 				}
 
-				throw new Error("Item Types Exhausted");
+				throw new Error(`Item Types Exhausted: ${item.type}`);
 			}
 
 			const data = computed(() => {

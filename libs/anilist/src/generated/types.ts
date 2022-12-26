@@ -362,6 +362,35 @@ export interface getCurrentUser {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getListsContainingMediaId
+// ====================================================
+
+export interface getListsContainingMediaId_MediaList {
+  __typename: "MediaList";
+  /**
+   * Map of booleans for which custom lists the entry are in
+   */
+  customLists: any | null;
+}
+
+export interface getListsContainingMediaId {
+  /**
+   * Media list query
+   */
+  MediaList: getListsContainingMediaId_MediaList | null;
+}
+
+export interface getListsContainingMediaIdVariables {
+  mediaId: number;
+  userId: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getUserById
 // ====================================================
 
@@ -513,7 +542,7 @@ export interface addEntryToList {
 }
 
 export interface addEntryToListVariables {
-  listName: string;
+  listNames: string[];
   mediaId: number;
 }
 

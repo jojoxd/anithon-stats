@@ -6,11 +6,14 @@
 	import {IOverlayController} from "../../plugin/overlay";
 	import {useList} from "../../composition/composed/useList";
 	import {mdiContentSave} from "@mdi/js";
+  import {SeriesDto} from "@anistats/shared";
+  import {useAddEntryFn} from "../../composition/useAddEntryFn";
+  import {useSeriesTitle} from "../../composition/useSeriesTitle";
 
 	declare const $overlay: IOverlayController;
 
 	export default defineComponent({
-		props: {
+    props: {
 			listId: {
 				type: String,
 				required: true,
@@ -115,6 +118,33 @@
 				}
 			});
 
+			const addEntry = useAddEntryFn(listId);
+      async function addSeries(series: SeriesDto)
+      {
+        // @TODO: Add series
+        console.log('Add series', series.id, series.title.romaji);
+
+
+        const title = useSeriesTitle(series.title).seriesTitle.value
+
+        $overlay.show(`Adding ${title} to list`, null, true);
+        const success = await addEntry(series.id);
+
+        if (!success) {
+          $overlay.show("Could not add Entry", null, false);
+          return;
+        } else {
+          $overlay.hide();
+        }
+
+        await update();
+      }
+
+      function isSeriesDtoSearchItemDisabled(series: SeriesDto): boolean
+      {
+        return entryData.value?.some(entry => entry.series.id === series.id) ?? true;
+      }
+
 			return {
 				listId,
 				listData,
@@ -124,6 +154,9 @@
 
 				update,
 
+        addSeries,
+        isSeriesDtoSearchItemDisabled,
+
 				userData,
 				entryData,
 				chunkData,
@@ -132,8 +165,8 @@
 				ApiStatus,
 
 				mdiContentSave,
-			}
-		}
+			};
+		},
 	});
 </script>
 
@@ -146,6 +179,8 @@
 		<list-settings-card v-model="listSettings" v-if="listSettings" />
 
 		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>
+
+    <search-series @selected="addSeries($event)" :is-disabled="isSeriesDtoSearchItemDisabled" />
 
 		<template v-if="userData?.isCurrentUser ?? false">
 			<v-btn

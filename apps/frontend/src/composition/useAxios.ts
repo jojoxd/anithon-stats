@@ -10,6 +10,9 @@ const getBaseUrl = (): string => {
 
 const axiosInstance = axios.create({
     baseURL: getBaseUrl(),
+
+    // Don't throw on responses >=300
+    validateStatus: () => true,
 });
 
 if(import.meta.env.DEV) {

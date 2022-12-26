@@ -494,6 +494,204 @@ export interface getUserListsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: addEntryToList
+// ====================================================
+
+export interface addEntryToList_SaveMediaListEntry {
+  __typename: "MediaList";
+  /**
+   * The id of the list entry
+   */
+  id: number;
+}
+
+export interface addEntryToList {
+  /**
+   * Create or update a media list entry
+   */
+  SaveMediaListEntry: addEntryToList_SaveMediaListEntry | null;
+}
+
+export interface addEntryToListVariables {
+  listName: string;
+  mediaId: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: searchSeries
+// ====================================================
+
+export interface searchSeries_Page_media_coverImage {
+  __typename: "MediaCoverImage";
+  /**
+   * The cover image url of the media at a large size
+   */
+  large: string | null;
+}
+
+export interface searchSeries_Page_media_startDate {
+  __typename: "FuzzyDate";
+  /**
+   * Numeric Year (2017)
+   */
+  year: number | null;
+  /**
+   * Numeric Month (3)
+   */
+  month: number | null;
+  /**
+   * Numeric Day (24)
+   */
+  day: number | null;
+}
+
+export interface searchSeries_Page_media_endDate {
+  __typename: "FuzzyDate";
+  /**
+   * Numeric Year (2017)
+   */
+  year: number | null;
+  /**
+   * Numeric Month (3)
+   */
+  month: number | null;
+  /**
+   * Numeric Day (24)
+   */
+  day: number | null;
+}
+
+export interface searchSeries_Page_media_title {
+  __typename: "MediaTitle";
+  /**
+   * The romanization of the native language title
+   */
+  romaji: string | null;
+  /**
+   * The official english title
+   */
+  english: string | null;
+  /**
+   * Official title in it's native language
+   */
+  native: string | null;
+}
+
+export interface searchSeries_Page_media_relations_edges_node_title {
+  __typename: "MediaTitle";
+  /**
+   * The romanization of the native language title
+   */
+  romaji: string | null;
+  /**
+   * The official english title
+   */
+  english: string | null;
+  /**
+   * Official title in it's native language
+   */
+  native: string | null;
+}
+
+export interface searchSeries_Page_media_relations_edges_node {
+  __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: searchSeries_Page_media_relations_edges_node_title | null;
+}
+
+export interface searchSeries_Page_media_relations_edges {
+  __typename: "MediaEdge";
+  /**
+   * The type of relation to the parent model
+   */
+  relationType: MediaRelation | null;
+  node: searchSeries_Page_media_relations_edges_node | null;
+}
+
+export interface searchSeries_Page_media_relations {
+  __typename: "MediaConnection";
+  edges: (searchSeries_Page_media_relations_edges | null)[] | null;
+}
+
+export interface searchSeries_Page_media {
+  __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The current releasing status of the media
+   */
+  status: MediaStatus | null;
+  /**
+   * The format the media was released in
+   */
+  format: MediaFormat | null;
+  /**
+   * The amount of episodes the anime has when complete
+   */
+  episodes: number | null;
+  /**
+   * The general length of each anime episode in minutes
+   */
+  duration: number | null;
+  /**
+   * Short description of the media's story and characters
+   */
+  description: string | null;
+  /**
+   * The cover images of the media
+   */
+  coverImage: searchSeries_Page_media_coverImage | null;
+  /**
+   * The first official release date of the media
+   */
+  startDate: searchSeries_Page_media_startDate | null;
+  /**
+   * The last official release date of the media
+   */
+  endDate: searchSeries_Page_media_endDate | null;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: searchSeries_Page_media_title | null;
+  /**
+   * Other media in the same or connecting franchise
+   */
+  relations: searchSeries_Page_media_relations | null;
+}
+
+export interface searchSeries_Page {
+  __typename: "Page";
+  media: (searchSeries_Page_media | null)[] | null;
+}
+
+export interface searchSeries {
+  Page: searchSeries_Page | null;
+}
+
+export interface searchSeriesVariables {
+  query: string;
+  type: MediaType;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: searchUserByName
 // ====================================================
 
@@ -538,6 +736,161 @@ export interface searchUserByName {
 
 export interface searchUserByNameVariables {
   name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: SeriesData
+// ====================================================
+
+export interface SeriesData_coverImage {
+  __typename: "MediaCoverImage";
+  /**
+   * The cover image url of the media at a large size
+   */
+  large: string | null;
+}
+
+export interface SeriesData_startDate {
+  __typename: "FuzzyDate";
+  /**
+   * Numeric Year (2017)
+   */
+  year: number | null;
+  /**
+   * Numeric Month (3)
+   */
+  month: number | null;
+  /**
+   * Numeric Day (24)
+   */
+  day: number | null;
+}
+
+export interface SeriesData_endDate {
+  __typename: "FuzzyDate";
+  /**
+   * Numeric Year (2017)
+   */
+  year: number | null;
+  /**
+   * Numeric Month (3)
+   */
+  month: number | null;
+  /**
+   * Numeric Day (24)
+   */
+  day: number | null;
+}
+
+export interface SeriesData_title {
+  __typename: "MediaTitle";
+  /**
+   * The romanization of the native language title
+   */
+  romaji: string | null;
+  /**
+   * The official english title
+   */
+  english: string | null;
+  /**
+   * Official title in it's native language
+   */
+  native: string | null;
+}
+
+export interface SeriesData_relations_edges_node_title {
+  __typename: "MediaTitle";
+  /**
+   * The romanization of the native language title
+   */
+  romaji: string | null;
+  /**
+   * The official english title
+   */
+  english: string | null;
+  /**
+   * Official title in it's native language
+   */
+  native: string | null;
+}
+
+export interface SeriesData_relations_edges_node {
+  __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: SeriesData_relations_edges_node_title | null;
+}
+
+export interface SeriesData_relations_edges {
+  __typename: "MediaEdge";
+  /**
+   * The type of relation to the parent model
+   */
+  relationType: MediaRelation | null;
+  node: SeriesData_relations_edges_node | null;
+}
+
+export interface SeriesData_relations {
+  __typename: "MediaConnection";
+  edges: (SeriesData_relations_edges | null)[] | null;
+}
+
+export interface SeriesData {
+  __typename: "Media";
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The current releasing status of the media
+   */
+  status: MediaStatus | null;
+  /**
+   * The format the media was released in
+   */
+  format: MediaFormat | null;
+  /**
+   * The amount of episodes the anime has when complete
+   */
+  episodes: number | null;
+  /**
+   * The general length of each anime episode in minutes
+   */
+  duration: number | null;
+  /**
+   * Short description of the media's story and characters
+   */
+  description: string | null;
+  /**
+   * The cover images of the media
+   */
+  coverImage: SeriesData_coverImage | null;
+  /**
+   * The first official release date of the media
+   */
+  startDate: SeriesData_startDate | null;
+  /**
+   * The last official release date of the media
+   */
+  endDate: SeriesData_endDate | null;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: SeriesData_title | null;
+  /**
+   * Other media in the same or connecting franchise
+   */
+  relations: SeriesData_relations | null;
 }
 
 /* tslint:disable */

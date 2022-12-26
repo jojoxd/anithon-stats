@@ -10,7 +10,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/shared",
+        "outputPath": "libs/shared/dist",
         "tsConfig": "libs/shared/tsconfig.lib.json",
         "packageJson": "libs/shared/package.json",
         "main": "libs/shared/src/index.ts",

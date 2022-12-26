@@ -10,7 +10,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/apps/backend",
+        "outputPath": "apps/backend/dist",
 				"tsConfig": "apps/backend/tsconfig.app.json",
 				"packageJson": "apps/backend/package.json",
         "main": "apps/backend/src/main.ts",

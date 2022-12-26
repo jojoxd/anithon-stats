@@ -2,6 +2,7 @@
 
 import {gql} from "apollo-boost";
 import {DocumentNode} from "graphql";
+import SeriesDataFragment from "./fragments/SeriesDataFragment.gql";
 
 export default gql`
     query fetchUserLists($userId: Int!, $type: MediaType!, $statuses: [MediaListStatus!]!) {
@@ -31,51 +32,12 @@ export default gql`
                     }
 
                     media {
-                        id
-                        status
-                        format
-                        episodes
-                        duration
-                        description
-
-                        coverImage {
-                            large
-                        }
-
-                        startDate {
-                            year
-                            month
-                            day
-                        }
-
-                        endDate {
-                            year
-                            month
-                            day
-                        }
-
-                        title {
-                            romaji
-                            english
-                            native
-                        }
-                        
-                        relations {
-                            edges {
-                                relationType
-                                node {
-                                    id
-                                    title {
-                                        romaji
-                                        english
-                                        native                                        
-                                    }
-                                }
-                            }
-                        }
+                        ...SeriesData
                     }
                 }
             }
         }
     }
+    
+    ${SeriesDataFragment}
 ` as unknown as DocumentNode;

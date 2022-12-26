@@ -10,7 +10,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/anilist",
+        "outputPath": "libs/anilist/dist",
         "tsConfig": "libs/anilist/tsconfig.lib.json",
         "packageJson": "libs/anilist/package.json",
         "main": "libs/anilist/src/index.ts",

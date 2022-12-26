@@ -1,11 +1,12 @@
 import {Controller, Inject} from "@tsed/di";
-import {BodyParamEntity} from "@jojoxd/tsed-entity-mapper";
+import {BodyParamEntity, PathParamEntity} from "@jojoxd/tsed-entity-mapper";
 import {AnilistUser} from "../../../entity/AnilistUser";
-import {ContentType, Header, Post} from "@tsed/schema";
+import {ContentType, Header, Post, Put} from "@tsed/schema";
 import {AnilistUserManager} from "../../../services/AnilistUserManager";
-import {PathParams} from "@tsed/common";
-import {IListData, IUserData} from "@anistats/shared";
+import {BodyParams, PathParams, Session} from "@tsed/common";
+import {IListData, IUserData, ListAddEntryRequest} from "@anistats/shared";
 import {AnilistService, MediaType} from "@anistats/anilist";
+import {UserList} from "../../../entity/UserList";
 
 @Controller("/user")
 export class UserListController

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import {computed, defineComponent, ref, watch} from "vue";
+	import {computed, defineComponent, ref} from "vue";
 	import {mdiArrowLeft, mdiMagnify} from "@mdi/js";
 	import {ApiStatus} from "../../../composition/useApi";
 	import {useSearch} from "../../../composition/useSearch";
 	import {useRouter} from "vue-router";
-	import {SearchItem} from "@anistats/shared";
+  import {SearchItemListDto, SearchItemUserDto, SearchResponse} from "@anistats/shared";
 	import {breakpointsVuetify, useBreakpoints, useArrayFilter} from "@vueuse/core";
 	import {useCurrentUser} from "../../../composition/useCurrentUser";
 
@@ -14,7 +14,8 @@
 			const textField = ref<HTMLElement>(null);
 
 			const {
-				searchData,
+				users,
+        lists,
 				searchStatus,
 			} = useSearch(query);
 
@@ -42,40 +43,28 @@
 				return 400;
 			});
 
-			function go(item: SearchItem): void
+			function go(item: SearchItemUserDto | SearchItemListDto): void
 			{
 				dialogOpen.value = false;
 				query.value = "";
 
-				if(item.type === "user") {
+        if ('uuid' in item) {
+          router.push(`/l/${item.uuid}`);
+          return;
+        }
+
+				if('name' in item) {
 					router.push(`/u/${item.name}`);
           return;
 				}
 
-				if (item.type === "list") {
-					router.push(`/l/${item.uuid}`);
-          return;
-				}
-
-				throw new Error(`Item Types Exhausted: ${item.type}`);
+				throw new Error(`Items Exhausted: ${item}`);
 			}
-
-			const data = computed(() => {
-				if (query.value) {
-					return searchData.value?.items ?? [];
-				}
-
-				return [];
-			});
-
-			const users = useArrayFilter(data, (item) => item.type === 'user');
-			const lists = useArrayFilter(data, (item) => item.type === 'list');
 
 			return {
 				query,
 				textField,
 
-				data,
 				users,
 				lists,
 
@@ -114,12 +103,12 @@
 				></v-text-field>
 			</v-col>
 
-			<v-col cols="12" lg="6" v-if="query && data">
+			<v-col cols="12" lg="6" v-if="query">
 				<v-card>
 					<v-card-title>Users</v-card-title>
 
 					<v-card-text>
-						<v-list>
+						<v-list v-if="!isLoading">
 							<v-list-item
 								v-for="user of users"
 								@click="go(user)"
@@ -129,19 +118,19 @@
 							></v-list-item>
 
 							<v-list-item
-								v-if="lists.length === 0"
+								v-if="users.length === 0"
 							>No Users Found</v-list-item>
 						</v-list>
 					</v-card-text>
 				</v-card>
 			</v-col>
 
-			<v-col cols="12" lg="6" v-if="currentUser.isAuthenticated && query && data">
+			<v-col cols="12" lg="6" v-if="currentUser.isAuthenticated && query && !isLoading">
 				<v-card>
 					<v-card-title>Your Lists</v-card-title>
 
 					<v-card-text>
-						<v-list>
+						<v-list v-if="!isLoading">
 							<v-list-item
 								v-for="list of lists"
 								@click="go(list)"

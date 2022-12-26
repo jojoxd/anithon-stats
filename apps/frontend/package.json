@@ -6,6 +6,17 @@
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview"
   },
+  "dependencies": {
+    "@vueuse/core": "9",
+    "axios": "^1.0.0",
+    "moment": "^2.29.3",
+    "moment-duration-format": "^2.3.2",
+    "pinia": "^2.0.26",
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.15",
+    "vue3-popper": "^1.4.2",
+    "vuetify": "3.0.4"
+  },
   "devDependencies": {
     "@iconify/json": "^2.1.37",
     "@jojoxd/tsconfig": "1.1.3",

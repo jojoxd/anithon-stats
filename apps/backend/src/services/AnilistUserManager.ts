@@ -1,6 +1,6 @@
 import {Inject, Service} from "@tsed/di";
 import {ANILIST_USER_REPOSITORY} from "../entity/repository/AnilistUserRepository";
-import {AnilistService, IAnilistUser, MediaType} from "@anistats/anilist";
+import {AnilistService, AnilistSearchService, IAnilistUser, MediaType} from "@anistats/anilist";
 import {AnilistUser} from "../entity/AnilistUser";
 import {UserList} from "../entity/UserList";
 import { $log } from "@tsed/common";
@@ -27,6 +27,9 @@ export class AnilistUserManager
 {
     @Inject(ANILIST_USER_REPOSITORY)
     protected anilistUserRepository!: ANILIST_USER_REPOSITORY;
+
+	@Inject()
+	protected anilistSearchService!: AnilistSearchService;
 
     @Inject()
     protected anilistService!: AnilistService;
@@ -84,7 +87,7 @@ export class AnilistUserManager
             if(user === null) {
                 $log.info(`Creating user (userName:${userName})`);
 
-                const userData = await this.anilistService.searchUserByName(userName);
+                const userData = await this.anilistSearchService.searchUserByName(userName);
                 user = await this.createUser(userData);
                 forceUpdate = true;
             }

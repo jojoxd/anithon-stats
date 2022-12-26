@@ -264,7 +264,7 @@ type Character {
     name: CharacterName
     "The url for the character page on the AniList website"
     siteUrl: String
-    updatedAt: Int @deprecated(reason : "No data available")
+    updatedAt: Int @deprecated(reason: "No data available")
 }
 
 type CharacterConnection {
@@ -1376,13 +1376,13 @@ type MediaList {
 "List of anime or manga"
 type MediaListCollection {
     "A map of media list entry arrays grouped by custom lists"
-    customLists(asArray: Boolean): [[MediaList]] @deprecated(reason : "Not GraphQL spec compliant, use lists field instead.")
+    customLists(asArray: Boolean): [[MediaList]] @deprecated(reason: "Not GraphQL spec compliant, use lists field instead.")
     "If there is another chunk"
     hasNextChunk: Boolean
     "Grouped media list entries"
     lists: [MediaListGroup]
     "A map of media list entry arrays grouped by status"
-    statusLists(asArray: Boolean): [[MediaList]] @deprecated(reason : "Not GraphQL spec compliant, use lists field instead.")
+    statusLists(asArray: Boolean): [[MediaList]] @deprecated(reason: "Not GraphQL spec compliant, use lists field instead.")
     "The owner of the list"
     user: User
 }
@@ -1408,10 +1408,10 @@ type MediaListOptions {
     "The score format the user is using for media lists"
     scoreFormat: ScoreFormat
     "The list theme options for both lists"
-    sharedTheme: Json @deprecated(reason : "No longer used")
+    sharedTheme: Json @deprecated(reason: "No longer used")
     "If the shared theme should be used instead of the individual list themes"
-    sharedThemeEnabled: Boolean @deprecated(reason : "No longer used")
-    useLegacyLists: Boolean @deprecated(reason : "No longer used")
+    sharedThemeEnabled: Boolean @deprecated(reason: "No longer used")
+    useLegacyLists: Boolean @deprecated(reason: "No longer used")
 }
 
 "A user's list options for anime or manga lists"
@@ -1427,7 +1427,7 @@ type MediaListTypeOptions {
     "If the completed sections of the list should be separated by format"
     splitCompletedSectionByFormat: Boolean
     "The list theme options"
-    theme: Json @deprecated(reason : "This field has not yet been fully implemented and may change without warning")
+    theme: Json @deprecated(reason: "This field has not yet been fully implemented and may change without warning")
 }
 
 "Notification for when a media entry is merged into another for a user who had it on their list"
@@ -1472,7 +1472,7 @@ type MediaRank {
 
 "A media's statistics"
 type MediaStats {
-    airingProgression: [AiringProgression] @deprecated(reason : "Replaced by MediaTrends")
+    airingProgression: [AiringProgression] @deprecated(reason: "Replaced by MediaTrends")
     scoreDistribution: [ScoreDistribution]
     statusDistribution: [StatusDistribution]
 }
@@ -3366,7 +3366,7 @@ type Staff {
     "If the staff member is blocked from being added to favourites"
     isFavouriteBlocked: Boolean!
     "The primary language the staff member dub's in"
-    language: StaffLanguage @deprecated(reason : "Replaced with languageV2")
+    language: StaffLanguage @deprecated(reason: "Replaced with languageV2")
     "The primary language of the staff member. Current values: Japanese, English, Korean, Italian, Spanish, Portuguese, French, German, Hebrew, Hungarian, Chinese, Arabic, Filipino, Catalan, Finnish, Turkish, Dutch, Swedish, Thai, Tagalog, Malaysian, Indonesian, Vietnamese, Nepali, Hindi, Urdu"
     languageV2: String
     "Notes for site moderators"
@@ -3395,7 +3395,7 @@ type Staff {
     submissionStatus: Int
     "Submitter for the submission"
     submitter: User
-    updatedAt: Int @deprecated(reason : "No data available")
+    updatedAt: Int @deprecated(reason: "No data available")
     "[startYear, endYear] (If the 2nd value is not present staff is still active)"
     yearsActive: [Int]
 }
@@ -3833,7 +3833,7 @@ type User {
     "The user's moderator roles if they are a site moderator"
     moderatorRoles: [ModRole]
     "If the user is a moderator or data moderator"
-    moderatorStatus: String @deprecated(reason : "Deprecated. Replaced with moderatorRoles field.")
+    moderatorStatus: String @deprecated(reason: "Deprecated. Replaced with moderatorRoles field.")
     "The name of the user"
     name: String!
     "The user's general options"
@@ -3845,7 +3845,7 @@ type User {
     "The users anime & manga list statistics"
     statistics: UserStatisticTypes
     "The user's statistics"
-    stats: UserStats @deprecated(reason : "Deprecated. Replaced with statistics field.")
+    stats: UserStats @deprecated(reason: "Deprecated. Replaced with statistics field.")
     "The number of unread notifications the user has"
     unreadNotificationCount: Int
     "When the user's data was last updated"
@@ -4680,6 +4680,14 @@ enum UserTitleLanguage {
     ROMAJI_STYLISED
 }
 
+"ISO 3166-1 alpha-2 country code"
+scalar CountryCode
+
+"8 digit long date integer (YYYYMMDD). Unknown dates represented by 0. E.g. 2016: 20160000, May 1976: 19760500"
+scalar FuzzyDateInt
+
+scalar Json
+
 input AiringScheduleInput {
     airingAt: Int
     episode: Int
@@ -4779,12 +4787,3 @@ input StaffNameInput {
     "The person's full name in their native language"
     native: String
 }
-
-
-scalar Json
-
-"ISO 3166-1 alpha-2 country code"
-scalar CountryCode
-
-"8 digit long date integer (YYYYMMDD). Unknown dates represented by 0. E.g. 2016: 20160000, May 1976: 19760500"
-scalar FuzzyDateInt

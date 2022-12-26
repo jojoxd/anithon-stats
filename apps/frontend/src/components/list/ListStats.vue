@@ -23,7 +23,7 @@
 
 <template>
 	<v-chip-group disabled>
-		<v-chip>{{ $moment.duration(list?.meta.totalDuration, 'minutes').format() }}</v-chip>
+		<v-chip>{{ $moment.duration(list?.meta.totalDuration, 'minutes').format('HH:mm:ss') }}</v-chip>
 	</v-chip-group>
 </template>
 

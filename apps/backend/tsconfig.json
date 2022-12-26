@@ -11,5 +11,8 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+	"exclude": [
+		"./dist/**/*.ts"
+	]
 }

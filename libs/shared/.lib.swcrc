@@ -23,5 +23,6 @@
     }
   },
   "sourceMaps": true,
-  "minify": false
+  "minify": false,
+  "exclude": ["dist/", "node_modules/"]
 }

@@ -1,34 +1,16 @@
 import {MaybeRef, get} from "@vueuse/core";
 import {computed, ComputedRef} from "vue";
 import {IEntry} from "@anistats/shared";
-import {storeToRefs} from "pinia";
-import {Language, useAppStore} from "./store/app-store";
+import {useSeriesTitle} from "./useSeriesTitle";
 
 const FALLBACK_COVER = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/default.jpg";
 
 export function useEntry(entry: MaybeRef<IEntry>): IUseEntryReturnData
 {
     // Title
-    const { language } = storeToRefs(useAppStore());
-
-    const title = computed(() => {
-        const _entry = get(entry);
-
-        if(language.value == Language.English && _entry?.series?.title?.english)
-            return _entry.series.title.english;
-
-        if(language.value == Language.Native && _entry?.series?.title?.native)
-            return _entry.series.title.native;
-
-        if(language.value == Language.Romaji && _entry?.series?.title?.romaji)
-            return _entry.series.title.romaji;
-
-        return _entry?.series?.title?.english ??
-            _entry?.series?.title?.romaji ??
-            _entry?.series?.title?.native ??
-            "No Title Available";
-    });
-
+    const {seriesTitle: title} = useSeriesTitle(computed(() => {
+        return get(entry).series.title;
+    }));
 
     // Cover
     const cover = computed<string>(() => {

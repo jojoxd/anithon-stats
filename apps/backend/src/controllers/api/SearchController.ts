@@ -1,7 +1,14 @@
 import {Controller, Inject} from "@tsed/di";
-import {ISearchItemList, ISearchItemUser, ISearchRequest, ISearchResponse} from "@anistats/shared";
+import {
+	SearchItemListDto,
+	SearchItemUserDto,
+	SearchRequest,
+	SearchResponse,
+	SearchAnimeRequest,
+	SearchAnimeResponse
+} from "@anistats/shared";
 import {BodyParams, Post} from "@tsed/common";
-import {AnilistService} from "@anistats/anilist";
+import {AnilistSearchService, AnilistService, MediaType} from "@anistats/anilist";
 import {USERLIST_REPOSITORY} from "../../entity/repository/UserListRepository";
 import {UserList} from "../../entity/UserList";
 
@@ -11,11 +18,14 @@ export class SearchController
 	@Inject()
 	protected anilistService!: AnilistService;
 
+	@Inject()
+	protected anilistSearchService!: AnilistSearchService;
+
 	@Inject(USERLIST_REPOSITORY)
 	protected listRepository!: USERLIST_REPOSITORY;
 
 	@Post("/")
-	async search(@BodyParams() searchRequest: ISearchRequest): Promise<ISearchResponse>
+	async search(@BodyParams() searchRequest: SearchRequest): Promise<SearchResponse>
 	{
 		const users = await this.anilistService.findUsersByName(searchRequest.query);
 		const currentUser = await this.anilistService.getCurrentUser();
@@ -26,25 +36,45 @@ export class SearchController
 		}
 
 		return {
-			items: [
-				...users.map<ISearchItemUser>((user) => {
-					return {
-						type: 'user',
-						name: user.name,
+			users: users.map<SearchItemUserDto>((user) => {
+				return {
+					name: user.name,
+					avatar: user.avatar.large ?? undefined,
+				};
+			}),
 
-						uuid: 'test',
-					};
-				}),
+			lists: lists.map<SearchItemListDto>((list) => {
+				return {
+					name: list.listName,
+					uuid: list.id,
+				};
+			}),
+		};
+	}
 
-				...lists.map<ISearchItemList>((list) => {
-					return {
-						type: 'list',
-						name: list.listName,
+	@Post('/series')
+	async searchAnime(@BodyParams() request: SearchAnimeRequest): Promise<SearchAnimeResponse>
+	{
+		const data = await this.anilistSearchService.searchSeriesByName(request.query, MediaType.ANIME);
 
-						uuid: list.id,
-					};
-				}),
-			],
+		return {
+			series: data.map((serie) => {
+				return {
+					id: serie.id,
+
+					title: {
+						english: serie.title!.english!,
+						native: serie.title!.native!,
+						romaji: serie.title!.romaji!,
+					},
+
+					description: serie.description,
+					coverImage: serie.coverImage!.large!,
+					duration: serie.duration!,
+					episodes: serie.episodes,
+					notes: null,
+				}
+			}),
 		};
 	}
 }

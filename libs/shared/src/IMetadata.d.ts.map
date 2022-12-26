@@ -1,1 +1,0 @@
-{"version":3,"file":"IMetadata.d.ts","sourceRoot":"","sources":["IMetadata.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,UAAU,EAAC,MAAM,cAAc,CAAC;AAExC,MAAM,WAAW,SAAS;IAEtB,eAAe,CAAC,EAAE,OAAO,CAAC;IAE1B,SAAS,CAAC,EAAE;QAAE,CAAC,GAAG,EAAE,MAAM,GAAG,UAAU,CAAA;KAAE,CAAC;CAC7C"}

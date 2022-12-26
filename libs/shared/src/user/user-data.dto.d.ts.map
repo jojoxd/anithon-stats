@@ -1,1 +1,0 @@
-{"version":3,"file":"user-data.dto.d.ts","sourceRoot":"","sources":["user-data.dto.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,WAAW;IAE3B,QAAQ,CAAC,IAAI,EAAE,MAAM,CAAC;IAEtB,QAAQ,CAAC,SAAS,EAAE,MAAM,CAAC;IAE3B,QAAQ,CAAC,IAAI,EAAE,MAAM,CAAC;IAEtB,QAAQ,CAAC,MAAM,EAAE,MAAM,CAAC;IAExB,QAAQ,CAAC,aAAa,EAAE,OAAO,CAAC;CAChC"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"ICurrentUser.d.ts","sourceRoot":"","sources":["ICurrentUser.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,oBAAoB,EAAC,MAAM,wBAAwB,CAAC;AAE5D,oBAAY,YAAY,GAAG;IACvB,eAAe,EAAE,KAAK,CAAC;CAC1B,GAAG,CAAC;IACD,eAAe,EAAE,IAAI,CAAC;CACzB,GAAG,oBAAoB,CAAC,CAAA"}

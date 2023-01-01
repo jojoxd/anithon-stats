@@ -36,6 +36,10 @@
       },
     },
 
+    emits: [
+        'remove'
+    ],
+
     setup(props, { emit })
     {
       const { entry, index, user, upEnabled, downEnabled } = useVModels(props, emit);
@@ -155,7 +159,11 @@
 				</v-card-text>
 
 				<v-card-actions class="position-absolute" style="bottom: 0">
-					<v-btn :prepend-icon="mdiDeleteOutline" color="error">
+					<v-btn
+              :prepend-icon="mdiDeleteOutline"
+              color="error"
+              @click.prevent="$emit('remove')"
+          >
 						Remove
 					</v-btn>
 					<v-btn

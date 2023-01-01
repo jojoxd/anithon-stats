@@ -3,7 +3,7 @@ import {AnilistClientService} from "./AnilistClientService";
 import addEntryToListQuery from "../gql/mutation/addEntryToList.gql";
 import {
     addEntryToList, addEntryToListVariables, AnilistService, CustomListJson,
-    getListsContainingMediaId, getListsContainingMediaIdVariables
+    getListsContainingMediaId, getListsContainingMediaIdVariables, removeEntryFromList, removeEntryFromListVariables
 } from "..";
 
 import getListsContainingMediaIdQuery from "../gql/getListsContainingMediaId.gql";
@@ -39,9 +39,25 @@ export class AnilistListService
         });
     }
 
-    public async removeEntry(listName: string, id: number): Promise<void>
+    public async removeEntry(listName: string, mediaId: number): Promise<void>
     {
-        throw new Error("Removing entries not implemented");
+        const currentUser = await this.baseService.getCurrentUser();
+
+        if (!currentUser) {
+            console.log('NO CURRENT USER');
+            throw new Error(`Can't remove list entry from user as we are not authenticated`);
+        }
+
+        const originalListNames = await this.getListsContainingMediaId(currentUser.id, mediaId);
+
+        // Add Entry to lists
+        await this.client.mutate<addEntryToList, addEntryToListVariables, number>({
+            mutation: addEntryToListQuery,
+            variables: {
+                listNames: originalListNames.filter((originalListName) => originalListName !== listName),
+                mediaId,
+            },
+        });
     }
 
     public async getListsContainingMediaId(userId: number, mediaId: number): Promise<Array<string>>

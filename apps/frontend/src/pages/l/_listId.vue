@@ -9,6 +9,7 @@
   import {SeriesDto} from "@anistats/shared";
   import {useAddEntryFn} from "../../composition/useAddEntryFn";
   import {useSeriesTitle} from "../../composition/useSeriesTitle";
+  import {useRemoveEntryFn} from "../../composition/useRemoveEntryFn";
 
 	declare const $overlay: IOverlayController;
 
@@ -119,19 +120,38 @@
 			});
 
 			const addEntry = useAddEntryFn(listId);
+			const removeEntry = useRemoveEntryFn(listId);
+
       async function addSeries(series: SeriesDto)
       {
-        // @TODO: Add series
         console.log('Add series', series.id, series.title.romaji);
 
-
-        const title = useSeriesTitle(series.title).seriesTitle.value
+        const title = useSeriesTitle(series.title).seriesTitle.value;
 
         $overlay.show(`Adding ${title} to list`, null, true);
         const success = await addEntry(series.id);
 
         if (!success) {
           $overlay.show("Could not add Entry", null, false);
+          return;
+        } else {
+          $overlay.hide();
+        }
+
+        await update();
+      }
+
+      async function removeSeries(series: SeriesDto)
+      {
+        console.log('remove series', series);
+
+        const title = useSeriesTitle(series.title).seriesTitle.value;
+
+        $overlay.show(`Removing ${title} from list`, null, true);
+        const success = await removeEntry(series.id);
+
+        if (!success) {
+          $overlay.show("Could not remove Entry", null, false);
           return;
         } else {
           $overlay.hide();
@@ -155,6 +175,7 @@
 				update,
 
         addSeries,
+        removeSeries,
         isSeriesDtoSearchItemDisabled,
 
 				userData,
@@ -196,7 +217,7 @@
 								:prop-update="(entry, idx) => entry.savedData.order = idx">
 				<template #item="{ item, up, down, index, upEnabled, downEnabled }">
 					<EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled"
-													:down-enabled="downEnabled" :index="index"/>
+													:down-enabled="downEnabled" :index="index" @remove="removeSeries($event)"/>
 				</template>
 			</Sortable>
 		</div>

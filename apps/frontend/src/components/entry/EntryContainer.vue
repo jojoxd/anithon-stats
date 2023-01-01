@@ -37,6 +37,7 @@
 		emits: [
 			'move-up',
 			'move-down',
+      'remove',
 		],
 
     setup(props, { emit })
@@ -72,10 +73,10 @@
 		:entry="entry"
 	>
 		<div class="d-flex flex-column flex-grow-1">
-			<Entry :entry="entry" :index="index" :user="user" />
+			<Entry :entry="entry" :index="index" :user="user" @remove="$emit('remove', entry.series)" />
 
 			<template v-for="sequel of sequels">
-				<Entry :entry="sequel" :user="user" />
+				<Entry :entry="sequel" :user="user" @remove="$emit('remove', sequel.series)" />
 			</template>
 		</div>
 	</entry-sheet>

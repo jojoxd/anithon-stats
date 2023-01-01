@@ -552,6 +552,34 @@ export interface addEntryToListVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: removeEntryFromList
+// ====================================================
+
+export interface removeEntryFromList_DeleteMediaListEntry {
+  __typename: "Deleted";
+  /**
+   * If an item has been successfully deleted
+   */
+  deleted: boolean | null;
+}
+
+export interface removeEntryFromList {
+  /**
+   * Delete a media list entry
+   */
+  DeleteMediaListEntry: removeEntryFromList_DeleteMediaListEntry | null;
+}
+
+export interface removeEntryFromListVariables {
+  entryId: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: searchSeries
 // ====================================================
 

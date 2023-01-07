@@ -3,15 +3,13 @@
 	import {useTitle} from "../../composition/useTitle";
 	import {ApiStatus} from "../../composition/useApi";
 	import {useVModels} from "@vueuse/core";
-	import {IOverlayController} from "../../plugin/overlay";
 	import {useList} from "../../composition/composed/useList";
 	import {mdiContentSave} from "@mdi/js";
   import {SeriesDto} from "@anistats/shared";
   import {useAddEntryFn} from "../../composition/useAddEntryFn";
   import {useSeriesTitle} from "../../composition/useSeriesTitle";
   import {useRemoveEntryFn} from "../../composition/useRemoveEntryFn";
-
-	declare const $overlay: IOverlayController;
+  import {useOverlay} from "../../components/overlay/use-overlay.composition";
 
 	export default defineComponent({
     props: {
@@ -25,6 +23,8 @@
 			const {listId} = useVModels(props, emit);
 
 			const updating = ref<boolean>(false);
+
+			const overlay = useOverlay();
 
 			const {
 				chunkData,
@@ -91,31 +91,43 @@
 			}
 
 			watch([status], () => {
-				if (updating.value)
-					return;
-
-				else if(status.value !== ApiStatus.Ok) {
+				if (updating.value) {
+          return;
+        } else if(status.value !== ApiStatus.Ok) {
 					if (chunkStatus.value === ApiStatus.Failure) {
-						$overlay.show(`Something went wrong fetching chunks (${chunkResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-						return;
+					  return overlay.show({
+              title: `Something went wrong fetching chunks (${chunkResponseStatus.value})`,
+              content: `<a href="${window.location.href}">Reload</a>`
+            });
 					}
 
 					if (entryStatus.value === ApiStatus.Failure) {
-						$overlay.show(`Something went wrong fetching entries (${entryResponseStatus.value})`, `<a href="${window.location.href}">Reload</a>`, false);
-						return;
+					  return overlay.show({
+              title: `Something went wrong fetching entries (${entryResponseStatus.value})`,
+              content: `<a href="${window.location.href}">Reload</a>`
+            });
 					}
 
-					$overlay.show("Loading", null, true);
+					// @TODO: Spinner: true
+					return overlay.show({
+            title: `Loading`,
+            content: ``,
+            showSpinner: true,
+          })
 				} else {
-					$overlay.hide();
+				  overlay.hide();
 				}
-			}, {immediate: true});
+			}, { immediate: true, });
 
 			watch(updating, () => {
 				if (updating.value) {
-					$overlay.show("Updating", null, true);
+          overlay.show({
+            title: 'Updating',
+            content: ``,
+            showSpinner: true,
+          });
 				} else {
-					$overlay.hide();
+				  overlay.hide();
 				}
 			});
 
@@ -128,14 +140,14 @@
 
         const title = useSeriesTitle(series.title).seriesTitle.value;
 
-        $overlay.show(`Adding ${title} to list`, null, true);
+        //$overlay.show(`Adding ${title} to list`, null, true);
         const success = await addEntry(series.id);
 
         if (!success) {
-          $overlay.show("Could not add Entry", null, false);
+          //$overlay.show("Could not add Entry", null, false);
           return;
         } else {
-          $overlay.hide();
+          //$overlay.hide();
         }
 
         await update();
@@ -147,14 +159,14 @@
 
         const title = useSeriesTitle(series.title).seriesTitle.value;
 
-        $overlay.show(`Removing ${title} from list`, null, true);
+        //$overlay.show(`Removing ${title} from list`, null, true);
         const success = await removeEntry(series.id);
 
         if (!success) {
-          $overlay.show("Could not remove Entry", null, false);
+          //$overlay.show("Could not remove Entry", null, false);
           return;
         } else {
-          $overlay.hide();
+          //$overlay.hide();
         }
 
         await update();

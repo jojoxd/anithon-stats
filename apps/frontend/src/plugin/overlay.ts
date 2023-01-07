@@ -23,34 +23,34 @@ class OverlayController implements IOverlayController
 
     public show(title: string, content: string | null = null, spinner: boolean = false): void
     {
-    	console.log(`OverlayController: show(${title})`);
-
-        this.setHtmlOverflow("hidden");
-
-        this.title.value = title;
-        this.content.value = content;
-        this.shown.value = true;
-
-        this.hasContent.value = this.content.value !== null;
-
-        this.withSpinner.value = spinner;
+    	// console.log(`OverlayController: show(${title})`);
+        //
+        // this.setHtmlOverflow("hidden");
+        //
+        // this.title.value = title;
+        // this.content.value = content;
+        // this.shown.value = true;
+        //
+        // this.hasContent.value = this.content.value !== null;
+        //
+        // this.withSpinner.value = spinner;
     }
 
     public hide(): void
     {
-    	console.log(`OverlayController: hide(${this.title.value})`);
-
-        this.setHtmlOverflow(null);
-        this.shown.value = false;
+    	// console.log(`OverlayController: hide(${this.title.value})`);
+        //
+        // this.setHtmlOverflow(null);
+        // this.shown.value = false;
     }
 
     protected setHtmlOverflow(value: "hidden" | null)
     {
-        const htmlElement = document.querySelector("html");
-
-        if(htmlElement) {
-            htmlElement.style.setProperty("overflow", value);
-        }
+        // const htmlElement = document.querySelector("html");
+        //
+        // if(htmlElement) {
+        //     htmlElement.style.setProperty("overflow", value);
+        // }
     }
 }
 

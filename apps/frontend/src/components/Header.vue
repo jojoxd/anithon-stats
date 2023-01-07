@@ -10,7 +10,7 @@
       const { currentUser } = useCurrentUser();
 
       const oauthUri = computed(() => {
-        return `/api/oauth?redirect=${encodeURIComponent(window.location.href)}`;
+        return `/api/connect/anilist?redirect=${encodeURIComponent(window.location.href)}`;
       });
 
       return {

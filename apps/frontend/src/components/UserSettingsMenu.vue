@@ -14,7 +14,7 @@ import {useAppStore} from "../composition/store/app-store";
 			const language = ref('test');
 
 			const logoutUri = computed(() => {
-				return `/api/oauth/logout?redirect=${encodeURIComponent(window.location.href)}`;
+				return `/api/logout?redirect=${encodeURIComponent(window.location.href)}`;
 			});
 
 			const theme = useTheme();

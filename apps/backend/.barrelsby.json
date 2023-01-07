@@ -3,6 +3,7 @@
 
 	"directory": [
 		"src/controllers/api",
-		"src/services"
+		"src/domain/service",
+		"src/application/service"
 	]
 }

@@ -1,14 +1,19 @@
 import {defineStore} from "pinia";
 import { ref } from "vue";
-import {ListDataResponse} from "@anistats/shared";
+import {ListId, ListResponse} from "@anistats/shared";
+import {useAxios} from "../useAxios";
 
 export const useListStore = defineStore('list', () => {
-    const entries = ref<null | ListDataResponse>();
+    const currentList = ref<null | ListResponse>();
 
     const hasUnsavedChanges = ref<boolean>(false);
 
-    async function loadList(id: string) {
+    const axios = useAxios();
+
+    async function loadList(id: ListId) {
         console.log('Load List', id);
+
+
     }
 
     async function saveList() {

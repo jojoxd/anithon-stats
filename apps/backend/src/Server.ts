@@ -11,14 +11,17 @@ import "@jojoxd/tsed-auth-expression";
 import "@tsed/ajv";
 import {config, rootDir} from "./config";
 import {TypeormStore} from "connect-typeorm";
-import {SESSION_REPOSITORY} from "./entity/repository/SessionRepository";
 import "@tsed/platform-express";
 import "@tsed/platform-cache";
 
 import * as apiControllers from "./controllers/api";
-import "./services";
+
+import "./domain/service";
+import "./application/service";
+
 import "@tsed/swagger";
 import {isProduction} from "./config/env";
+import {SessionRepository} from "./domain/repository/session/session.repository";
 
 @Configuration({
     ...config,
@@ -71,7 +74,7 @@ export class Server
 
     $beforeRoutesInit(): void
     {
-        const sessionRepository = this.injector.get<SESSION_REPOSITORY>(SESSION_REPOSITORY);
+        const sessionRepository = this.injector.get<SessionRepository>(SessionRepository);
         $log.info("Session Repo (BRI) =", sessionRepository);
 
         this.app
@@ -96,7 +99,7 @@ export class Server
 
     $onReady(): void
     {
-        const sessionRepository = this.injector.get<SESSION_REPOSITORY>(SESSION_REPOSITORY);
+        const sessionRepository = this.injector.get<SessionRepository>(SessionRepository);
 
         if(!sessionRepository)
             throw new Error("Failed to load Session Store");

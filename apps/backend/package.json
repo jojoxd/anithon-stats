@@ -11,12 +11,14 @@
     "start:debug": "node --inspect -r ts-node/register -r tsconfig-paths/register src/index.ts",
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
     "build:packages": "yarn build:package-shared && yarn build:package-tsed-auth && yarn build:package-tsed-entity-mapper && yarn build:package-anilist",
-    "typeorm": "tsed typeorm"
+    "typeorm": "tsed typeorm",
+		"create-gql": "graphql-codegen -c graphql-codegen.config.ts"
   },
   "resolutions": {
     "graphql": "^15.8.0"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.3",
     "@jojoxd/tsed-auth-expression": "^1.0.0",
     "@jojoxd/tsed-entity-mapper": "^1.0.0",
     "@swc/helpers": "~0.4.11",
@@ -62,6 +64,8 @@
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.16.3",
+    "@graphql-codegen/client-preset": "^1.2.5",
     "@jojoxd/tsconfig": "1.1.3",
     "@tsed/cli-plugin-typeorm": "4.2.3",
     "@types/compression": "^1.7.2",

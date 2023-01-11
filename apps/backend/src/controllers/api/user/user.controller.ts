@@ -3,7 +3,7 @@ import {Controller, Inject} from "@tsed/di";
 import {UserId, UserResponse, UserListsResponse} from "@anistats/shared";
 import {UserApplicationService} from "../../../application/service/user.application-service";
 import { PathParams, Session } from "@tsed/common";
-import {NotFound, Unauthorized} from "@tsed/exceptions";
+import {Unauthorized} from "@tsed/exceptions";
 
 @Controller("/user")
 export class UserController

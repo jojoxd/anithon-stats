@@ -1,5 +1,15 @@
 import {SeriesId, SeriesTitleDto} from "@anistats/shared";
-import {Column, Entity, Generated, JoinTable, ManyToMany, OneToMany, PrimaryColumn} from "typeorm";
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	Generated,
+	JoinTable,
+	ManyToMany,
+	OneToMany,
+	PrimaryColumn,
+	UpdateDateColumn
+} from "typeorm";
 import {EntryEntity} from "../entry/entry.entity";
 
 @Entity("series")
@@ -36,4 +46,26 @@ export class SeriesEntity
 
 	@ManyToMany(() => SeriesEntity, (series) => series.sequels)
 	public prequels!: Array<SeriesEntity>;
+
+	@Column("datetime")
+	public createdAt!: Date;
+
+	@Column("datetime", { nullable: true, })
+	public synchronizedAt!: Date | null;
+
+	public addPrequel(prequel: SeriesEntity): void
+	{
+		if (!this.prequels.some(pq => pq.id === prequel.id)) {
+			this.prequels.push(prequel);
+			prequel.addSequel(this);
+		}
+	}
+
+	public addSequel(sequel: SeriesEntity): void
+	{
+		if (!this.sequels.some(sq => sq.id === sequel.id)) {
+			this.sequels.push(sequel);
+			sequel.addPrequel(this);
+		}
+	}
 }

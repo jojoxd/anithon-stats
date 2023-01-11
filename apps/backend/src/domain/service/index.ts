@@ -11,3 +11,6 @@ export * from "./list-settings.domain-service";
 export * from "./series.domain-service";
 export * from "./sync.domain-service";
 export * from "./user.domain-service";
+export * from "./anilist/anilist.domain-service";
+export * from "./anilist/list/anilist-list.domain-service";
+export * from "./anilist/user/anilist-user.domain-service";

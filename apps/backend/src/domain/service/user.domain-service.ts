@@ -5,6 +5,10 @@ import {ListEntity} from "../entity/list/list.entity";
 import {UserRepository} from "../repository/user/user.repository";
 import {ListMetadataDomainService} from "./list-metadata.domain-service";
 import {SyncDomainService} from "./sync.domain-service";
+import {AnilistUserDomainService} from "./anilist/user/anilist-user.domain-service";
+import { $log } from "@tsed/common";
+import {AnilistUserView} from "../view/anilist/anilist-user.view";
+import {UserEntityFactory} from "../factory/user/user-entity.factory";
 
 @Service()
 export class UserDomainService
@@ -13,10 +17,13 @@ export class UserDomainService
 	protected readonly userRepository!: UserRepository;
 
 	@Inject()
-	protected listMetadataService!: ListMetadataDomainService;
+	protected readonly listMetadataService!: ListMetadataDomainService;
 
 	@Inject()
 	protected readonly syncService!: SyncDomainService;
+
+	@Inject()
+	protected readonly anilistUserService!: AnilistUserDomainService;
 
 	public async getUserFromList(list: ListEntity): Promise<UserDto>
 	{
@@ -33,25 +40,21 @@ export class UserDomainService
 		}
 	}
 
-	public async onboardAnilistUser(anilistId: any): Promise<UserEntity>
+	public async onboardAnilistUser(anilistUser: AnilistUserView): Promise<UserEntity>
 	{
-		let user = await this.userRepository.findOneBy({ anilistId, });
+		let user = await this.userRepository.findOneBy({ anilistId: anilistUser.id, });
 
 		// @NOTE: Do we want to support user renaming from anilist?
 
 		// Create if not exists
 		if (!user) {
-			user = new UserEntity();
-
-			// @TODO: Fetch from anilist
-			user.name = "jojoxd";
-			user.avatarUrl = "http://null";
-			user.anilistId = anilistId;
+			$log.info(`Creating new User: ${anilistUser.userName} (${anilistUser.id})`);
+			user = UserEntityFactory.createFromAnilistUser(anilistUser);
 
 			await this.userRepository.save(user);
 		}
 
-		await this.syncService.syncUser(user);
+		await this.syncService.syncUser(user, true);
 
 		return user;
 	}

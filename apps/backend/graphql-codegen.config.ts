@@ -1,17 +1,16 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-	schema: "",
+	schema: "https://graphql.anilist.co",
 	documents: [
 		"src/domain/graphql/anilist/**/*.gql.ts"
 	],
 	generates: {
-		'./src/domain/graphql/anilist/generated/': {
-			preset: 'client',
-			plugins: [],
-			presetConfig: {
-				gqlTagName: 'gql'
-			},
+		'./src/domain/graphql/anilist/generated-types.ts': {
+			plugins: [
+				'typescript',
+				'typescript-operations'
+			],
 		},
 	},
 

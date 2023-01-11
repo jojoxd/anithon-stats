@@ -14,7 +14,7 @@ export class ListEntity
 	@Column()
 	public name!: string;
 
-	@ManyToOne(() => UserEntity, (user) => user.lists, { eager: true })
+	@ManyToOne(() => UserEntity, (user) => user.lists)
 	@JoinColumn({ name: "user_id", })
 	public user!: UserEntity;
 
@@ -24,4 +24,10 @@ export class ListEntity
 
 	@OneToMany(() => EntryEntity, (entry) => entry.list)
 	public entries!: Array<EntryEntity>;
+
+	@Column("datetime")
+	public createdAt!: Date;
+
+	@Column("datetime", { nullable: true })
+	public synchronizedAt!: Date | null;
 }

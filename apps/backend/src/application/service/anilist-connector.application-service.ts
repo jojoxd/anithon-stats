@@ -2,6 +2,7 @@ import {Constant, Inject, Service} from "@tsed/di";
 import {AnilistOAuthService} from "@anistats/anilist";
 import {Context, PlatformResponse, Session} from "@tsed/common";
 import {UserDomainService} from "../../domain/service/user.domain-service";
+import {AnilistUserDomainService} from "../../domain/service";
 
 @Service()
 export class AnilistConnectorApplicationService
@@ -14,6 +15,9 @@ export class AnilistConnectorApplicationService
 
 	@Inject()
 	protected readonly anilistOAuthService!: AnilistOAuthService;
+
+	@Inject()
+	protected readonly anilistUserService!: AnilistUserDomainService;
 
 	@Inject()
 	protected readonly userService!: UserDomainService;
@@ -38,16 +42,15 @@ export class AnilistConnectorApplicationService
 
 	async finishAuthorize(code: string, context: Context, session: Session): Promise<PlatformResponse>
 	{
-		session.anilistToken = await this.anilistOAuthService.getToken(code, this.redirectUri) ?? undefined;
+		session.anilistToken = await this.anilistOAuthService.getToken(code, `${this.redirectUri}${AnilistConnectorApplicationService.INGEST_ROUTE}`) ?? undefined;
 		const redirectNext = session.anilistConnector?.redirectNext ?? "/";
 		delete session.anilistConnector;
 
-		// @TODO: Fetch current user using anilist API
-		const anilistUser = {
-			id: 141428,
-		};
+		const currentUser = await this.anilistUserService.getCurrentUser();
 
-		const user = this.userService.onboardAnilistUser(anilistUser.id);
+		const user = await this.userService.onboardAnilistUser(currentUser);
+
+		session.userId = user.id;
 
 		return context.response.redirect(302, redirectNext);
 	}

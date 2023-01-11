@@ -14,6 +14,9 @@
 				"tsConfig": "apps/backend/tsconfig.app.json",
 				"packageJson": "apps/backend/package.json",
         "main": "apps/backend/src/main.ts",
+				"swcExclude": [
+					"apps/backend/dist/"
+				],
         "assets": [
           "apps/backend/src/static/**",
 					"apps/backend/.env.default"

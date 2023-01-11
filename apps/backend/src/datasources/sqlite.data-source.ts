@@ -18,6 +18,8 @@ export const SqliteDataSource = new DataSource({
 
     synchronize: true,
 
+	cache: false,
+
     entities: [
     	SessionEntity,
 
@@ -40,9 +42,9 @@ registerProvider<DataSource>({
 
     async useAsyncFactory(logger: Logger, conf: Configuration)
     {
-        SqliteDataSource.setOptions({
-            logging: conf.env === Env.DEV,
-        });
+        // SqliteDataSource.setOptions({
+        //     logging: conf.env === Env.DEV,
+        // });
 
         await SqliteDataSource.initialize();
 

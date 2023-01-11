@@ -1,17 +1,29 @@
-import {ApolloClient, InMemoryCache} from "@apollo/client";
-import {Constant} from "@tsed/di";
+import {ApolloClient} from "@apollo/client/core";
+import {Injectable, InjectContext, ProviderScope} from "@tsed/di";
+import {Context} from "@tsed/common";
+import {ApolloClientBuilder} from "../../util/apollo-client-builder";
 
+@Injectable({ scope: ProviderScope.REQUEST })
 export abstract class AnilistDomainService
 {
 	protected readonly client: ApolloClient<any>;
 
-	@Constant("ANILIST_API_URI")
-	protected readonly anilistApiUri!: string;
+	private static readonly GRAPHQL_ENDPOINT = "https://graphql.anilist.co";
+
+	@InjectContext()
+	private context?: Context;
 
 	constructor() {
-		this.client = new ApolloClient<any>({
-			uri: this.anilistApiUri,
-			cache: new InMemoryCache(),
-		});
+		const builder = new ApolloClientBuilder(AnilistDomainService.GRAPHQL_ENDPOINT);
+
+		this.client = builder
+			.withAuth(() => this.bearerToken)
+			.withMemoryCache()
+			.build();
+	}
+
+	private get bearerToken(): string | null
+	{
+		return this.context?.getRequest?.()?.session?.anilistToken ?? null;
 	}
 }

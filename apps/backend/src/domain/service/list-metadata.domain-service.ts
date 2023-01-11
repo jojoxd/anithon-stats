@@ -21,9 +21,9 @@ export class ListMetadataDomainService
 	protected createMetadataStats(list: ListEntity): ListMetadataStatsDto
 	{
 		return {
-			time: list.entries.reduce((totalTime, entry) => {
+			time: list.entries?.reduce((totalTime, entry) => {
 				return totalTime + (this.seriesService.getTotalDuration(entry.series) ?? 0);
-			}, 0),
+			}, 0) ?? 0,
 		};
 	}
 }

@@ -12,6 +12,7 @@ export class ListController
 	protected listService!: ListApplicationService;
 
 	@Get("/:listId")
+	@ContentType("application/json")
 	async getList(@PathParams('listId') listId: ListId): Promise<ListResponse>
 	{
 		return this.listService.getList(listId);

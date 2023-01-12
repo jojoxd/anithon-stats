@@ -5,11 +5,13 @@ import {NotFound} from "@tsed/exceptions";
 import {UserDomainService} from "../../domain/service/user.domain-service";
 import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
 import {UserEntity} from "../../domain/entity/user/user.entity";
+import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {SyncDomainService} from "../../domain/service";
 
 @Service()
 export class UserApplicationService
 {
-	@Inject(UserRepository)
+	@InjectRepository(UserEntity)
 	protected userRepository!: UserRepository;
 
 	@Inject()
@@ -18,9 +20,17 @@ export class UserApplicationService
 	@Inject()
 	protected listMetadataService!: ListMetadataDomainService;
 
+	@Inject()
+	protected syncService!: SyncDomainService;
+
 	public async getLists(userId: UserId): Promise<UserListsResponse>
 	{
 		const user = await this.getUserOrThrow(userId);
+
+		// @TODO: This may generate 429's on anilist API
+		await this.syncService.syncUser(user, true);
+
+		await user.lists.init({ populate: true });
 
 		const lists: Record<ListId, ListMetadataDto> = {};
 		for(const list of user.lists) {
@@ -39,7 +49,7 @@ export class UserApplicationService
 		let user: UserEntity | null = null;
 
 		try {
-			user = await this.userRepository.findOneBy({ id: userId });
+			user = await this.userRepository.findOne({ id: userId });
 		} catch(e: any) {
 			throw new NotFound("Could not fetch user", e);
 		}

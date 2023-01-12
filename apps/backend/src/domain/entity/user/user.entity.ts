@@ -1,30 +1,34 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, Generated, OneToMany, PrimaryColumn, UpdateEvent} from "typeorm";
 import {ListEntity} from "../list/list.entity";
 import {UserId} from "@anistats/shared";
+import {Collection, Entity, OneToMany, PrimaryKey, Property} from "@mikro-orm/core";
+import { v4 as uuid4 } from "uuid";
+import {UserRepository} from "../../repository/user/user.repository";
 
-@Entity("user")
+@Entity({
+	tableName: "user",
+	repository: () => UserRepository,
+})
 export class UserEntity
 {
-	@PrimaryColumn("uuid")
-	@Generated("uuid")
-	public id!: UserId;
+	@PrimaryKey({ type: 'varchar', length: 36, })
+	public id: UserId = uuid4() as any as UserId;
 
-	@Column()
+	@Property()
 	public name!: string;
 
-	@Column("simple-json")
+	@Property({ type: 'json', })
 	public anilistId!: any;
 
-	@OneToMany(() => ListEntity, (list) => list.user, { eager: true, })
-	public lists!: Array<ListEntity>;
+	@OneToMany(() => ListEntity, "user", { eager: true, })
+	public lists = new Collection<ListEntity>(this);
 
 	// @TODO: Maybe cache avatar locally?
-	@Column()
+	@Property()
 	public avatarUrl!: string;
 
-	@Column("datetime")
+	@Property()
 	public createdAt!: Date;
 
-	@Column("datetime", { nullable: true })
-	public synchronizedAt!: Date | null;
+	@Property({ nullable: true })
+	public synchronizedAt?: Date;
 }

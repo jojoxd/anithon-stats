@@ -64,7 +64,7 @@ export class ListEntryDomainService
 
 	public async getEntryData(list: ListEntity): Promise<Array<EntryDataDto>>
 	{
-		return list.entries.map(entry => this.convertEntryData(entry));
+		return list.entries.getItems().map(entry => this.convertEntryData(entry));
 	}
 
 	protected convertEntryData(entry: EntryEntity): EntryDataDto
@@ -76,10 +76,10 @@ export class ListEntryDomainService
 
 			mult: entry.data.mult,
 
-			split: entry.data.split,
+			split: entry.data.split ?? null,
 			splitSequelEntry: entry.data.splitSequelEntry,
 
-			startAt: entry.data.startAt,
+			startAt: entry.data.startAt ?? null,
 		};
 	}
 }

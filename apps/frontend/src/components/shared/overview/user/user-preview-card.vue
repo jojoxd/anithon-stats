@@ -1,26 +1,23 @@
 <script lang="ts">
-	import {defineComponent, toRefs, useAttrs} from "vue";
-	import {useUser} from "../../../../composition/useUser";
-	import {UserIdentifierType} from "@anistats/shared";
+	import {defineComponent, PropType, toRefs, useAttrs} from "vue";
+  import {UserDto} from "@anistats/shared";
 
 	export default defineComponent({
 		inheritAttrs: false,
 
 		props: {
-			userId: {
-				type: String,
+			user: {
+				type: Object as PropType<UserDto>,
 				required: true,
 			},
 		},
 
 		setup(props) {
 			const {
-				userId
+				user
 			} = toRefs(props);
 
 			const cardAttributes = useAttrs();
-
-			const { user } = useUser(userId, UserIdentifierType.Uuid);
 
 			return {
 				user,
@@ -39,7 +36,7 @@
 		v-bind="cardAttributes"
 	>
 		<v-card-text>
-			Total Lists: {{ user.stats?.totalLists ?? "None" }}
+			Total Lists: TODO: Add Total List number somehow
 			TODO: Add Stats to API
 		</v-card-text>
 	</v-card>

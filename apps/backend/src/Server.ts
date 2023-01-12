@@ -1,6 +1,6 @@
 import "@jojoxd/tsed-entity-mapper";
 import {Configuration, Constant, Inject, InjectorService} from "@tsed/di";
-import {$log, PlatformApplication} from "@tsed/common";
+import {PlatformApplication} from "@tsed/common";
 import bodyParser from "body-parser";
 import compress from "compression";
 import cookieParser from "cookie-parser";
@@ -10,18 +10,20 @@ import session from "express-session";
 import "@jojoxd/tsed-auth-expression";
 import "@tsed/ajv";
 import {config, rootDir} from "./config";
-import {TypeormStore} from "connect-typeorm";
 import "@tsed/platform-express";
 import "@tsed/platform-cache";
+import "@tsed/mikro-orm";
 
 import * as apiControllers from "./controllers/api";
 
+import "./domain/repository";
 import "./domain/service";
 import "./application/service";
 
 import "@tsed/swagger";
 import {isProduction} from "./config/env";
-import {SessionRepository} from "./domain/repository/session/session.repository";
+import { Knex } from "@mikro-orm/knex";
+import createKnexStore from "connect-session-knex";
 
 @Configuration({
     ...config,
@@ -67,15 +69,10 @@ export class Server
     @Inject()
     protected readonly injector!: InjectorService;
 
-    protected sessionStore: TypeormStore = new TypeormStore({
-        cleanupLimit: 2,
-        ttl: 86400
-    });
-
     $beforeRoutesInit(): void
     {
-        const sessionRepository = this.injector.get<SessionRepository>(SessionRepository);
-        $log.info("Session Repo (BRI) =", sessionRepository);
+        const knex = this.injector.get<Knex>(Knex);
+        const KnexStore = createKnexStore(session);
 
         this.app
             .use(cors())
@@ -89,21 +86,11 @@ export class Server
             .use(session({
                 name: "SESSID",
                 secret: this.sessionSecret,
-                store: this.sessionStore,
+                store: new KnexStore({ knex, createtable: true, }),
 
                 resave: true,
                 saveUninitialized: true,
                 cookie: { secure: false, httpOnly: true },
             }));
-    }
-
-    $onReady(): void
-    {
-        const sessionRepository = this.injector.get<SessionRepository>(SessionRepository);
-
-        if(!sessionRepository)
-            throw new Error("Failed to load Session Store");
-
-        this.sessionStore.connect(sessionRepository);
     }
 }

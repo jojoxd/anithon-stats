@@ -1,19 +1,22 @@
-import {Column, Entity, Generated, PrimaryColumn} from "typeorm";
-import {ListId} from "@anistats/shared";
+import {ListSettingsRepository} from "../../repository/list/list-settings.repository";
+import {Entity, PrimaryKey, Property} from "@mikro-orm/core";
+import { v4 as uuid4 } from "uuid";
 
-@Entity("list_settings")
+@Entity({
+	tableName: "list_settings",
+	repository: () => ListSettingsRepository,
+})
 export class ListSettingsEntity
 {
-	@PrimaryColumn("uuid")
-	@Generated("uuid")
-	public id!: string;
+	@PrimaryKey({ type: 'varchar', length: 36, })
+	public id: string = uuid4();
 
-	@Column()
+	@Property()
 	public allowChunkMerge!: boolean;
 
-	@Column()
+	@Property()
 	public maxChunkLength!: number;
 
-	@Column()
+	@Property()
 	public maxChunkJoinLength!: number;
 }

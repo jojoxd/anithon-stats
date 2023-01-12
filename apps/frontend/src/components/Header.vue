@@ -1,13 +1,19 @@
 <script lang="ts">
   import {computed, defineComponent} from "vue";
-  import {useCurrentUser} from "../composition/useCurrentUser";
 	import UserSettingsMenu from "./UserSettingsMenu.vue";
 	import {mdiHome, mdiLoginVariant} from "@mdi/js";
+  import {storeToRefs} from "pinia";
+  import {useAuthStore} from "../composition/store/auth.store";
 
   export default defineComponent({
 		components: {UserSettingsMenu},
 		setup() {
-      const { currentUser } = useCurrentUser();
+		  const authStore = useAuthStore();
+      const {
+        currentUser,
+      } = storeToRefs(authStore);
+
+      authStore.reloadCurrentUser();
 
       const oauthUri = computed(() => {
         return `/api/connect/anilist?redirect=${encodeURIComponent(window.location.href)}`;
@@ -38,11 +44,11 @@
 			Home
 		</v-btn>
 
-		<div v-if="currentUser?.isAuthenticated">
+		<div v-if="currentUser">
 			<user-settings-menu>
 				<template #activator="{ props }">
 					<v-btn icon variant="plain" v-bind="props">
-						<v-avatar :image="currentUser?.avatar?.large" />
+						<v-avatar :image="currentUser.avatar" />
 					</v-btn>
 				</template>
 			</user-settings-menu>

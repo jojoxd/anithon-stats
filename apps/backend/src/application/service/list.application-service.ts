@@ -7,12 +7,13 @@ import {ListEntryDomainService} from "../../domain/service/list-entry.domain-ser
 import {ListImageDomainService} from "../../domain/service/list-image.domain-service";
 import {ListChunkDomainService} from "../../domain/service/list-chunk.domain-service";
 import {ListSettingsDomainService} from "../../domain/service/list-settings.domain-service";
-import {UseTransaction} from "../../datasources/use-transaction.decorator";
-import {SqliteDataSource} from "../../datasources/sqlite.data-source";
 import {SeriesDomainService} from "../../domain/service/series.domain-service";
 import {UserDomainService} from "../../domain/service/user.domain-service";
 import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
 import {ListEntryDataDomainService} from "../../domain/service/list-entry-data.domain-service";
+import {Transactional} from "@tsed/mikro-orm";
+import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {SyncDomainService} from "../../domain/service";
 
 @Service()
 export class ListApplicationService
@@ -41,12 +42,18 @@ export class ListApplicationService
 	@Inject()
 	protected listEntryDataService!: ListEntryDataDomainService;
 
-	@Inject(ListRepository)
+	@InjectRepository(ListEntity)
 	protected listRepository!: ListRepository;
+
+	@Inject()
+	protected syncService!: SyncDomainService;
 
 	public async getList(listId: ListId): Promise<ListResponse>
 	{
 		const list = await this.getListOrThrow(listId);
+
+		// Sync list before fetching data
+		await this.syncService.syncList(list);
 
 		const chunks = await this.listChunkService.getChunkList(list);
 		const series = await this.seriesService.getSeriesList(list);
@@ -70,7 +77,7 @@ export class ListApplicationService
 		};
 	}
 
-	@UseTransaction(SqliteDataSource)
+	//@Transactional()
 	public async updateList(updateListRequest: UpdateListRequest): Promise<void>
 	{
 		const list = await this.getListOrThrow(updateListRequest.id);
@@ -100,7 +107,7 @@ export class ListApplicationService
 		let list: ListEntity | null = null;
 
 		try {
-			list = await this.listRepository.findOneBy({ id: listId });
+			list = await this.listRepository.findOne({ id: listId });
 		} catch(e: any) {
 			throw new InternalServerError("Could not fetch list", e);
 		}

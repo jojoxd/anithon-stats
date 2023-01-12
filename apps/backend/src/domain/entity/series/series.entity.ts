@@ -1,71 +1,48 @@
 import {SeriesId, SeriesTitleDto} from "@anistats/shared";
-import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	Generated,
-	JoinTable,
-	ManyToMany,
-	OneToMany,
-	PrimaryColumn,
-	UpdateDateColumn
-} from "typeorm";
 import {EntryEntity} from "../entry/entry.entity";
+import {Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property,} from "@mikro-orm/core";
+import {SeriesRepository} from "../../repository/series/series.repository";
+import { v4 as uuid4 } from "uuid";
 
-@Entity("series")
+@Entity({
+	tableName: "series",
+	repository: () => SeriesRepository,
+})
 export class SeriesEntity
 {
-	@PrimaryColumn("uuid")
-	@Generated("uuid")
-	public id!: SeriesId;
+	@PrimaryKey({ type: 'varchar', length: 36, })
+	public id: SeriesId = uuid4() as any as SeriesId;
 
-	@Column("simple-json")
+	@Property()
 	public anilistId!: any;
 
-	@Column("simple-json")
+	@Property({ type: 'json', })
 	public title!: SeriesTitleDto;
 
-	@Column()
-	public coverImage!: string;
+	@Property({ nullable: true, })
+	public coverImage?: string;
 
-	@Column()
+	@Property()
 	public duration!: number;
 
-	@Column({ type: 'int', nullable: true })
-	public episodes!: number | null;
+	@Property({ nullable: true, })
+	public episodes?: number;
 
-	@Column({ type: 'text', nullable: true })
-	public description!: string | null;
+	@Property({ type: 'longtext', columnType: 'longtext', nullable: true, })
+	public description?: string;
 
-	@OneToMany(() => EntryEntity, (entry) => entry.list)
-	public entries!: Array<EntryEntity>;
+	@OneToMany(() => EntryEntity, (entry) => entry.series)
+	public entries = new Collection<EntryEntity>(this);
 
 	@ManyToMany(() => SeriesEntity, (series) => series.prequels)
-	@JoinTable({ name: "series_sequels" })
-	public sequels!: Array<SeriesEntity>;
+	public sequels = new Collection<SeriesEntity>(this);
 
-	@ManyToMany(() => SeriesEntity, (series) => series.sequels)
-	public prequels!: Array<SeriesEntity>;
+	@ManyToMany(() => SeriesEntity)
+	public prequels = new Collection<SeriesEntity>(this);
 
-	@Column("datetime")
-	public createdAt!: Date;
+	@Property()
+	public createdAt: Date = new Date();
 
-	@Column("datetime", { nullable: true, })
-	public synchronizedAt!: Date | null;
-
-	public addPrequel(prequel: SeriesEntity): void
-	{
-		if (!this.prequels.some(pq => pq.id === prequel.id)) {
-			this.prequels.push(prequel);
-			prequel.addSequel(this);
-		}
-	}
-
-	public addSequel(sequel: SeriesEntity): void
-	{
-		if (!this.sequels.some(sq => sq.id === sequel.id)) {
-			this.sequels.push(sequel);
-			sequel.addPrequel(this);
-		}
-	}
+	@Property({ nullable: true, })
+	public synchronizedAt?: Date;
 }

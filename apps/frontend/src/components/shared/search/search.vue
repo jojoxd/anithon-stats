@@ -5,8 +5,9 @@
 	import {useSearch} from "../../../composition/useSearch";
 	import {useRouter} from "vue-router";
   import {SearchItemListDto, SearchItemUserDto, SearchResponse} from "@anistats/shared";
-	import {breakpointsVuetify, useBreakpoints, useArrayFilter} from "@vueuse/core";
-	import {useCurrentUser} from "../../../composition/useCurrentUser";
+	import {breakpointsVuetify, useBreakpoints} from "@vueuse/core";
+  import {storeToRefs} from "pinia";
+  import {useAuthStore} from "../../../composition/store/auth.store";
 
 	export default defineComponent({
 		setup() {
@@ -19,7 +20,9 @@
 				searchStatus,
 			} = useSearch(query);
 
-			const { currentUser } = useCurrentUser();
+			const {
+			  currentUser
+      } = storeToRefs(useAuthStore());
 
 			const router = useRouter();
 
@@ -125,7 +128,7 @@
 				</v-card>
 			</v-col>
 
-			<v-col cols="12" lg="6" v-if="currentUser.isAuthenticated && query && !isLoading">
+			<v-col cols="12" lg="6" v-if="currentUser && query && !isLoading">
 				<v-card>
 					<v-card-title>Your Lists</v-card-title>
 

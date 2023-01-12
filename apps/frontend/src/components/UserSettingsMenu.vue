@@ -1,16 +1,19 @@
 <script lang="ts">
-import {computed, defineComponent, ref} from "vue";
-	import {useCurrentUser} from "../composition/useCurrentUser";
-	import {mdiLogoutVariant} from "@mdi/js";
-import {useTheme} from "vuetify";
-import {storeToRefs} from "pinia";
-import {useAppStore} from "../composition/store/app-store";
+  import {computed, defineComponent, ref} from "vue";
+  import {mdiLogoutVariant} from "@mdi/js";
+  import {useTheme} from "vuetify";
+  import {storeToRefs} from "pinia";
+  import {useAppStore} from "../composition/store/app-store";
+  import {useAuthStore} from "../composition/store/auth.store";
 
 	export default defineComponent({
 		setup() {
 			const menuOpen = ref<boolean>(false);
 
-			const { currentUser } = useCurrentUser();
+			const {
+			  currentUser
+      } = storeToRefs(useAuthStore());
+
 			const language = ref('test');
 
 			const logoutUri = computed(() => {
@@ -56,7 +59,8 @@ import {useAppStore} from "../composition/store/app-store";
 			<v-card min-width="300">
 				<v-list>
 					<v-list-item
-						:prepend-avatar="currentUser?.avatar?.large"
+            v-if="currentUser"
+						:prepend-avatar="currentUser?.avatar"
 						:title="currentUser?.name"
 						subtitle="Logged in from AniList"
 					>

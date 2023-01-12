@@ -9,11 +9,12 @@ import {AnilistUserDomainService} from "./anilist/user/anilist-user.domain-servi
 import { $log } from "@tsed/common";
 import {AnilistUserView} from "../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../factory/user/user-entity.factory";
+import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
 
 @Service()
 export class UserDomainService
 {
-	@Inject(UserRepository)
+	@InjectRepository(UserEntity)
 	protected readonly userRepository!: UserRepository;
 
 	@Inject()
@@ -27,7 +28,9 @@ export class UserDomainService
 
 	public async getUserFromList(list: ListEntity): Promise<UserDto>
 	{
-		return this.convertUserToDto(list.user)
+		await list.user.load();
+
+		return this.convertUserToDto(list.user.getEntity());
 	}
 
 	public convertUserToDto(user: UserEntity): UserDto
@@ -42,7 +45,7 @@ export class UserDomainService
 
 	public async onboardAnilistUser(anilistUser: AnilistUserView): Promise<UserEntity>
 	{
-		let user = await this.userRepository.findOneBy({ anilistId: anilistUser.id, });
+		let user = await this.userRepository.findOne({ anilistId: anilistUser.id, });
 
 		// @NOTE: Do we want to support user renaming from anilist?
 
@@ -51,7 +54,7 @@ export class UserDomainService
 			$log.info(`Creating new User: ${anilistUser.userName} (${anilistUser.id})`);
 			user = UserEntityFactory.createFromAnilistUser(anilistUser);
 
-			await this.userRepository.save(user);
+			await this.userRepository.persist(user);
 		}
 
 		await this.syncService.syncUser(user, true);

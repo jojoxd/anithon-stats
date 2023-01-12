@@ -26,6 +26,7 @@
   "minify": false,
   "exclude": [
   	".*\/dist",
+  	".*\/src\/migrations",
   	"node_modules/"
 	]
 }

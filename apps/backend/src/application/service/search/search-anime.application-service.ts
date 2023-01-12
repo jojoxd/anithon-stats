@@ -1,17 +1,25 @@
-import {SearchAnimeResponse, SeriesDto} from "@anistats/shared";
-import {Service} from "@tsed/di";
-import {AnilistSearchService, MediaType, searchSeries_Page_media} from "@anistats/anilist";
-import {NotImplemented} from "@tsed/exceptions";
+import {SearchAnimeResponse} from "@anistats/shared";
+import {Inject, Service} from "@tsed/di";
+import {SearchSeriesDomainService} from "../../../domain/service/search/search-series.domain-service";
+import {SeriesDomainService} from "../../../domain/service";
 
 @Service()
 export class SearchAnimeApplicationService
 {
-	protected anilistSearchService!: AnilistSearchService;
+	@Inject()
+	protected searchSeriesService!: SearchSeriesDomainService;
+
+	@Inject()
+	protected seriesService!: SeriesDomainService;
 
 	public async search(query: string): Promise<SearchAnimeResponse>
 	{
-		const series = await this.anilistSearchService.searchSeriesByName(query, MediaType.ANIME);
+		const series = await this.searchSeriesService.searchSeries(query);
 
-		throw new NotImplemented("TODO: update anilistSearchService to give ID's only, use database and auto-fill from anilist where needed");
+		return {
+			series: series.map(series => {
+				return this.seriesService.mapToDto(series)
+			}),
+		};
 	}
 }

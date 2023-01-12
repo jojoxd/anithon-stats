@@ -10,17 +10,12 @@ export class SeriesEntityFactory
 		seriesEntity.anilistId = anilistSeriesView.id;
 
 		seriesEntity.title = anilistSeriesView.title;
-		seriesEntity.description = anilistSeriesView.description;
+		seriesEntity.description = anilistSeriesView.description ?? undefined;
 
 		seriesEntity.coverImage = anilistSeriesView.coverImage;
 
-		seriesEntity.episodes = anilistSeriesView.episodeCount;
+		seriesEntity.episodes = anilistSeriesView.episodeCount ?? undefined; // @TODO: Should never be null, ever
 		seriesEntity.duration = anilistSeriesView.duration! ?? 1; // @TODO: Should not be null, ever
-
-		seriesEntity.entries = [];
-
-		seriesEntity.prequels = [];
-		seriesEntity.sequels = [];
 
 		seriesEntity.createdAt = new Date();
 

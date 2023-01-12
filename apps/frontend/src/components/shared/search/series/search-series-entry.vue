@@ -43,6 +43,7 @@
       }
 
       return {
+        disabled,
         series,
         onClick,
         title,
@@ -54,21 +55,25 @@
 
 <template>
   <v-list-item
-      :class="{ disabled, 'search-series-item': true, }"
-      @click="onClick"
-      :active="selected"
-      :prepend-avatar="series.coverImage">
+    :class="{ disabled, 'search-series-item': true, }"
+    @click="onClick"
+    :active="selected"
+    :prepend-avatar="series.coverImage"
+  >
     <v-list-item-title class="search-series-item-title">{{ title }}</v-list-item-title>
 
-    Hello
+    <v-chip-group disabled>
+      <v-chip>{{ series.episodes }} episodes</v-chip>
+      <v-chip>{{ $moment.duration(series.duration, 'minutes').format('HH:mm:ss') }} / episode</v-chip>
+
+      <v-chip>Test 123</v-chip>
+    </v-chip-group>
   </v-list-item>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .search-series-item {
     &.disabled {
-      // @TODO: Make title strike-through
-
       .search-series-item-title {
         text-decoration: line-through;
       }

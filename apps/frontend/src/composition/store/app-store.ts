@@ -20,6 +20,8 @@ export const useAppStore = defineStore('app', () => {
 	const isDebugEnabled = useLocalStorage<boolean>('app.debug', false, { serializer: StorageSerializers.boolean });
 	const theme = useLocalStorage<Theme>('app.theme', Theme.AnilistLike);
 
+	// @TODO: Save in backend on user
+
 	return {
 		language,
 

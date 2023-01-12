@@ -1,33 +1,35 @@
-import {Column, Entity, Generated, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn} from "typeorm";
 import {ListId} from "@anistats/shared";
 import {ListSettingsEntity} from "./list-settings.entity";
 import {UserEntity} from "../user/user.entity";
 import {EntryEntity} from "../entry/entry.entity";
+import {ListRepository} from "../../repository/list/list.repository";
+import {Cascade, Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, Ref} from "@mikro-orm/core";
+import { v4 as uuid4 } from "uuid";
 
-@Entity("list")
+@Entity({
+	tableName: "list",
+	repository: () => ListRepository,
+})
 export class ListEntity
 {
-	@PrimaryColumn("uuid")
-	@Generated("uuid")
-	public id!: ListId;
+	@PrimaryKey({ type: 'varchar', length: 36, })
+	public id: ListId = uuid4() as any as ListId;
 
-	@Column()
+	@Property()
 	public name!: string;
 
-	@ManyToOne(() => UserEntity, (user) => user.lists)
-	@JoinColumn({ name: "user_id", })
-	public user!: UserEntity;
+	@ManyToOne(() => UserEntity, { ref: true, })
+	public user!: Ref<UserEntity>;
 
-	@OneToOne(() => ListSettingsEntity, { eager: true, cascade: true, })
-	@JoinColumn({ name: "settings_id", })
+	@OneToOne(() => ListSettingsEntity, { eager: true, cascade: [Cascade.PERSIST], })
 	public settings!: ListSettingsEntity;
 
-	@OneToMany(() => EntryEntity, (entry) => entry.list)
-	public entries!: Array<EntryEntity>;
+	@OneToMany(() => EntryEntity, (entry) => entry.list, { orphanRemoval: true, cascade: [Cascade.PERSIST], })
+	public entries = new Collection<EntryEntity>(this);
 
-	@Column("datetime")
+	@Property()
 	public createdAt!: Date;
 
-	@Column("datetime", { nullable: true })
-	public synchronizedAt!: Date | null;
+	@Property({ nullable: true, })
+	public synchronizedAt?: Date;
 }

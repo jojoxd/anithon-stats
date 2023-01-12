@@ -1,6 +1,7 @@
 import {ListEntity} from "../../entity/list/list.entity";
 import {UserEntity} from "../../entity/user/user.entity";
 import {ListSettingsEntityFactory} from "./list-settings-entity.factory";
+import {Reference} from "@mikro-orm/core";
 
 export class ListEntityFactory
 {
@@ -9,12 +10,11 @@ export class ListEntityFactory
 		const listEntity = new ListEntity();
 
 		listEntity.name = name;
-		listEntity.entries = [];
 		listEntity.settings = ListSettingsEntityFactory.create();
 
 		if (user) {
-			listEntity.user = user;
-			user.lists.push(listEntity);
+			listEntity.user = Reference.create(user);
+			user.lists.add(listEntity);
 		}
 
 		listEntity.createdAt = new Date();

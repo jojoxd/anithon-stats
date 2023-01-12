@@ -4,11 +4,11 @@ import {ListEntity} from "../entity/list/list.entity";
 import {AnilistListDomainService} from "./anilist/list/anilist-list.domain-service";
 import {AnilistListView} from "../view/anilist/list/anilist-list.view";
 import {UserRepository} from "../repository/user/user.repository";
-import {UseTransaction} from "../../datasources/use-transaction.decorator";
-import {SqliteDataSource} from "../../datasources/sqlite.data-source";
 import {ListRepository} from "../repository/list/list.repository";
 import {ListEntityFactory} from "../factory/list/list-entity.factory";
 import {SyncEntriesDomainService} from "./sync/sync-entries.domain-service";
+import {Transactional} from "@tsed/mikro-orm";
+import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
 
 @Service()
 export class SyncDomainService
@@ -16,10 +16,10 @@ export class SyncDomainService
 	@Inject()
 	protected anilistListService!: AnilistListDomainService;
 
-	@Inject(UserRepository)
+	@InjectRepository(UserEntity)
 	protected userRepository!: UserRepository;
 
-	@Inject(ListRepository)
+	@InjectRepository(ListEntity)
 	protected listRepository!: ListRepository;
 
 	@Inject()
@@ -30,7 +30,6 @@ export class SyncDomainService
 	 *
 	 * NOTE: Syncing entries will result in a 429 on anilist API when a user has way too many items
 	 */
-	@UseTransaction(SqliteDataSource)
 	public async syncUser(user: UserEntity, syncEntries: boolean = false): Promise<void>
 	{
 		console.log("SYNC USER", user);
@@ -41,11 +40,15 @@ export class SyncDomainService
 		for (const addedList of diff.added) {
 			const list = ListEntityFactory.create(addedList.name, user);
 
-			await this.listRepository.save(list);
+			await this.listRepository.persist(list);
 		}
 
 		for (const removedList of diff.removed) {
-			user.lists = user.lists.filter(userList => userList.name !== removedList.name);
+			user.lists.set(
+				user.lists
+					.getItems()
+					.filter(userList => userList.name !== removedList.name)
+			);
 		}
 
 		if(syncEntries) {
@@ -59,27 +62,36 @@ export class SyncDomainService
 
 		user.synchronizedAt = new Date();
 
-		await this.userRepository.save(user);
+		await this.userRepository.persist(user);
 	}
 
 	/**
 	 * Synchronizes a single list
 	 */
-	@UseTransaction(SqliteDataSource)
-	public async syncList(list: ListEntity, anilistListView: AnilistListView): Promise<void>
+	//@Transactional()
+	public async syncList(list: ListEntity, anilistListView?: AnilistListView): Promise<void>
 	{
+		if (!anilistListView) {
+			anilistListView = await this.anilistListService.getList(list) ?? undefined;
+
+			// @TODO: Is it correct to throw here?
+			if (!anilistListView) {
+				throw new Error("No listview found on anilist that matches the list");
+			}
+		}
+
 		// @TODO: Ensure list names are correct?
 
 		await this.syncEntriesService.syncEntries(list, anilistListView);
 
 		list.synchronizedAt = new Date();
 
-		await this.listRepository.save(list);
+		await this.listRepository.persist(list);
 	}
 
 	protected getListDiff(user: UserEntity, anilistLists: Array<AnilistListView>): { added: Array<AnilistListView>, removed: Array<ListEntity>, }
 	{
-		const userListNames = user.lists.map(list => list.name);
+		const userListNames = user.lists.getItems().map(list => list.name);
 		const anilistListNames = anilistLists.map(list => list.name);
 
 		const added = anilistListNames
@@ -88,7 +100,7 @@ export class SyncDomainService
 
 		const removed = userListNames
 			.filter(userListName => !anilistListNames.includes(userListName))
-			.map(userListName => user.lists.find(userList => userList.name === userListName)!);
+			.map(userListName => user.lists.getItems().find(userList => userList.name === userListName)!);
 
 		return {
 			added,

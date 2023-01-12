@@ -10,6 +10,8 @@
   import {useSeriesTitle} from "../../composition/useSeriesTitle";
   import {useRemoveEntryFn} from "../../composition/useRemoveEntryFn";
   import {useOverlay} from "../../components/overlay/use-overlay.composition";
+  import {storeToRefs} from "pinia";
+  import {useListStore} from "../../composition/store/list-store";
 
 	export default defineComponent({
     props: {
@@ -22,31 +24,6 @@
 		setup(props, {emit}) {
 			const {listId} = useVModels(props, emit);
 
-			const updating = ref<boolean>(false);
-
-			const overlay = useOverlay();
-
-			const {
-				chunkData,
-				chunkStatus,
-				chunkResponseStatus,
-
-				entryData,
-				entryStatus,
-				entryResponseStatus,
-
-				user: userData,
-
-				listSettings,
-
-				listData,
-
-				status,
-
-				update: updateList,
-				reload: reloadList,
-			} = useList(listId);
-
 			const host = computed(() => {
 				return `${window.location.protocol}//${window.location.host}`;
 			});
@@ -55,147 +32,16 @@
 				return `${host.value}/api/embed/${userData.value?.name}/${listId.value}.png`;
 			});
 
-			const title = useTitle();
+			const listStore = useListStore();
 
-			watch([userData, listData, updating, status], () => {
-				if(status.value === ApiStatus.Failure) {
-					title.value = "Error";
-					return;
-				} else if (status.value !== ApiStatus.Ok) {
-					title.value = "Loading...";
-					return;
-				}
+			listStore.loadList(listId.value);
 
-				if(updating.value) {
-					title.value = "Updating...";
-					return;
-				}
-
-				if(!userData.value || !listData.value) {
-					title.value = null;
-				} else {
-					title.value = `${userData.value?.name} / ${listData.value?.name}`;
-				}
-			}, {immediate: true});
-
-			async function update() {
-				updating.value = true;
-
-				await updateList()
-				await reloadList();
-
-				// Make the overlay feel more right (also less flashing)
-				setTimeout(() => {
-					updating.value = false;
-				}, 1000);
-			}
-
-			watch([status], () => {
-				if (updating.value) {
-          return;
-        } else if(status.value !== ApiStatus.Ok) {
-					if (chunkStatus.value === ApiStatus.Failure) {
-					  return overlay.show({
-              title: `Something went wrong fetching chunks (${chunkResponseStatus.value})`,
-              content: `<a href="${window.location.href}">Reload</a>`
-            });
-					}
-
-					if (entryStatus.value === ApiStatus.Failure) {
-					  return overlay.show({
-              title: `Something went wrong fetching entries (${entryResponseStatus.value})`,
-              content: `<a href="${window.location.href}">Reload</a>`
-            });
-					}
-
-					// @TODO: Spinner: true
-					return overlay.show({
-            title: `Loading`,
-            content: ``,
-            showSpinner: true,
-          })
-				} else {
-				  overlay.hide();
-				}
-			}, { immediate: true, });
-
-			watch(updating, () => {
-				if (updating.value) {
-          overlay.show({
-            title: 'Updating',
-            content: ``,
-            showSpinner: true,
-          });
-				} else {
-				  overlay.hide();
-				}
-			});
-
-			const addEntry = useAddEntryFn(listId);
-			const removeEntry = useRemoveEntryFn(listId);
-
-      async function addSeries(series: SeriesDto)
-      {
-        console.log('Add series', series.id, series.title.romaji);
-
-        const title = useSeriesTitle(series.title).seriesTitle.value;
-
-        //$overlay.show(`Adding ${title} to list`, null, true);
-        const success = await addEntry(series.id);
-
-        if (!success) {
-          //$overlay.show("Could not add Entry", null, false);
-          return;
-        } else {
-          //$overlay.hide();
-        }
-
-        await update();
-      }
-
-      async function removeSeries(series: SeriesDto)
-      {
-        console.log('remove series', series);
-
-        const title = useSeriesTitle(series.title).seriesTitle.value;
-
-        //$overlay.show(`Removing ${title} from list`, null, true);
-        const success = await removeEntry(series.id);
-
-        if (!success) {
-          //$overlay.show("Could not remove Entry", null, false);
-          return;
-        } else {
-          //$overlay.hide();
-        }
-
-        await update();
-      }
-
-      function isSeriesDtoSearchItemDisabled(series: SeriesDto): boolean
-      {
-        return entryData.value?.some(entry => entry.series.id === series.id) ?? true;
-      }
+			const {
+			  currentList,
+      } = storeToRefs(listStore);
 
 			return {
-				listId,
-				listData,
-				listSettings,
-
-				embedImageUri,
-
-				update,
-
-        addSeries,
-        removeSeries,
-        isSeriesDtoSearchItemDisabled,
-
-				userData,
-				entryData,
-				chunkData,
-
-				chunkStatus,
-				ApiStatus,
+			  currentList,
 
 				mdiContentSave,
 			};
@@ -205,35 +51,36 @@
 
 <template>
 	<div>
-		<h1>{{ userData?.name }} / {{ listData?.name }}</h1>
+    {{ currentList }}
+<!--		<h1>{{ userData?.name }} / {{ listData?.name }}</h1>-->
 
-		<ListStats :list="listData"/>
+<!--		<ListStats :list="listData"/>-->
 
-		<list-settings-card v-model="listSettings" v-if="listSettings" />
+<!--		<list-settings-card v-model="listSettings" v-if="listSettings" />-->
 
-		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>
+<!--		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>-->
 
-    <search-series @selected="addSeries($event)" :is-disabled="isSeriesDtoSearchItemDisabled" />
+<!--    <search-series @selected="addSeries($event)" :is-disabled="isSeriesDtoSearchItemDisabled" />-->
 
-		<template v-if="userData?.isCurrentUser ?? false">
-			<v-btn
-				variant="tonal"
-				color="success"
-				:prepend-icon="mdiContentSave"
-				@click.prevent="update"
-			>Update</v-btn>
-		</template>
+<!--		<template v-if="userData?.isCurrentUser ?? false">-->
+<!--			<v-btn-->
+<!--				variant="tonal"-->
+<!--				color="success"-->
+<!--				:prepend-icon="mdiContentSave"-->
+<!--				@click.prevent="update"-->
+<!--			>Update</v-btn>-->
+<!--		</template>-->
 
-		<div class="dev" v-if="entryData">
-			<Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false"
-								:prop-update="(entry, idx) => entry.savedData.order = idx">
-				<template #item="{ item, up, down, index, upEnabled, downEnabled }">
-					<EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled"
-													:down-enabled="downEnabled" :index="index" @remove="removeSeries($event)"/>
-				</template>
-			</Sortable>
-		</div>
+<!--		<div class="dev" v-if="entryData">-->
+<!--			<Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false"-->
+<!--								:prop-update="(entry, idx) => entry.savedData.order = idx">-->
+<!--				<template #item="{ item, up, down, index, upEnabled, downEnabled }">-->
+<!--					<EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled"-->
+<!--													:down-enabled="downEnabled" :index="index" @remove="removeSeries($event)"/>-->
+<!--				</template>-->
+<!--			</Sortable>-->
+<!--		</div>-->
 
-		<chunk-list :chunks="chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok" />
+<!--		<chunk-list :chunks="chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok" />-->
 	</div>
 </template>

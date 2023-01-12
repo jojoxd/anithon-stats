@@ -16,15 +16,33 @@ export class SeriesDomainService
 
 	public async getSeries(list: ListEntity): Promise<Array<SeriesDto>>
 	{
-		throw new NotImplemented("Not implemented");
+		await list.entries.init({ populate: true });
+
+		return list.entries.getItems().map(entry => {
+			return this.mapToDto(entry.series.getEntity());
+		});
 	}
 
 	public getTotalDuration(series: SeriesEntity): number | null
 	{
-		if (series.episodes === null) {
+		if (typeof series.episodes === 'undefined') {
 			return null;
 		}
 
 		return series.duration * series.episodes;
+	}
+
+	public mapToDto(seriesEntity: SeriesEntity): SeriesDto
+	{
+		return {
+			id: seriesEntity.id,
+			title: seriesEntity.title,
+			description: seriesEntity.description ?? null,
+
+			coverImage: seriesEntity.coverImage!,
+
+			duration: seriesEntity.duration,
+			episodes: seriesEntity.episodes ?? null,
+		}
 	}
 }

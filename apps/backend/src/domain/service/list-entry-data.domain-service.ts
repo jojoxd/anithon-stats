@@ -2,17 +2,19 @@ import {Inject, Service} from "@tsed/di";
 import {ListEntity} from "../entity/list/list.entity";
 import {EntryDataDto} from "@anistats/shared";
 import {EntryDataRepository} from "../repository/entry/entry-data.repository";
+import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {EntryDataEntity} from "../entity";
 
 @Service()
 export class ListEntryDataDomainService
 {
-	@Inject(EntryDataRepository)
+	@InjectRepository(EntryDataEntity)
 	protected entryDataRepository!: EntryDataRepository;
 
 	public async updateEntryData(data: Array<EntryDataDto>, list: ListEntity): Promise<void>
 	{
 		for(const entryData of data) {
-			const entry = list.entries.find((entry) => entry.id === entryData.ref);
+			const entry = list.entries.getItems().find((entry) => entry.id === entryData.ref);
 
 			if (!entry) {
 				// @TODO: Is this correct, or do we want to throw away the full update?
@@ -22,11 +24,11 @@ export class ListEntryDataDomainService
 
 			entry.data.mult = entryData.mult;
 			entry.data.order = entryData.order;
-			entry.data.split = entryData.split;
+			entry.data.split = entryData.split ?? undefined;
 			entry.data.splitSequelEntry = entryData.splitSequelEntry;
-			entry.data.startAt = entryData.startAt;
+			entry.data.startAt = entryData.startAt ?? undefined;
 
-			await this.entryDataRepository.save(entry.data);
+			await this.entryDataRepository.persist(entry.data);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 	},
 	"exclude": [
 		"jest.config.ts",
+		"src/migrations/**/*",
 		"**/*.spec.ts",
 		"**/*.test.ts"
 	],

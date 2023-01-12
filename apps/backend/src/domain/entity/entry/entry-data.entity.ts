@@ -1,28 +1,33 @@
-import {Column, Entity, Generated, OneToOne, PrimaryColumn} from "typeorm";
+// import {Column, Entity, Generated, OneToOne, PrimaryColumn} from "typeorm";
 import {EntryEntity} from "./entry.entity";
+import {Entity, OneToOne, PrimaryKey, Property, Ref} from "@mikro-orm/core";
+import {EntryDataRepository} from "../../repository/entry/entry-data.repository";
+import { v4 as uuid4 } from "uuid";
 
-@Entity("entry_data")
+@Entity({
+	tableName: "entry_data",
+	repository: () => EntryDataRepository,
+})
 export class EntryDataEntity
 {
-	@PrimaryColumn("uuid")
-	@Generated("uuid")
-	public id!: string;
+	@PrimaryKey({ type: 'varchar', length: 36, })
+	public id: string = uuid4();
 
-	@OneToOne(() => EntryEntity, (entry) => entry.data)
+	@OneToOne(() => EntryEntity, { eager: true, mappedBy: 'data', })
 	public entry!: EntryEntity;
 
-	@Column({ default: 1, })
+	@Property({ type: 'int', precision: 1, })
 	public mult!: number;
 
-	@Column()
+	@Property()
 	public order!: number;
 
-	@Column({ type: 'int', nullable: true, })
-	public startAt!: number | null;
+	@Property({ nullable: true, })
+	public startAt?: number;
 
-	@Column({ type: 'int', nullable: true, })
-	public split!: number | null;
+	@Property({ nullable: true, })
+	public split?: number;
 
-	@Column({ default: false })
-	public splitSequelEntry!: boolean;
+	@Property()
+	public splitSequelEntry: boolean = false;
 }

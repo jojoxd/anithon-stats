@@ -4694,3 +4694,13 @@ export type GetSeriesQueryVariables = Exact<{
 
 
 export type GetSeriesQuery = { __typename?: 'Query', Media?: { __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null } | null };
+
+export type SearchSeriesQueryVariables = Exact<{
+  query: Scalars['String'];
+  mediaType: MediaType;
+  page: Scalars['Int'];
+  perPage: Scalars['Int'];
+}>;
+
+
+export type SearchSeriesQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', media?: Array<{ __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null } | null> | null } | null };

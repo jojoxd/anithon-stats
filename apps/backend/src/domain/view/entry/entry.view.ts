@@ -2,6 +2,7 @@ import { $log } from "@tsed/common";
 import {EntryEntity} from "../../entity/entry/entry.entity";
 import {ListSettingsEntity} from "../../entity/list/list-settings.entity";
 import {EntryId, EntryStatusEnum} from "@anistats/shared";
+import {EntryDataEntity} from "../../entity";
 
 export class EntryView
 {
@@ -11,7 +12,12 @@ export class EntryView
 
 	protected get listSettings(): ListSettingsEntity
 	{
-		return this.entry.list.settings;
+		return this.entry.list.getEntity().settings;
+	}
+
+	protected get entryData(): EntryDataEntity
+	{
+		return this.entry.data;
 	}
 
 	get id(): EntryId
@@ -21,24 +27,26 @@ export class EntryView
 
 	get episodeCount(): number
 	{
-		if (this.entry.series.episodes === null) {
+		const seriesEntity = this.entry.series.getEntity();
+
+		if (typeof seriesEntity.episodes === 'undefined') {
 			$log.warn(`Series ${this.entry.series.id} has no episodes, falling back to 1 episode`);
 
 			return 1;
 		}
 
-		return this.entry.series.episodes - (this.entry.data.startAt ?? 0);
+		return seriesEntity.episodes - (this.entryData.startAt ?? 0);
 	}
 
 	get totalTime(): number
 	{
-		return this.entry.series.duration * this.episodeCount * this.entry.data.mult;
+		return this.entry.series.getEntity().duration * this.episodeCount * this.entryData.mult;
 	}
 
 	get hasJoinedLastChunk(): boolean
 	{
-		if ((this.entry.data.split ?? 0) > 0) {
-			return Math.floor(this.episodeCount / this.entry.data.split!) <= 1;
+		if ((this.entryData.split ?? 0) > 0) {
+			return Math.floor(this.episodeCount / this.entryData.split!) <= 1;
 		}
 
 		return this.totalTime % this.listSettings.maxChunkLength < (this.listSettings.maxChunkJoinLength);
@@ -46,9 +54,9 @@ export class EntryView
 
 	get chunkCount(): number
 	{
-		if ((this.entry.data.split ?? 0) > 0) {
+		if ((this.entryData.split ?? 0) > 0) {
 			// Ensure we are into range 1 - episodeCount
-			return Math.min(Math.max(this.entry.data.split!, 1), this.episodeCount);
+			return Math.min(Math.max(this.entryData.split!, 1), this.episodeCount);
 		}
 
 		if (this.hasJoinedLastChunk) {
@@ -61,7 +69,7 @@ export class EntryView
 
 	get startAt(): number
 	{
-		return this.entry.data.startAt ?? 0;
+		return this.entryData.startAt ?? 0;
 	}
 
 	get state(): EntryStatusEnum

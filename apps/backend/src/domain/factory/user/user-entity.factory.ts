@@ -11,7 +11,7 @@ export class UserEntityFactory
 		user.avatarUrl = anilistUserView.avatarUri;
 		user.anilistId = anilistUserView.id;
 
-		user.lists = [];
+		// user.lists = [];
 
 		user.createdAt = new Date();
 

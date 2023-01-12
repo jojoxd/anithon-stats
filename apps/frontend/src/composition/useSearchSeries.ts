@@ -24,11 +24,18 @@ export function useSearchSeries(query: Ref<string>)
         status,
         data,
         reload,
-    } = useApi<SearchAnimeRequest, SearchAnimeResponse>('search/series', request, false, "POST");
+    } = useApi<SearchAnimeRequest, SearchAnimeResponse>('search/anime', request, false, "POST");
 
     return {
         searchStatus: status,
-        searchData: readonly(data),
+
+        foundSeries: computed(() => {
+            return data.value?.series ?? null;
+        }),
+
+        resetData: () => {
+            data.value = null;
+        },
 
         reload,
     };

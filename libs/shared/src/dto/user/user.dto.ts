@@ -7,4 +7,6 @@ export interface UserDto
     name: string;
 
     avatar: string;
+
+    // @TODO: Stats, like total lists
 }

@@ -1,16 +1,23 @@
 <script lang="ts">
-import { mdiMagnify } from "@mdi/js";
-import { useSearchSeries } from "../../../../composition/useSearchSeries";
-import {computed, defineComponent, PropType, ref, toRefs, watch} from "vue";
-import {ApiStatus} from "../../../../composition/useApi";
-import {SeriesDto} from "@anistats/shared";
+  import { mdiMagnify } from "@mdi/js";
+  import { useSearchSeries } from "../../../../composition/useSearchSeries";
+  import {computed, defineComponent, PropType, ref, toRefs, watch} from "vue";
+  import {ApiStatus} from "../../../../composition/useApi";
+  import {SeriesDto, SeriesId} from "@anistats/shared";
+  import {breakpointsVuetify, useBreakpoints} from "@vueuse/core";
 
   export default defineComponent({
     props: {
+      multiple: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+
       isDisabled: {
         type: Function as PropType<(series: SeriesDto) => boolean>,
         required: false,
-        default: () => true,
+        default: () => false,
       },
     },
 
@@ -20,29 +27,60 @@ import {SeriesDto} from "@anistats/shared";
 
     setup(props, { emit }) {
       const query = ref();
-      const selectedId = ref();
+      const selected = ref<Array<SeriesId>>([]);
 
       const isOpened = ref(false);
 
+      const breakpoints = useBreakpoints(breakpointsVuetify);
+      const isSmallScreen = breakpoints.smaller('md');
+
       const {
-        isDisabled
+        multiple,
+        isDisabled,
       } = toRefs(props);
 
       const {
-        searchData,
+        foundSeries,
+        resetData,
         searchStatus,
       } = useSearchSeries(query);
 
-      watch(searchData, () => {
-        console.log(searchData.value);
-      })
+      watch(foundSeries, () => {
+        console.log(foundSeries.value);
+        selected.value = []; // reset selected
+      });
 
       function onCompleted()
       {
-        const selectedSeries = searchData.value?.series.find(series => series.id === selectedId.value) ?? undefined;
+        const selectedSeries = foundSeries.value?.filter((series) => {
+          return selected.value.includes(series.id);
+        });
 
         emit('selected', selectedSeries);
+
+        close();
+      }
+
+      function close()
+      {
         isOpened.value = false;
+        query.value = '';
+        selected.value = [];
+        resetData();
+      }
+
+      function toggleSelected(series: SeriesDto): void
+      {
+        if (!multiple.value) {
+          selected.value = [series.id];
+          return;
+        }
+
+        if(selected.value.includes(series.id)) {
+          selected.value = selected.value.filter(seriesId => seriesId !== series.id);
+        } else {
+          selected.value.push(series.id);
+        }
       }
 
       const isLoading = computed(() => {
@@ -51,15 +89,23 @@ import {SeriesDto} from "@anistats/shared";
 
       return {
         query,
+
         onCompleted,
-        selectedId,
+        close,
+
+        selected,
+        toggleSelected,
 
         isLoading,
         isOpened,
 
         isDisabled,
 
-        searchData,
+        multiple,
+
+        isSmallScreen,
+
+        foundSeries,
 
         mdiMagnify,
       };
@@ -68,39 +114,44 @@ import {SeriesDto} from "@anistats/shared";
 </script>
 
 <template>
-  <v-dialog v-model="isOpened">
+  <v-dialog v-model="isOpened" :fullscreen="isSmallScreen">
     <template #activator="{ on, props }">
       <v-btn v-on="on" v-bind="props">
         Add
       </v-btn>
     </template>
 
-    <v-card>
-      <v-card-title>Test</v-card-title>
+    <v-card density="compact" variant="elevated">
+      <v-card-title>Search Anime</v-card-title>
 
       <v-card-text>
         <v-text-field
           ref="textField"
           v-model="query"
           :loading="isLoading"
-          variant="solo"
+          variant="outlined"
           hide-details
           clearable
           label="Search"
           :prepend-inner-icon="mdiMagnify"
         ></v-text-field>
 
-        <v-list v-if="searchData">
+        <div v-if="multiple">
+          Hint: You can select multiple series at once!
+        </div>
+
+        <v-list v-if="foundSeries">
           <slot
               name="item"
-              v-for="series in searchData.series"
+              v-for="series in foundSeries"
               :key="series.id"
-              :series="series">
+              :series="series"
+          >
             <search-series-entry
                 :series="series"
                 :disabled="isDisabled(series)"
-                @click="selectedId = (selectedId === series.id) ? null : series.id"
-                :selected="selectedId === series.id"
+                @click="toggleSelected(series)"
+                :selected="selected.includes(series.id)"
             ></search-series-entry>
           </slot>
         </v-list>
@@ -108,12 +159,12 @@ import {SeriesDto} from "@anistats/shared";
 
       <v-card-actions>
         <v-btn
-            :disabled="!selectedId"
+            :disabled="selected.length === 0"
             @click="onCompleted"
         >Add</v-btn>
 
         <v-btn
-          @click="isOpened = false"
+          @click="close"
         >Close</v-btn>
       </v-card-actions>
     </v-card>

@@ -6,6 +6,7 @@ import {MediaType} from "../../../graphql/anilist/generated-types";
 import {Injectable, ProviderScope} from "@tsed/di";
 import { $log } from "@tsed/common";
 import {InternalServerError} from "@tsed/exceptions";
+import {ListEntity} from "../../../entity";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistListDomainService extends AnilistDomainService
@@ -22,7 +23,8 @@ export class AnilistListDomainService extends AnilistDomainService
 				mediaType: MediaType.Anime,
 			},
 
-			errorPolicy: "ignore"
+			errorPolicy: "ignore",
+			fetchPolicy: "no-cache",
 		});
 
 		if (errors) {
@@ -35,5 +37,15 @@ export class AnilistListDomainService extends AnilistDomainService
 
 			return new AnilistListView(list!.name!, mediaIds);
 		});
+	}
+
+	public async getList(list: ListEntity): Promise<AnilistListView | null>
+	{
+		// @TODO: Optimize, use new query
+
+		await list.user.load();
+		const lists = await this.getLists(list.user.getEntity());
+
+		return lists.find(anilistListView => anilistListView.name === list.name) ?? null;
 	}
 }

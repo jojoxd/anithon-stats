@@ -1,41 +1,39 @@
 <script lang="ts">
-	import {computed, defineComponent, ref, toRefs, useAttrs} from "vue";
-	import {useUserList} from "../../../../composition/useUserList";
-	import {UserIdentifierType} from "@anistats/shared";
+	import {computed, defineComponent, PropType, toRefs, useAttrs} from "vue";
+  import {ListMetadataDto} from "@anistats/shared";
 
 	export default defineComponent({
 		inheritAttrs: false,
 
 		props: {
-			// @TODO: Is userId really needed here? isn't the backend already using UUID's for lists?
-			userId: {
-				type: String,
-				required: true,
-			},
+		  listId: {
+		    type: String,
+        required: true,
+      },
 
-			listId: {
-				type: String,
+			metadata: {
+				type: Object as PropType<ListMetadataDto>,
 				required: true,
 			},
 		},
 
 		setup(props) {
 			const {
-				userId,
 				listId,
+        metadata,
 			} = toRefs(props);
 
 			const cardAttributes = useAttrs();
 
-			const { list } = useUserList(userId, listId, UserIdentifierType.Uuid);
-
-			const listUri = computed(() => `/l/${listId.value}`);
+			const listUri = computed(() => {
+			  return `/l/${listId.value}`;
+      });
 
 			return {
 				listId,
 				listUri,
 
-				list,
+				metadata,
 
 				cardAttributes,
 			};
@@ -45,12 +43,16 @@
 
 <template>
 	<v-card
-		v-if="list"
-		:title="list.name"
+		v-if="metadata"
+		:title="metadata.title"
 		v-bind="cardAttributes"
 	>
 		<v-card-text>
-			{{ list }}
+      <v-chip-group disabled>
+        <v-chip>{{ $moment.duration(metadata.stats.time, 'minutes').format('HH:mm:ss') }}</v-chip>
+      </v-chip-group>
+
+			{{ metadata.description }}
 		</v-card-text>
 
 		<v-card-actions>

@@ -4,6 +4,7 @@ import fetch from "node-fetch";
 import {$log} from "@tsed/common";
 import {ApolloCache, ApolloLink, InMemoryCache, NextLink, Operation, ApolloClient, HttpLink} from "@apollo/client/core";
 import {onError} from "@apollo/client/link/error";
+import {inspect} from "util";
 
 export class ApolloClientBuilder
 {
@@ -64,11 +65,11 @@ export class ApolloClientBuilder
 	protected get interceptorLink(): ApolloLink
 	{
 		return new ApolloLink((operation: Operation, forward: NextLink): any => {
-			$log.info(`GQL REQUEST "${operation.operationName}"`);
+			$log.info(`GQL REQUEST "${operation.operationName}" ${operation.variables}`);
 
 			const response = forward(operation);
 
-			$log.info(`GQL REQUEST COMPLETE "${operation.operationName}"`);
+			$log.info(`GQL REQUEST COMPLETE "${operation.operationName}" ${operation.variables}`);
 
 			return response;
 		});
@@ -88,7 +89,7 @@ export class ApolloClientBuilder
 		}
 
 		link = onError(({ graphQLErrors, networkError, forward, operation, response }) => {
-			$log.error(graphQLErrors ?? networkError);
+			$log.error(inspect({ error: graphQLErrors ?? networkError, opName: operation.operationName, variables: operation.variables }, { depth: null, colors: true, }));
 		}).concat(link);
 
 		return new ApolloClient({

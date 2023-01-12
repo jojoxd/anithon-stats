@@ -1,28 +1,31 @@
 <script lang="ts">
   import {defineComponent} from "vue";
-  import {useCurrentUser} from "../composition/useCurrentUser";
+  import {storeToRefs} from "pinia";
+  import {useAuthStore} from "../composition/store/auth.store";
 
   export default defineComponent({
     setup()
     {
       const {
-        currentUser,
-      } = useCurrentUser();
+        currentUser
+      } = storeToRefs(useAuthStore());
 
       return {
         currentUser,
       };
-    }
+    },
   });
 </script>
 
 <template>
-  <div v-if="currentUser?.isAuthenticated">
-    <UserLists :user-name="currentUser.name" />
+  <div v-if="currentUser">
+    <UserLists :user="currentUser" />
   </div>
   <div v-else>
     It's pretty empty here...
   </div>
+
+  <search-series multiple />
 </template>
 
 <style scoped lang="scss">

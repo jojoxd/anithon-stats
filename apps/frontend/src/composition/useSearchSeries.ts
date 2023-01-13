@@ -1,4 +1,4 @@
-import {computed, readonly, Ref} from "vue";
+import {computed, Ref} from "vue";
 import {get, useDebounce} from "@vueuse/core";
 import {useApi} from "./useApi";
 import {SearchAnimeRequest, SearchAnimeResponse} from "@anistats/shared";

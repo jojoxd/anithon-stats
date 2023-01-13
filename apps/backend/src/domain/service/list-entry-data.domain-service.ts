@@ -1,9 +1,9 @@
-import {Inject, Service} from "@tsed/di";
+import {Service} from "@tsed/di";
 import {ListEntity} from "../entity/list/list.entity";
 import {EntryDataDto} from "@anistats/shared";
 import {EntryDataRepository} from "../repository/entry/entry-data.repository";
 import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
-import {EntryDataEntity} from "../entity";
+import {EntryDataEntity} from "../entity/entry/entry-data.entity";
 
 @Service()
 export class ListEntryDataDomainService

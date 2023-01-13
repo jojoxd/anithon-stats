@@ -36,10 +36,10 @@ export class SyncSeriesDomainService
 
 		if (!series) {
 			series = SeriesEntityFactory.create(anilistSeriesView);
-			console.log(`new(${series.anilistId})`);
+			// console.log(`new(${series.anilistId})`);
 			await this.seriesRepository.persistAndFlush(series);
 		} else {
-			console.log(`found(${series.anilistId})`);
+			// console.log(`found(${series.anilistId})`);
 		}
 
 		if(depth >= 1) {
@@ -58,7 +58,7 @@ export class SyncSeriesDomainService
 				continue;
 			}
 
-			console.log(`(${series.id}).addPrequel(${prequelId})`);
+			// console.log(`(${series.id}).addPrequel(${prequelId})`);
 			const prequel = await this.findOrCreateSeriesEntity(prequelId, depth, excludeIdsInner);
 			series.prequels.add(prequel);
 
@@ -70,7 +70,7 @@ export class SyncSeriesDomainService
 				continue;
 			}
 
-			console.log(`(${series.id}).addSequel(${sequelId})`);
+			// console.log(`(${series.id}).addSequel(${sequelId})`);
 			const sequel = await this.findOrCreateSeriesEntity(sequelId, depth, excludeIdsInner);
 			series.sequels.add(sequel);
 
@@ -100,7 +100,7 @@ export class SyncSeriesDomainService
 		const synchronizedAt = DateTime.fromJSDate(seriesEntity.synchronizedAt);
 		const oneDay = Duration.fromDurationLike({ day: 1, });
 
-		console.log(`Should synchronize ${seriesEntity.anilistId}? ${synchronizedAt < now.minus(oneDay) ? 'true' : 'false'}`);
+		// console.log(`Should synchronize ${seriesEntity.anilistId}? ${synchronizedAt < now.minus(oneDay) ? 'true' : 'false'}`);
 
 		return synchronizedAt < now.minus(oneDay);
 	}

@@ -1,8 +1,7 @@
 import {Service} from "@tsed/di";
 import {SeriesDto, SeriesListDto} from "@anistats/shared";
-import {ListEntity} from "../entity/list/list.entity";
-import {SeriesEntity} from "../entity/series/series.entity";
-import {NotImplemented} from "@tsed/exceptions";
+import { ListEntity } from "../entity/list/list.entity";
+import { SeriesEntity } from "../entity/series/series.entity";
 
 @Service()
 export class SeriesDomainService

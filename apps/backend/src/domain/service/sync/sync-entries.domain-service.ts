@@ -3,8 +3,13 @@ import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {Inject, Service} from "@tsed/di";
 import {SyncSeriesDomainService} from "./sync-series.domain-service";
 import {InjectRepository} from "../../../ext/mikro-orm/inject-repository.decorator";
-import {EntryDataEntity, EntryEntity, SeriesEntity} from "../../entity";
-import {EntryDataRepository, EntryRepository, ListRepository, SeriesRepository} from "../../repository";
+import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
+import {EntryEntity} from "../../entity/entry/entry.entity";
+import {SeriesEntity} from "../../entity/series/series.entity";
+import { EntryDataRepository } from "../../repository/entry/entry-data.repository";
+import { EntryRepository } from "../../repository/entry/entry.repository";
+import { ListRepository } from "../../repository/list/list.repository";
+import { SeriesRepository } from "../../repository/series/series.repository";
 import {EntryEntityFactory} from "../../factory/entry/entry-entity.factory";
 
 @Service()
@@ -40,10 +45,10 @@ export class SyncEntriesDomainService
 			let series = await this.seriesRepository.findOneOrFail({ anilistId: anilistSeriesId });
 
 			if (!entry) {
-				console.log('Creating entry');
+				// console.log('Creating entry');
 				entry = EntryEntityFactory.create(list, series);
 			} else {
-				console.log('Found entry');
+				// console.log('Found entry');
 			}
 
 			entry.series.set(series);

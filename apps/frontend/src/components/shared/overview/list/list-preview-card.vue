@@ -48,9 +48,7 @@
 		v-bind="cardAttributes"
 	>
 		<v-card-text>
-      <v-chip-group disabled>
-        <v-chip>{{ $moment.duration(metadata.stats.time, 'minutes').format('HH:mm:ss') }}</v-chip>
-      </v-chip-group>
+      <list-metadata :metadata="metadata" />
 
 			{{ metadata.description }}
 		</v-card-text>

@@ -7,7 +7,6 @@ import {UserRepository} from "../repository/user/user.repository";
 import {ListRepository} from "../repository/list/list.repository";
 import {ListEntityFactory} from "../factory/list/list-entity.factory";
 import {SyncEntriesDomainService} from "./sync/sync-entries.domain-service";
-import {Transactional} from "@tsed/mikro-orm";
 import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
 
 @Service()

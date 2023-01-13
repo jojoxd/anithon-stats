@@ -1,9 +1,10 @@
-import {UserDataFragmentFragment} from "../../graphql/anilist/generated-types";
+import {UserViewFragment} from "../../graphql/anilist/generated-types";
+import {AnilistUserId} from "@anistats/shared";
 
 export class AnilistUserView
 {
 	constructor(
-		protected user: UserDataFragmentFragment,
+		protected user: UserViewFragment,
 	) {}
 
 	get userName(): string
@@ -11,7 +12,7 @@ export class AnilistUserView
 		return this.user!.name!;
 	}
 
-	get id(): any
+	get id(): AnilistUserId
 	{
 		return this.user!.id!;
 	}

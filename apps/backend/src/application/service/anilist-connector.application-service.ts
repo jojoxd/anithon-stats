@@ -1,8 +1,6 @@
 import {Constant, Inject, Service} from "@tsed/di";
-import {AnilistOAuthService} from "@anistats/anilist";
 import {Context, PlatformResponse, Session} from "@tsed/common";
-import {UserDomainService} from "../../domain/service/user.domain-service";
-import {AnilistUserDomainService} from "../../domain/service";
+import {UserDomainService, AnilistOAuthDomainService, AnilistUserDomainService} from "../../domain/service";
 
 @Service()
 export class AnilistConnectorApplicationService
@@ -14,7 +12,7 @@ export class AnilistConnectorApplicationService
 	protected readonly externalApiUrl!: string;
 
 	@Inject()
-	protected readonly anilistOAuthService!: AnilistOAuthService;
+	protected readonly anilistOAuthService!: AnilistOAuthDomainService;
 
 	@Inject()
 	protected readonly anilistUserService!: AnilistUserDomainService;
@@ -24,7 +22,7 @@ export class AnilistConnectorApplicationService
 
 	protected get redirectUri(): string
 	{
-		return `${this.externalApiUrl}/connect/anilist`;
+		return `${this.externalApiUrl}/${AnilistConnectorApplicationService.CONTROLLER_ROUTE}`;
 	}
 
 	async startAuthorize(redirectTo: string, context: Context, session: Session): Promise<PlatformResponse>
@@ -40,9 +38,9 @@ export class AnilistConnectorApplicationService
 		);
 	}
 
-	async finishAuthorize(code: string, context: Context, session: Session): Promise<PlatformResponse>
+	async finishAuthorize(authorizeCode: string, context: Context, session: Session): Promise<PlatformResponse>
 	{
-		session.anilistToken = await this.anilistOAuthService.getToken(code, `${this.redirectUri}${AnilistConnectorApplicationService.INGEST_ROUTE}`) ?? undefined;
+		session.anilistToken = await this.anilistOAuthService.getAccessToken(authorizeCode, `${this.redirectUri}${AnilistConnectorApplicationService.INGEST_ROUTE}`) ?? undefined;
 		const redirectNext = session.anilistConnector?.redirectNext ?? "/";
 		delete session.anilistConnector;
 

@@ -1,7 +1,7 @@
 import {ApolloClient} from "@apollo/client/core";
-import {Injectable, InjectContext, ProviderScope} from "@tsed/di";
-import {Context} from "@tsed/common";
+import {Injectable, ProviderScope} from "@tsed/di";
 import {ApolloClientBuilder} from "../../util/apollo-client-builder";
+import {InjectSession, Session} from "../../decorator/inject-session.decorator";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export abstract class AnilistDomainService
@@ -10,8 +10,8 @@ export abstract class AnilistDomainService
 
 	private static readonly GRAPHQL_ENDPOINT = "https://graphql.anilist.co";
 
-	@InjectContext()
-	private context?: Context;
+	@InjectSession()
+	protected session?: Session;
 
 	constructor() {
 		const builder = new ApolloClientBuilder(AnilistDomainService.GRAPHQL_ENDPOINT);
@@ -24,6 +24,6 @@ export abstract class AnilistDomainService
 
 	private get bearerToken(): string | null
 	{
-		return this.context?.getRequest?.()?.session?.anilistToken ?? null;
+		return this.session?.anilistToken ?? null;
 	}
 }

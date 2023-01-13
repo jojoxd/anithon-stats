@@ -1,13 +1,13 @@
 import {useDebounce, get} from "@vueuse/core";
 import {computed, Ref} from "vue";
 import {useApi} from "./useApi";
-import {SearchRequest, SearchResponse} from "@anistats/shared";
+import {SearchGlobalRequest, SearchGlobalResponse} from "@anistats/shared";
 
-export function useSearch(query: Ref<string>)
+export function useSearch(query: Ref<string>, debounce: number = 250)
 {
-	const debouncedQuery = useDebounce(query, 250);
+	const debouncedQuery = useDebounce(query, debounce);
 
-	const request = computed<SearchRequest | null>(() => {
+	const request = computed<SearchGlobalRequest | null>(() => {
 		const query = get(debouncedQuery);
 
 		// If query is empty, disallow useApi to call
@@ -24,7 +24,7 @@ export function useSearch(query: Ref<string>)
 		status,
 		data,
 		reload,
-	} = useApi<SearchRequest, SearchResponse>('search', request, false, "POST");
+	} = useApi<SearchGlobalRequest, SearchGlobalResponse>('search/global', request, false, "POST");
 
 	const users = computed(() => {
 		return data.value?.users ?? [];

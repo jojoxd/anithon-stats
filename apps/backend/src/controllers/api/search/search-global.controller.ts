@@ -16,3 +16,4 @@ export class SearchGlobalController
 		return this.searchGlobalService.search(searchGlobalRequest.query);
 	}
 }
+

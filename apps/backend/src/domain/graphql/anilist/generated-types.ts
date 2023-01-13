@@ -4664,22 +4664,6 @@ export type YearStats = {
   year?: Maybe<Scalars['Int']>;
 };
 
-export type SeriesDataFragmentFragment = { __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null };
-
-export type UserDataFragmentFragment = { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null };
-
-export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCurrentUserQuery = { __typename?: 'Query', Viewer?: { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null } | null };
-
-export type GetUserQueryVariables = Exact<{
-  userId: Scalars['Int'];
-}>;
-
-
-export type GetUserQuery = { __typename?: 'Query', User?: { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null } | null };
-
 export type GetUserListsQueryVariables = Exact<{
   userId: Scalars['Int'];
   mediaType: MediaType;
@@ -4704,3 +4688,28 @@ export type SearchSeriesQueryVariables = Exact<{
 
 
 export type SearchSeriesQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', media?: Array<{ __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null } | null> | null } | null };
+
+export type SeriesViewFragment = { __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null };
+
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCurrentUserQuery = { __typename?: 'Query', Viewer?: { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null } | null };
+
+export type GetUserQueryVariables = Exact<{
+  userId: Scalars['Int'];
+}>;
+
+
+export type GetUserQuery = { __typename?: 'Query', User?: { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null } | null };
+
+export type SearchUsersQueryVariables = Exact<{
+  query: Scalars['String'];
+  page: Scalars['Int'];
+  perPage: Scalars['Int'];
+}>;
+
+
+export type SearchUsersQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', users?: Array<{ __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null } | null> | null } | null };
+
+export type UserViewFragment = { __typename?: 'User', id: number, name: string, bannerImage?: string | null, avatar?: { __typename?: 'UserAvatar', large?: string | null, medium?: string | null } | null };

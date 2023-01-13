@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import Popper from 'vue3-popper';
 import moment from "moment";
 import momentDurationFormat from "moment-duration-format";
 
@@ -21,7 +20,6 @@ app.use(pinia);
 
 app.use(vuetify);
 
-app.use(Popper);
 app.use(createOverlayController(router));
 
 app.config.globalProperties.$moment = moment;

@@ -1,5 +1,5 @@
 import {ListEntity} from "../list/list.entity";
-import {UserId} from "@anistats/shared";
+import {AnilistUserId, UserId} from "@anistats/shared";
 import {Collection, Entity, OneToMany, PrimaryKey, Property} from "@mikro-orm/core";
 import { v4 as uuid4 } from "uuid";
 import {UserRepository} from "../../repository/user/user.repository";
@@ -17,7 +17,7 @@ export class UserEntity
 	public name!: string;
 
 	@Property({ type: 'json', })
-	public anilistId!: any;
+	public anilistId!: AnilistUserId;
 
 	@OneToMany(() => ListEntity, "user", { eager: true, })
 	public lists = new Collection<ListEntity>(this);

@@ -1,4 +1,4 @@
-import {Inject, Service} from "@tsed/di";
+import {Inject, Injectable, ProviderScope} from "@tsed/di";
 import {UserDto} from "@anistats/shared";
 import {UserEntity} from "../entity/user/user.entity";
 import {ListEntity} from "../entity/list/list.entity";
@@ -6,12 +6,13 @@ import {UserRepository} from "../repository/user/user.repository";
 import {ListMetadataDomainService} from "./list-metadata.domain-service";
 import {SyncDomainService} from "./sync.domain-service";
 import {AnilistUserDomainService} from "./anilist/user/anilist-user.domain-service";
-import { $log } from "@tsed/common";
+import {$log} from "@tsed/common";
 import {AnilistUserView} from "../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../factory/user/user-entity.factory";
 import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {InjectSession, Session} from "../decorator/inject-session.decorator";
 
-@Service()
+@Injectable({ scope: ProviderScope.REQUEST, })
 export class UserDomainService
 {
 	@InjectRepository(UserEntity)
@@ -25,6 +26,9 @@ export class UserDomainService
 
 	@Inject()
 	protected readonly anilistUserService!: AnilistUserDomainService;
+
+	@InjectSession()
+	protected readonly session?: Session;
 
 	public async getUserFromList(list: ListEntity): Promise<UserDto>
 	{
@@ -60,5 +64,16 @@ export class UserDomainService
 		await this.syncService.syncUser(user, true);
 
 		return user;
+	}
+
+	public async getCurrentUser(): Promise<UserEntity | null>
+	{
+		const userId = this.session?.userId ?? null;
+
+		if (!userId) {
+			return null;
+		}
+
+		return this.userRepository.findOne({ id: userId });
 	}
 }

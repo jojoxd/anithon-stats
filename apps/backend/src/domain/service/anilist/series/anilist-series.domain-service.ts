@@ -2,20 +2,23 @@ import {AnilistDomainService} from "../anilist.domain-service";
 import {Injectable, ProviderScope} from "@tsed/di";
 import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
 import {InternalServerError} from "@tsed/exceptions";
-
-import {GetSeries, GetSeriesQuery, GetSeriesQueryVariables} from "../../../graphql/anilist/series/get-series.gql";
+import {MediaType} from "../../../graphql/anilist/generated-types";
+import { $log } from "@tsed/common";
 
 import {
 	SearchSeries,
-	SearchSeriesQuery,
-	SearchSeriesQueryVariables
-} from "../../../graphql/anilist/series/search-series.gql";
-import {MediaType} from "../../../graphql/anilist/generated-types";
-import { $log } from "@tsed/common";
+	SearchSeriesQuery, SearchSeriesQueryVariables,
+
+	GetSeries,
+	GetSeriesQuery, GetSeriesQueryVariables,
+} from "../../../graphql/anilist/series";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistSeriesDomainService extends AnilistDomainService
 {
+	/**
+	 * @deprecated TODO: Make a bulk version of this API
+	 */
 	async getSeries(seriesId: any): Promise<AnilistSeriesView>
 	{
 		console.log(`[AL] getSeries(${seriesId})`);

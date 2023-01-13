@@ -1,12 +1,16 @@
 import {AnilistDomainService} from "../anilist.domain-service";
-import {UserEntity} from "../../../entity/user/user.entity";
-import {GetUserLists, GetUserListsQuery, GetUserListsQueryVariables} from "../../../graphql/anilist/list/get-user-lists.gql";
 import {AnilistListView} from "../../../view/anilist/list/anilist-list.view";
 import {MediaType} from "../../../graphql/anilist/generated-types";
 import {Injectable, ProviderScope} from "@tsed/di";
 import { $log } from "@tsed/common";
 import {InternalServerError} from "@tsed/exceptions";
-import {ListEntity} from "../../../entity";
+import {ListEntity} from "../../../entity/list/list.entity";
+import {UserEntity} from "../../../entity/user/user.entity";
+
+import {
+	GetUserLists,
+	GetUserListsQuery, GetUserListsQueryVariables,
+} from "../../../graphql/anilist/list";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistListDomainService extends AnilistDomainService

@@ -1,4 +1,4 @@
-import {SeriesId, SeriesTitleDto} from "@anistats/shared";
+import {AnilistSeriesId, SeriesId, SeriesTitleDto} from "@anistats/shared";
 import {EntryEntity} from "../entry/entry.entity";
 import {Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property,} from "@mikro-orm/core";
 import {SeriesRepository} from "../../repository/series/series.repository";
@@ -13,8 +13,8 @@ export class SeriesEntity
 	@PrimaryKey({ type: 'varchar', length: 36, })
 	public id: SeriesId = uuid4() as any as SeriesId;
 
-	@Property()
-	public anilistId!: any;
+	@Property({ type: 'json', })
+	public anilistId!: AnilistSeriesId;
 
 	@Property({ type: 'json', })
 	public title!: SeriesTitleDto;

@@ -1,8 +1,6 @@
 import { $log } from "@tsed/common";
-import {EntryEntity} from "../../entity/entry/entry.entity";
-import {ListSettingsEntity} from "../../entity/list/list-settings.entity";
+import {EntryEntity, EntryDataEntity, ListSettingsEntity} from "../../entity";
 import {EntryId, EntryStatusEnum} from "@anistats/shared";
-import {EntryDataEntity} from "../../entity";
 
 export class EntryView
 {
@@ -83,4 +81,3 @@ export class EntryView
 		return this.entry.progress;
 	}
 }
-

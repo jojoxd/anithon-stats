@@ -1,22 +1,15 @@
 <script lang="ts">
-	import {computed, defineComponent, ref, watch} from "vue";
-	import {useTitle} from "../../composition/useTitle";
-	import {ApiStatus} from "../../composition/useApi";
+	import {computed, defineComponent, PropType, ref} from "vue";
 	import {useVModels} from "@vueuse/core";
-	import {useList} from "../../composition/composed/useList";
 	import {mdiContentSave} from "@mdi/js";
-  import {SeriesDto} from "@anistats/shared";
-  import {useAddEntryFn} from "../../composition/useAddEntryFn";
-  import {useSeriesTitle} from "../../composition/useSeriesTitle";
-  import {useRemoveEntryFn} from "../../composition/useRemoveEntryFn";
-  import {useOverlay} from "../../components/overlay/use-overlay.composition";
+  import {ListId} from "@anistats/shared";
   import {storeToRefs} from "pinia";
   import {useListStore} from "../../composition/store/list-store";
 
 	export default defineComponent({
     props: {
 			listId: {
-				type: String,
+				type: String as unknown as PropType<ListId>,
 				required: true,
 			},
 		},
@@ -24,24 +17,29 @@
 		setup(props, {emit}) {
 			const {listId} = useVModels(props, emit);
 
-			const host = computed(() => {
-				return `${window.location.protocol}//${window.location.host}`;
-			});
-
-			const embedImageUri = computed(() => {
-				return `${host.value}/api/embed/${userData.value?.name}/${listId.value}.png`;
-			});
-
 			const listStore = useListStore();
 
 			listStore.loadList(listId.value);
 
+			// @TODO: Check if users are the same
+      const canEdit = ref(true);
+
 			const {
 			  currentList,
+        listUser,
+        embedImageUri,
+        metadata,
+        hasUnsavedChanges,
       } = storeToRefs(listStore);
 
 			return {
 			  currentList,
+        listUser,
+        embedImageUri,
+        metadata,
+        hasUnsavedChanges,
+
+        canEdit,
 
 				mdiContentSave,
 			};
@@ -50,13 +48,16 @@
 </script>
 
 <template>
-	<div>
-    {{ currentList }}
-<!--		<h1>{{ userData?.name }} / {{ listData?.name }}</h1>-->
+	<div v-if="currentList">
+    <v-badge :model-value="hasUnsavedChanges" content="Unsaved Changes" color="warning" offset-x="-10">
+      <h1>{{ listUser.name }} / {{ metadata.title }}</h1>
+    </v-badge>
 
-<!--		<ListStats :list="listData"/>-->
+    <p>{{ metadata.description }}</p>
 
-<!--		<list-settings-card v-model="listSettings" v-if="listSettings" />-->
+    <list-metadata :metadata="metadata" />
+
+		<list-settings-card v-if="canEdit" />
 
 <!--		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>-->
 

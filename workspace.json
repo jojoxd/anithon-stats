@@ -2,7 +2,6 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "anilist": "libs/anilist",
     "backend": "apps/backend",
     "frontend": "apps/frontend",
     "shared": "libs/shared"

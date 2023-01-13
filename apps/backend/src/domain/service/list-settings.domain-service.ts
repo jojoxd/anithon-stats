@@ -3,7 +3,7 @@ import {ListSettingsDto} from "@anistats/shared";
 import {ListEntity} from "../entity/list/list.entity";
 import {ListSettingsRepository} from "../repository/list/list-settings.repository";
 import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
-import {ListSettingsEntity} from "../entity";
+import {ListSettingsEntity} from "../entity/list/list-settings.entity";
 
 @Service()
 export class ListSettingsDomainService

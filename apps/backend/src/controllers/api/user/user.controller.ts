@@ -21,6 +21,12 @@ export class UserController
 		return this.userService.getUser(session.userId);
 	}
 
+	@Get('/:userId')
+	async getUser(@PathParams('userId') userId: UserId): Promise<UserResponse>
+	{
+		return this.userService.getUser(userId);
+	}
+
 	@Get('/:userId/lists')
 	async getLists(@PathParams('userId') userId: UserId): Promise<UserListsResponse>
 	{

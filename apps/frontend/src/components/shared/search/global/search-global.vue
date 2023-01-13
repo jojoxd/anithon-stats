@@ -1,16 +1,18 @@
 <script lang="ts">
 	import {computed, defineComponent, ref} from "vue";
 	import {mdiArrowLeft, mdiMagnify} from "@mdi/js";
-	import {ApiStatus} from "../../../composition/useApi";
-	import {useSearch} from "../../../composition/useSearch";
 	import {useRouter} from "vue-router";
-  import {SearchItemListDto, SearchItemUserDto, SearchResponse} from "@anistats/shared";
 	import {breakpointsVuetify, useBreakpoints} from "@vueuse/core";
   import {storeToRefs} from "pinia";
-  import {useAuthStore} from "../../../composition/store/auth.store";
+  import SearchGlobalListEntry from "./search-global-list-entry.vue";
+  import {useSearch} from "../../../../composition/useSearch";
+  import {useAuthStore} from "../../../../composition/store/auth.store";
+  import {ApiStatus} from "../../../../composition/useApi";
+  import {SearchGlobalListDto, SearchGlobalUserDto} from "@anistats/shared";
 
 	export default defineComponent({
-		setup() {
+    components: {SearchGlobalListEntry},
+    setup() {
 			const query = ref<string>(null);
 			const textField = ref<HTMLElement>(null);
 
@@ -46,23 +48,25 @@
 				return 400;
 			});
 
-			function go(item: SearchItemUserDto | SearchItemListDto): void
-			{
-				dialogOpen.value = false;
-				query.value = "";
+			function goToList(list: SearchGlobalListDto)
+      {
+        close();
 
-        if ('uuid' in item) {
-          router.push(`/l/${item.uuid}`);
-          return;
-        }
+        router.push(`/l/${list.id}`);
+      }
 
-				if('name' in item) {
-					router.push(`/u/${item.name}`);
-          return;
-				}
+      function goToUser(user: SearchGlobalUserDto)
+      {
+        close();
 
-				throw new Error(`Items Exhausted: ${item}`);
-			}
+        router.push(`/u/${user.id}`);
+      }
+
+      function close()
+      {
+        dialogOpen.value = false;
+        query.value = "";
+      }
 
 			return {
 				query,
@@ -77,7 +81,9 @@
 				currentUser,
 
 				isLoading,
-				go,
+
+        goToUser,
+        goToList,
 
 				mdiMagnify,
 				mdiArrowLeft,
@@ -112,13 +118,12 @@
 
 					<v-card-text>
 						<v-list v-if="!isLoading">
-							<v-list-item
-								v-for="user of users"
-								@click="go(user)"
-								:key="user.uuid"
-								:title="user.name"
-								:prepend-avatar="user.avatar"
-							></v-list-item>
+              <search-global-user-entry
+                  v-for="user in users"
+                  :key="user.id"
+                  :user="user"
+                  @click="goToUser(user)"
+              ></search-global-user-entry>
 
 							<v-list-item
 								v-if="users.length === 0"
@@ -134,12 +139,12 @@
 
 					<v-card-text>
 						<v-list v-if="!isLoading">
-							<v-list-item
-								v-for="list of lists"
-								@click="go(list)"
-								:key="list.uuid"
-								:title="list.name"
-							></v-list-item>
+              <search-global-list-entry
+                v-for="list of lists"
+                :key="list.id"
+                :list="list"
+                @click="goToList(list)"
+              ></search-global-list-entry>
 
 							<v-list-item
 								v-if="lists.length === 0"

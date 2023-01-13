@@ -1,13 +1,13 @@
-import {MediaRelation, SeriesDataFragmentFragment} from "../../../graphql/anilist/generated-types";
-import {SeriesTitleDto} from "@anistats/shared";
+import {MediaRelation, SeriesViewFragment} from "../../../graphql/anilist/generated-types";
+import {AnilistSeriesId, SeriesTitleDto} from "@anistats/shared";
 
 export class AnilistSeriesView
 {
 	constructor(
-		protected readonly seriesData: SeriesDataFragmentFragment
+		protected readonly seriesData: SeriesViewFragment
 	) {}
 
-	get id(): any
+	get id(): AnilistSeriesId
 	{
 		return this.seriesData.id;
 	}

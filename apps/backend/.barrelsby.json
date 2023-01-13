@@ -6,6 +6,9 @@
 		"src/domain/entity",
 		"src/domain/service",
 		"src/domain/repository",
-		"src/application/service"
+		"src/application/service",
+		"src/domain/graphql/anilist/list",
+		"src/domain/graphql/anilist/series",
+		"src/domain/graphql/anilist/user"
 	]
 }

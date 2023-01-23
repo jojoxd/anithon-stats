@@ -11,8 +11,7 @@ import {SeriesDomainService} from "../../domain/service/series.domain-service";
 import {UserDomainService} from "../../domain/service/user.domain-service";
 import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
 import {ListEntryDataDomainService} from "../../domain/service/list-entry-data.domain-service";
-import {Transactional} from "@tsed/mikro-orm";
-import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {SyncDomainService} from "../../domain/service";
 
 @Service()
@@ -55,12 +54,21 @@ export class ListApplicationService
 		// Sync list before fetching data
 		await this.syncService.syncList(list);
 
-		const chunks = await this.listChunkService.getChunkList(list);
-		const series = await this.seriesService.getSeriesList(list);
-		const entries = await this.listEntryService.getEntryList(list);
-		const user = await this.userService.getUserFromList(list);
-		const metadata = await this.listMetadataService.getMetadata(list);
-		const settings = await this.listSettingsService.getSettings(list);
+		const [
+			chunks,
+			series,
+			entries,
+			user,
+			metadata,
+			settings,
+		] = await Promise.all([
+			this.listChunkService.getChunkList(list),
+			this.seriesService.getSeriesList(list),
+			this.listEntryService.getEntryList(list),
+			this.userService.getUserFromList(list),
+			this.listMetadataService.getMetadata(list),
+			this.listSettingsService.getSettings(list),
+		]);
 
 		return {
 			list: {

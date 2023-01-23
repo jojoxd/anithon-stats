@@ -11,6 +11,8 @@ import {
 	GetUserLists,
 	GetUserListsQuery, GetUserListsQueryVariables,
 } from "../../../graphql/anilist/list";
+import {AnilistSeriesId} from "@anistats/shared";
+import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistListDomainService extends AnilistDomainService
@@ -37,9 +39,9 @@ export class AnilistListDomainService extends AnilistDomainService
 		}
 
 		return data!.MediaListCollection!.lists!.map((list) => {
-			const mediaIds = list!.entries!.map(entry => entry!.mediaId!);
+			const anilistSeriesViews = list!.entries!.map<AnilistSeriesView>(entry => new AnilistSeriesView(entry!.media!));
 
-			return new AnilistListView(list!.name!, mediaIds);
+			return new AnilistListView(list!.name!, anilistSeriesViews);
 		});
 	}
 

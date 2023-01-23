@@ -1,8 +1,8 @@
-import {Inject, Service} from "@tsed/di";
+import {Service} from "@tsed/di";
 import {ListSettingsDto} from "@anistats/shared";
 import {ListEntity} from "../entity/list/list.entity";
 import {ListSettingsRepository} from "../repository/list/list-settings.repository";
-import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {ListSettingsEntity} from "../entity/list/list-settings.entity";
 
 @Service()

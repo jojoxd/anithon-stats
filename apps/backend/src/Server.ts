@@ -1,15 +1,14 @@
 import "@jojoxd/tsed-entity-mapper";
-import {Configuration, Constant, Inject, InjectorService} from "@tsed/di";
-import {PlatformApplication} from "@tsed/common";
+import {Configuration, Inject} from "@tsed/di";
+import {BeforeRoutesInit, PlatformApplication} from "@tsed/common";
 import bodyParser from "body-parser";
 import compress from "compression";
 import cookieParser from "cookie-parser";
 import methodOverride from "method-override";
 import cors from "cors";
-import session from "express-session";
 import "@jojoxd/tsed-auth-expression";
 import "@tsed/ajv";
-import {config, rootDir} from "./config";
+import { config } from "./config";
 import "@tsed/platform-express";
 import "@tsed/platform-cache";
 import "@tsed/mikro-orm";
@@ -20,10 +19,21 @@ import "./domain/repository";
 import "./domain/service";
 import "./application/service";
 
+import "./application/exception-filter/unauthorized.exception-filter";
+import "./application/exception-filter/platform.exception-filter";
+
 import "@tsed/swagger";
 import {isProduction} from "./config/env";
-import { Knex } from "@mikro-orm/knex";
-import createKnexStore from "connect-session-knex";
+import {defineRedocSettings} from "@jojoxd/tsed-util/redoc";
+
+// @TODO: Indexed imports
+import "@tsed/passport";
+import "./application/strategy/anilist-v2.strategy";
+import "./application/protocol/anilist-v2.protocol";
+import "./application/protocol/jwt.protocol";
+
+import "@jojoxd/tsed-util/scheduler";
+import "./application/scheduler/sync-database.scheduler";
 
 @Configuration({
     ...config,
@@ -37,25 +47,19 @@ import createKnexStore from "connect-session-knex";
         ],
     },
 
-	swagger: isProduction ? undefined : [{
-    	path: '/api/docs',
-		viewPath: `redoc.ejs`,
-		specVersion: "3.0.1"
-	}],
-
-	views: isProduction ? undefined : {
-    	root: `${rootDir}/static/views`,
-		extensions: {
-    		ejs: 'ejs',
-		},
-	},
+	swagger: isProduction ? undefined : [
+		defineRedocSettings({
+			path: '/api/docs',
+			specVersion: "3.0.1",
+		}),
+	],
 
 	cache: {
-    	ttl: 300,
+		ttl: 300,
 		store: "memory",
 	},
 })
-export class Server
+export class Server implements BeforeRoutesInit
 {
     @Inject()
     app!: PlatformApplication;
@@ -63,17 +67,8 @@ export class Server
     @Configuration()
     settings!: Configuration;
 
-    @Constant("SESSION_SECRET")
-    protected readonly sessionSecret!: string;
-
-    @Inject()
-    protected readonly injector!: InjectorService;
-
     $beforeRoutesInit(): void
     {
-        const knex = this.injector.get<Knex>(Knex);
-        const KnexStore = createKnexStore(session);
-
         this.app
             .use(cors())
             .use(cookieParser())
@@ -82,15 +77,6 @@ export class Server
             .use(bodyParser.json())
             .use(bodyParser.urlencoded({
                 extended: true
-            }))
-            .use(session({
-                name: "SESSID",
-                secret: this.sessionSecret,
-                store: new KnexStore({ knex, createtable: true, }),
-
-                resave: true,
-                saveUninitialized: true,
-                cookie: { secure: false, httpOnly: true },
             }));
     }
 }

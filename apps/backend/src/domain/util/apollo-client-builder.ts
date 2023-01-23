@@ -1,10 +1,10 @@
-"use strict";
-
-import fetch from "node-fetch";
 import {$log} from "@tsed/common";
 import {ApolloCache, ApolloLink, InMemoryCache, NextLink, Operation, ApolloClient, HttpLink} from "@apollo/client/core";
 import {onError} from "@apollo/client/link/error";
 import {inspect} from "util";
+
+import got, { ExtendOptions } from "got";
+import { createFetch } from "got-fetch";
 
 export class ApolloClientBuilder
 {
@@ -32,12 +32,10 @@ export class ApolloClientBuilder
 		return this;
 	}
 
-	withUri(uri: string): this {
+	withUri(uri: string, options?: ExtendOptions): this {
 		this.link = new HttpLink({
 			uri,
-
-			// @ts-ignore TS-2322 Different implementations, but are compatible
-			fetch
+			fetch: createFetch(got.extend(options ?? got)),
 		});
 
 		return this;

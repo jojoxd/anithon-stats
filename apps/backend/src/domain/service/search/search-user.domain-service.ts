@@ -1,5 +1,5 @@
 import {UserRepository} from "../../repository/user/user.repository";
-import {InjectRepository} from "../../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {UserEntity} from "../../entity/user/user.entity";
 import {Inject, Service} from "@tsed/di";
 import {AnilistUserDomainService} from "../anilist/user/anilist-user.domain-service";

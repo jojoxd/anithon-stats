@@ -5,7 +5,7 @@ import {NotFound} from "@tsed/exceptions";
 import {UserDomainService} from "../../domain/service/user.domain-service";
 import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
 import {UserEntity} from "../../domain/entity/user/user.entity";
-import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {SyncDomainService} from "../../domain/service";
 
 @Service()
@@ -27,8 +27,7 @@ export class UserApplicationService
 	{
 		const user = await this.getUserOrThrow(userId);
 
-		// @TODO: This may generate 429's on anilist API
-		await this.syncService.syncUser(user, true);
+		await this.syncService.syncUser(user, false);
 
 		await user.lists.init({ populate: true });
 

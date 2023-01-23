@@ -1,6 +1,6 @@
 import {ContentType, Get, Post} from "@tsed/schema";
 import {Controller, Inject} from "@tsed/di";
-import {ListResponse, UpdateListRequest, GenericResponse, ListId} from "@anistats/shared";
+import {ListResponse, UpdateListRequest, BaseResponse, ListId} from "@anistats/shared";
 import {BodyParams, PathParams} from "@tsed/common";
 import {UseCache} from "@tsed/platform-cache";
 import {ListApplicationService} from "../../../application/service/list.application-service";
@@ -19,7 +19,7 @@ export class ListController
 	}
 
 	@Post("/update")
-	async updateList(@BodyParams() updateListRequest: UpdateListRequest): Promise<GenericResponse>
+	async updateList(@BodyParams() updateListRequest: UpdateListRequest): Promise<BaseResponse>
 	{
 		// @TODO: Auth
 

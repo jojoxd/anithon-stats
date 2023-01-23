@@ -9,7 +9,7 @@ export class AnilistSeriesView
 
 	get id(): AnilistSeriesId
 	{
-		return this.seriesData.id;
+		return this.seriesData.id as AnilistSeriesId;
 	}
 
 	public get prequelIds(): Array<any>

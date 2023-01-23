@@ -9,8 +9,8 @@ import {AnilistUserDomainService} from "./anilist/user/anilist-user.domain-servi
 import {$log} from "@tsed/common";
 import {AnilistUserView} from "../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../factory/user/user-entity.factory";
-import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
-import {InjectSession, Session} from "../decorator/inject-session.decorator";
+import {InjectSession, Session} from "@jojoxd/tsed-util/express-session";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 
 @Injectable({ scope: ProviderScope.REQUEST, })
 export class UserDomainService
@@ -26,9 +26,6 @@ export class UserDomainService
 
 	@Inject()
 	protected readonly anilistUserService!: AnilistUserDomainService;
-
-	@InjectSession()
-	protected readonly session?: Session;
 
 	public async getUserFromList(list: ListEntity): Promise<UserDto>
 	{
@@ -68,12 +65,15 @@ export class UserDomainService
 
 	public async getCurrentUser(): Promise<UserEntity | null>
 	{
-		const userId = this.session?.userId ?? null;
-
-		if (!userId) {
-			return null;
-		}
-
-		return this.userRepository.findOne({ id: userId });
+		// @TODO: use req.user instead of session
+		return null;
+//
+//		const userId = this.session?.userId ?? null;
+//
+//		if (!userId) {
+//			return null;
+//		}
+//
+//		return this.userRepository.findOne({ id: userId });
 	}
 }

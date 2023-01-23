@@ -1,11 +1,10 @@
 import {SearchGlobalListDto, SearchGlobalResponse, UserDto, UserId} from "@anistats/shared";
-import {Inject, Injectable, InjectContext, ProviderScope} from "@tsed/di";
+import {Inject, Injectable, ProviderScope} from "@tsed/di";
 import {UserDomainService, SearchUserDomainService} from "../../../domain/service";
-import {Context} from "@tsed/common";
-import {InjectRepository} from "../../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {UserEntity} from "../../../domain/entity/user/user.entity";
 import {UserRepository} from "../../../domain/repository/user/user.repository";
-import {InjectSession, Session} from "../../../domain/decorator/inject-session.decorator";
+import {InjectSession, Session} from "@jojoxd/tsed-util/express-session";
 
 @Injectable({ scope: ProviderScope.REQUEST, })
 export class SearchGlobalApplicationService
@@ -21,9 +20,6 @@ export class SearchGlobalApplicationService
 
 	@InjectRepository(UserEntity)
 	protected userRepository!: UserRepository;
-
-	@InjectSession()
-	protected session?: Session;
 
 	public async search(query: string): Promise<SearchGlobalResponse>
 	{
@@ -43,13 +39,14 @@ export class SearchGlobalApplicationService
 
 	protected async searchLists(query: string): Promise<Array<SearchGlobalListDto>>
 	{
-		const userId = this.session?.userId ?? null;
-
-		if (!userId) {
-			return [];
-		}
-
-		// @TODO: Load ListMetadata, convert to ListMetadataDto, then to SearchGlobalListDto { id: list.id, ...listMetadataDto };
-		return [];
+		return []; // @TODO: Use req.user instead of session
+//		const userId = this.session?.userId ?? null;
+//
+//		if (!userId) {
+//			return [];
+//		}
+//
+//		// @TODO: Load ListMetadata, convert to ListMetadataDto, then to SearchGlobalListDto { id: list.id, ...listMetadataDto };
+//		return [];
 	}
 }

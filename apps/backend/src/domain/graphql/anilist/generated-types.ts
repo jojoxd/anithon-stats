@@ -4670,7 +4670,18 @@ export type GetUserListsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserListsQuery = { __typename?: 'Query', MediaListCollection?: { __typename?: 'MediaListCollection', lists?: Array<{ __typename?: 'MediaListGroup', name?: string | null, entries?: Array<{ __typename?: 'MediaList', mediaId: number } | null> | null } | null> | null } | null };
+export type GetUserListsQuery = { __typename?: 'Query', MediaListCollection?: { __typename?: 'MediaListCollection', lists?: Array<{ __typename?: 'MediaListGroup', name?: string | null, entries?: Array<{ __typename?: 'MediaList', media?: { __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null } | null } | null> | null } | null> | null } | null };
+
+export type PageViewFragment = { __typename?: 'Page', pageInfo?: { __typename?: 'PageInfo', total?: number | null, currentPage?: number | null, hasNextPage?: boolean | null } | null };
+
+export type BatchGetSeriesQueryVariables = Exact<{
+  mediaIds: Array<Scalars['Int']> | Scalars['Int'];
+  mediaType: MediaType;
+  perPage: Scalars['Int'];
+}>;
+
+
+export type BatchGetSeriesQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', media?: Array<{ __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number } | null } | null> | null } | null } | null } | null> | null } | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null } | null> | null, pageInfo?: { __typename?: 'PageInfo', total?: number | null, currentPage?: number | null, hasNextPage?: boolean | null } | null } | null };
 
 export type GetSeriesQueryVariables = Exact<{
   mediaId: Scalars['Int'];

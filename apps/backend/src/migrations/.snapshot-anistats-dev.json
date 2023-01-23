@@ -346,6 +346,15 @@
           "nullable": false,
           "mappedType": "json"
         },
+        "anilist_token": {
+          "name": "anilist_token",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "avatar_url": {
           "name": "avatar_url",
           "type": "varchar(255)",

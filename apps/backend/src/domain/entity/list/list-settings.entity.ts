@@ -1,6 +1,6 @@
 import {ListSettingsRepository} from "../../repository/list/list-settings.repository";
 import {Entity, PrimaryKey, Property} from "@mikro-orm/core";
-import { v4 as uuid4 } from "uuid";
+import { createId } from "../../util/create-id.fn";
 
 @Entity({
 	tableName: "list_settings",
@@ -9,7 +9,7 @@ import { v4 as uuid4 } from "uuid";
 export class ListSettingsEntity
 {
 	@PrimaryKey({ type: 'varchar', length: 36, })
-	public id: string = uuid4();
+	public id: string = createId();
 
 	@Property()
 	public allowChunkMerge!: boolean;

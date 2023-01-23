@@ -1,6 +1,6 @@
 import {SeriesEntity} from "../../entity/series/series.entity";
-import {EntityRepository} from "../../../ext/mikro-orm/entity-repository";
+import {BaseEntityRepository} from "../base-entity.repository";
 
-export class SeriesRepository extends EntityRepository<SeriesEntity>
+export class SeriesRepository extends BaseEntityRepository<SeriesEntity>
 {
 }

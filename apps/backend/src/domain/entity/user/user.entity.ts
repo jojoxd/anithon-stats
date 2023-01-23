@@ -1,8 +1,9 @@
 import {ListEntity} from "../list/list.entity";
 import {AnilistUserId, UserId} from "@anistats/shared";
-import {Collection, Entity, OneToMany, PrimaryKey, Property} from "@mikro-orm/core";
-import { v4 as uuid4 } from "uuid";
+import {Collection, Entity, OneToMany, PrimaryKey, Property, TextType} from "@mikro-orm/core";
 import {UserRepository} from "../../repository/user/user.repository";
+// import {EncryptedStringDataType} from "../../mikro-orm/data-type/encrypted-string.data-type";
+import { createId } from "../../util/create-id.fn";
 
 @Entity({
 	tableName: "user",
@@ -11,7 +12,7 @@ import {UserRepository} from "../../repository/user/user.repository";
 export class UserEntity
 {
 	@PrimaryKey({ type: 'varchar', length: 36, })
-	public id: UserId = uuid4() as any as UserId;
+	public id: UserId = createId<UserId>();
 
 	@Property()
 	public name!: string;
@@ -19,12 +20,18 @@ export class UserEntity
 	@Property({ type: 'json', })
 	public anilistId!: AnilistUserId;
 
+	// @TODO: Use EncryptedStringDataType instead of StringType here.
+	@Property({ type: TextType, })
+	public anilistToken!: string;
+
 	@OneToMany(() => ListEntity, "user", { eager: true, })
 	public lists = new Collection<ListEntity>(this);
 
-	// @TODO: Maybe cache avatar locally?
+	// @TODO: Maybe cache avatar locally? would use <uuid>.png, note that gif should also be supported
 	@Property()
 	public avatarUrl!: string;
+
+	// @TODO: Save banner
 
 	@Property()
 	public createdAt!: Date;

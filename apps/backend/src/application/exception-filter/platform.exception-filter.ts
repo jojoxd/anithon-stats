@@ -1,6 +1,11 @@
-import {Catch, ExceptionFilterMethods, PlatformContext} from "@tsed/common";
-import { Exception } from "@tsed/exceptions";
+import { Catch, ExceptionFilterMethods, PlatformContext } from "@tsed/common";
+import {Exception, InternalServerError} from "@tsed/exceptions";
+import { ExceptionResponse } from "@anistats/shared";
 
+/**
+ * Generic Exception catcher
+ * @TODO: Move to @jojoxd/tsed-exceptions, split out to Error and Exception
+ */
 @Catch(Error)
 export class PlatformExceptionFilter implements ExceptionFilterMethods
 {
@@ -20,17 +25,30 @@ export class PlatformExceptionFilter implements ExceptionFilterMethods
 			.body(error);
 	}
 
-	private mapError(error: any, correlationId: any): any
+	private mapError(error: Error | Exception, correlationId: string): ExceptionResponse
 	{
+		let exception: Exception;
+
+		// Typescript is weird, it apparantly does not implode the type
+		// when you use `if (!(error instanceof Exception)) { error = new InternalServerError() }`,
+		// it does not resolve the type of error to Exception.
+		if (error instanceof Exception) {
+			exception = error;
+		} else {
+			exception = new InternalServerError(error.message);
+		}
+
 		return {
-			name: error.origin?.name || error.name,
-			message: typeof error.status !== "undefined" ? error.message : "Internal Server Error",
-			status: error.status || 500,
-			correlation: correlationId,
+			isError: true,
+
+			name: exception.origin?.name ?? error.name,
+			status: exception.status,
+			message: exception.message,
+			correlationId,
 		};
 	}
 
-	private getHeaders(error: Error): any
+	private getHeaders(error: Error): { [p: string]: any; }
 	{
 		if (error instanceof Exception) {
 			return error.headers;

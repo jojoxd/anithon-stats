@@ -1,4 +1,6 @@
-import {EntryEntity, ListEntity, SeriesEntity} from "../../entity";
+import { EntryEntity } from "../../entity/entry/entry.entity";
+import { ListEntity } from "../../entity/list/list.entity";
+import { SeriesEntity } from "../../entity/series/series.entity";
 import {Reference} from "@mikro-orm/core";
 import {EntryStatusEnum} from "@anistats/shared";
 import {EntryDataEntityFactory} from "./entry-data-entity.factory";

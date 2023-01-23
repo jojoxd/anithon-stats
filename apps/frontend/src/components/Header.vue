@@ -1,34 +1,34 @@
 <script lang="ts">
-  import {computed, defineComponent} from "vue";
-	import UserSettingsMenu from "./UserSettingsMenu.vue";
-	import {mdiHome, mdiLoginVariant} from "@mdi/js";
-  import {storeToRefs} from "pinia";
-  import {useAuthStore} from "../composition/store/auth.store";
+    import {computed, defineComponent} from "vue";
+    import UserSettingsMenu from "./UserSettingsMenu.vue";
+    import {mdiHome, mdiLoginVariant} from "@mdi/js";
+    import {storeToRefs} from "pinia";
+    import {useAuthStore} from "../composition/store/auth.store";
 
-  export default defineComponent({
-		components: {UserSettingsMenu},
-		setup() {
-		  const authStore = useAuthStore();
-      const {
-        currentUser,
-      } = storeToRefs(authStore);
+    export default defineComponent({
+        components: {UserSettingsMenu},
+        setup() {
+            const authStore = useAuthStore();
+            const {
+                currentUser,
+            } = storeToRefs(authStore);
 
-      authStore.reloadCurrentUser();
+            authStore.reloadCurrentUser();
 
-      const oauthUri = computed(() => {
-        return `/api/connect/anilist?redirect=${encodeURIComponent(window.location.href)}`;
-      });
+            const oauthUri = computed(() => {
+                return `/api/auth/login?redirect=${encodeURIComponent(window.location.href)}`;
+            });
 
-      return {
-        currentUser,
+            return {
+                currentUser,
 
-        oauthUri,
+                oauthUri,
 
-				mdiHome,
-				mdiLoginVariant,
-      };
-    }
-  });
+                mdiHome,
+                mdiLoginVariant,
+            };
+        }
+    });
 </script>
 
 <template>

@@ -4,7 +4,7 @@ import {UserEntity} from "../user/user.entity";
 import {EntryEntity} from "../entry/entry.entity";
 import {ListRepository} from "../../repository/list/list.repository";
 import {Cascade, Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, Ref} from "@mikro-orm/core";
-import { v4 as uuid4 } from "uuid";
+import { createId } from "../../util/create-id.fn";
 
 @Entity({
 	tableName: "list",
@@ -13,7 +13,7 @@ import { v4 as uuid4 } from "uuid";
 export class ListEntity
 {
 	@PrimaryKey({ type: 'varchar', length: 36, })
-	public id: ListId = uuid4() as any as ListId;
+	public id: ListId = createId<ListId>();
 
 	@Property()
 	public name!: string;

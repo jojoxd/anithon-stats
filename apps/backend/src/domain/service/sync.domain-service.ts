@@ -7,7 +7,10 @@ import {UserRepository} from "../repository/user/user.repository";
 import {ListRepository} from "../repository/list/list.repository";
 import {ListEntityFactory} from "../factory/list/list-entity.factory";
 import {SyncEntriesDomainService} from "./sync/sync-entries.domain-service";
-import {InjectRepository} from "../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
+import {TimeUtil} from "../util/time.util";
+import {DateTime} from "luxon";
+import {SyncSeriesDomainService} from "./sync/sync-series.domain-service";
 
 @Service()
 export class SyncDomainService
@@ -24,12 +27,15 @@ export class SyncDomainService
 	@Inject()
 	protected syncEntriesService!: SyncEntriesDomainService;
 
+	@Inject()
+	protected syncSeriesService!: SyncSeriesDomainService;
+
 	/**
 	 * Synchronizes everything of a user
 	 *
 	 * NOTE: Syncing entries will result in a 429 on anilist API when a user has way too many items
 	 */
-	public async syncUser(user: UserEntity, syncEntries: boolean = false): Promise<void>
+	public async syncUser(user: UserEntity, force: boolean = false): Promise<void>
 	{
 		console.log("SYNC USER", user);
 
@@ -50,8 +56,9 @@ export class SyncDomainService
 			);
 		}
 
-		if(syncEntries) {
-			for(const list of user.lists) {
+		for(const list of user.lists) {
+			const hasTimedOut = TimeUtil.hasTimedOut(list.synchronizedAt, { day: 1,  }, DateTime.now());
+			if (force || hasTimedOut) {
 				await this.syncList(
 					list,
 					anilistLists.find(anilistList => anilistList.name === list.name)!

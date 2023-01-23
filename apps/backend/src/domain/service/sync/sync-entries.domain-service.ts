@@ -2,7 +2,7 @@ import {ListEntity} from "../../entity/list/list.entity";
 import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {Inject, Service} from "@tsed/di";
 import {SyncSeriesDomainService} from "./sync-series.domain-service";
-import {InjectRepository} from "../../../ext/mikro-orm/inject-repository.decorator";
+import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
 import {EntryEntity} from "../../entity/entry/entry.entity";
 import {SeriesEntity} from "../../entity/series/series.entity";
@@ -35,20 +35,16 @@ export class SyncEntriesDomainService
 		// anilistListView is the source of truth
 
 		// Ensure we have all entry series in the database
-		await this.syncSeriesService.syncSeries(anilistListView.entries);
+		await this.syncSeriesService.syncList(anilistListView);
 		await list.entries.init({ populate: true });
 
-		for(const anilistSeriesId of anilistListView.entries) {
+		for(const anilistSeriesView of anilistListView.entries) {
 			// try to find a local entry to update
-
-			let entry = list.entries.getItems().find((entry) => entry.series.getEntity().anilistId === anilistSeriesId);
-			let series = await this.seriesRepository.findOneOrFail({ anilistId: anilistSeriesId });
+			let entry = list.entries.getItems().find((entry) => entry.series.getEntity().anilistId === anilistSeriesView.id);
+			let series = await this.syncSeriesService.findOrCreateSeriesEntity(anilistSeriesView.id, 10, undefined, anilistSeriesView);
 
 			if (!entry) {
-				// console.log('Creating entry');
 				entry = EntryEntityFactory.create(list, series);
-			} else {
-				// console.log('Found entry');
 			}
 
 			entry.series.set(series);

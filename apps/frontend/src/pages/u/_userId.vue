@@ -1,38 +1,38 @@
 <script lang="ts">
-  import { defineComponent, PropType, ref, computed } from "vue";
-  import {useVModels} from "@vueuse/core";
-  import {UserId, UserResponse} from "@anistats/shared";
-  import {useApi} from "../../composition/useApi";
+import {defineComponent, PropType, computed, toRefs} from "vue";
+    import {UserId, UserResponse} from "@anistats/shared";
+    import {wrapAxios} from "../../lib/composition/use-axios.fn";
 
-  export default defineComponent({
-    props: {
-      userId: {
-        type: String as unknown as PropType<UserId>,
-        required: true,
-      }
-    },
+    export default defineComponent({
+        props: {
+            userId: {
+                type: String as unknown as PropType<UserId>,
+                required: true,
+            },
+        },
 
-    setup(props, { emit }) {
-      const {
-        userId,
-      } = useVModels(props, emit);
+        setup(props) {
+            const {
+                userId,
+            } = toRefs(props);
 
-      const {
-        data: userResponse,
-      } = useApi<void, UserResponse>('user/' + userId.value, ref(), true, 'GET');
+            const {
+                value: userResponse,
+            } = wrapAxios((axios) => {
+                return axios.get<void, UserResponse>(`user/${userId.value}`);
+            });
 
-      return {
-        user: computed(() => {
-          return userResponse.value?.user ?? null;
-        }),
-      };
-    }
-  });
+            const user = computed(() => {
+                return userResponse.value?.user ?? null;
+            })
+
+            return {
+                user,
+            };
+        },
+    });
 </script>
 
 <template>
-  <UserLists v-if="user" :user="user" />
+    <UserLists v-if="user" :user="user" />
 </template>
-
-<style scoped lang="scss">
-</style>

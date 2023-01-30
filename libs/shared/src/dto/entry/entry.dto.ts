@@ -19,5 +19,5 @@ export interface EntryDto
 
     status: EntryStatusEnum;
 
-    sequel: EntryRef;
+    sequel?: EntryRef | null;
 }

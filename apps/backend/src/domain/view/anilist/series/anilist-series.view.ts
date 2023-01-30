@@ -1,10 +1,12 @@
-import {MediaRelation, SeriesViewFragment} from "../../../graphql/anilist/generated-types";
+import {MediaRelation, MediaType} from "../../../graphql/anilist/generated-types";
 import {AnilistSeriesId, SeriesTitleDto} from "@anistats/shared";
+import {isSeriesView} from "../../../graphql/anilist/series";
+import { SeriesViewRelated } from "../../../graphql/anilist/series/series-view-related.fragment.gql";
 
 export class AnilistSeriesView
 {
 	constructor(
-		protected readonly seriesData: SeriesViewFragment
+			protected readonly seriesData: SeriesViewRelated
 	) {}
 
 	get id(): AnilistSeriesId
@@ -22,11 +24,25 @@ export class AnilistSeriesView
 		return this.getRelationIdsOfType(MediaRelation.Sequel);
 	}
 
+	/**
+	 * Returns null when we don't have any edges registered (e.g. on a normal SeriesView)
+     */
+	public get relations(): Array<AnilistSeriesView> | null
+	{
+		return this.seriesData.relations?.edges?.reduce((acc, edge) => {
+			if (isSeriesView(edge!.node!)) {
+				acc.push(new AnilistSeriesView(edge!.node!));
+			}
+
+			return acc;
+		}, [] as Array<AnilistSeriesView>) ?? null;
+	}
+
 	protected getRelationIdsOfType(mediaRelation: MediaRelation): Array<any>
 	{
-		return this.seriesData.relations!.edges!.filter((edge) => {
-			return edge!.relationType === mediaRelation;
-		}).map(edge => edge!.node!.id!);
+		return this.seriesData.relations?.edges?.filter((edge) => {
+			return edge!.relationType === mediaRelation && edge!.node!.type! === MediaType.Anime;
+		}).map(edge => edge!.node!.id!) ?? [];
 	}
 
 	get title(): SeriesTitleDto

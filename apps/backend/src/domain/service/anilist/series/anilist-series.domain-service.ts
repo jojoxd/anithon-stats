@@ -71,22 +71,19 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			throw new InternalServerError(`Failed to get multiple series`, errors);
 		}
 
-		return seriesIds.reduce((acc, seriesId) => {
-			const media = data.Page!.media!.find((media) => media!.id === seriesId) ?? null;
+		return data.Page!.media!.reduce((acc, media) => {
+			acc.set(media!.id, new AnilistSeriesView(media!));
 
-			// NOTE: We are trashing the unknown series here
-			if (media !== null) {
-				acc.set(seriesId, new AnilistSeriesView(media));
-
-				if (withRelated) {
-					for(const edge of media!.relations!.edges ?? []) {
+			if (withRelated) {
+				for(const edge of media!.relations!.edges ?? []) {
+					if (edge!.node!.type! === mediaType) {
 						acc.set(edge!.node!.id as AnilistSeriesId, new AnilistSeriesView(edge!.node!));
 					}
 				}
 			}
 
 			return acc;
-		}, new Map<AnilistSeriesId, AnilistSeriesView>());
+		}, new Map());
 	}
 
 	async searchSeries(query: string, mediaType: MediaType = MediaType.Anime, page: number = 1): Promise<Array<AnilistSeriesView> | null>

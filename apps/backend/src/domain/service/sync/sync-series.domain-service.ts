@@ -1,16 +1,16 @@
-import {Inject, Service} from "@tsed/di";
-import { $log } from "@tsed/common";
+import {Constant, Inject, Service} from "@tsed/di";
 import {SeriesRepository} from "../../repository/series/series.repository";
 import {AnilistSeriesDomainService} from "../anilist/series/anilist-series.domain-service";
 import {SeriesEntityFactory} from "../../factory/series/series-entity.factory";
 import {SeriesEntity} from "../../entity/series/series.entity";
-import {DateTime} from "luxon";
+import {DateTime, DurationLike} from "luxon";
 import {AnilistSeriesView} from "../../view/anilist/series/anilist-series.view";
 import {AnilistSeriesId} from "@anistats/shared";
 import {InternalServerError} from "@tsed/exceptions";
 import {TimeUtil} from "../../util/time.util";
 import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
+import { $log } from "@tsed/common";
 
 @Service()
 export class SyncSeriesDomainService
@@ -21,11 +21,16 @@ export class SyncSeriesDomainService
 	@Inject()
 	protected anilistSeriesService!: AnilistSeriesDomainService;
 
+	@Constant('app.series.syncTimeout')
+	protected readonly seriesSyncTimeout!: DurationLike;
+
 	protected static readonly MAX_RELATION_DEPTH = 1;
 
 	public async syncSeries(anilistIds: Array<AnilistSeriesId>): Promise<void>
 	{
+		$log.info('count ids', anilistIds.length);
 		const seriesViews = await this.anilistSeriesService.batchGetSeries(anilistIds, true);
+		$log.info('Count Series', seriesViews.size);
 
 		for(const [anilistSeriesId, anilistSeriesView] of seriesViews.entries()) {
 			if (anilistSeriesView === null) {
@@ -33,7 +38,7 @@ export class SyncSeriesDomainService
 			}
 
 			// We already use withRelated, depth can be set to 1
-			await this.findOrCreateSeriesEntity(anilistSeriesId, 1, undefined, anilistSeriesView);
+			await this.findOrCreateSeriesEntity(anilistSeriesId, 0, undefined, anilistSeriesView);
 		}
 	}
 
@@ -73,41 +78,43 @@ export class SyncSeriesDomainService
 
 		excludeIdsInner.push(series.anilistId);
 
-		const getDependantSeries = this.anilistSeriesService.batchGetSeries([
-			...anilistSeriesView.prequelIds,
-			...anilistSeriesView.sequelIds,
-		], depth < SyncSeriesDomainService.MAX_RELATION_DEPTH);
-
-		const [dependantSeries,,] = await Promise.all([
-			getDependantSeries,
+		await Promise.all([
 			series.prequels.init({ populate: true, }),
 			series.sequels.init({ populate: true, }),
 		]);
 
-		for (const [dependantSeriesId, dependantSeriesView] of dependantSeries.entries()) {
-			if (excludeIdsInner.includes(dependantSeriesId)) {
-				continue;
+		// @TODO: Maybe use prequelIds/sequelIds when we have no relations?
+		if (anilistSeriesView.relations !== null) {
+			for (const relation of anilistSeriesView.relations) {
+				if (excludeIdsInner.includes(relation.id)) {
+					continue;
+				}
+
+				// If not prequel or sequel, continue
+				if (![...anilistSeriesView.prequelIds, ...anilistSeriesView.sequelIds].includes(relation.id)) {
+					continue;
+				}
+
+				const relationSeriesEntity = await this.findOrCreateSeriesEntity(
+						relation.id,
+						depth,
+						excludeIdsInner,
+						relation
+						);
+
+				if (anilistSeriesView.prequelIds.includes(relation.id)) {
+					series.prequels.add(relationSeriesEntity);
+				} else if(anilistSeriesView.sequelIds.includes(relation.id)) {
+					series.sequels.add(relationSeriesEntity);
+				}
+
+				await this.seriesRepository.persist(series);
 			}
 
-			const dependantSeriesEntity = await this.findOrCreateSeriesEntity(
-				dependantSeriesId,
-				depth,
-				excludeIdsInner,
-				dependantSeriesView
-			);
-
-			if (anilistSeriesView.prequelIds.includes(dependantSeriesId)) {
-				series.prequels.add(dependantSeriesEntity);
-			} else if(anilistSeriesView.sequelIds.includes(dependantSeriesId)) {
-				series.sequels.add(dependantSeriesEntity);
-			}
-
-			await this.seriesRepository.persist(series);
+			series.synchronizedAt = new Date();
 		}
 
 		// @TODO: Remove id's not included in anilistSeriesView.prequels/.sequels
-
-		series.synchronizedAt = new Date();
 
 		await this.seriesRepository.persistAndFlush(series);
 
@@ -123,7 +130,7 @@ export class SyncSeriesDomainService
 
 		return TimeUtil.hasTimedOut(
 			seriesEntity.synchronizedAt,
-			{ day: 1 },
+			this.seriesSyncTimeout,
 			DateTime.now()
 		);
 	}

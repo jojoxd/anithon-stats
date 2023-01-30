@@ -1,5 +1,5 @@
 import { gql, DocumentNode } from "@apollo/client/core";
-import {SeriesViewFragment} from "../series/series-view.fragment.gql";
+import {SeriesViewRelatedFragment} from "../series/series-view-related.fragment.gql";
 
 export { GetUserListsQuery, GetUserListsQueryVariables } from "../generated-types";
 
@@ -11,12 +11,12 @@ export const GetUserLists = gql`
 				
 				entries {
 					media {
-						...SeriesView
+						...SeriesViewRelated
 					}
 				}
 			}
 		}
 	}
 	
-	${SeriesViewFragment}
+	${SeriesViewRelatedFragment}
 ` as DocumentNode;

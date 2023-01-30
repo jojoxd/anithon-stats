@@ -47,6 +47,7 @@ test/**/*.js.map
 # IDE
 .vscode
 .idea
+.fleet
 
 # Project
 /public

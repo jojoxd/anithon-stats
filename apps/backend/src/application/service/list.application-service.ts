@@ -3,16 +3,16 @@ import {ListId, ListResponse, UpdateListRequest} from "@anistats/shared";
 import {InternalServerError, NotFound} from "@tsed/exceptions";
 import {ListRepository} from "../../domain/repository/list/list.repository";
 import {ListEntity} from "../../domain/entity/list/list.entity";
-import {ListEntryDomainService} from "../../domain/service/list-entry.domain-service";
-import {ListImageDomainService} from "../../domain/service/list-image.domain-service";
-import {ListChunkDomainService} from "../../domain/service/list-chunk.domain-service";
-import {ListSettingsDomainService} from "../../domain/service/list-settings.domain-service";
-import {SeriesDomainService} from "../../domain/service/series.domain-service";
-import {UserDomainService} from "../../domain/service/user.domain-service";
-import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
-import {ListEntryDataDomainService} from "../../domain/service/list-entry-data.domain-service";
+import {ListEntryDomainService} from "../../domain/service/list/list-entry.domain-service";
+import {ListImageDomainService} from "../../domain/service/list/list-image.domain-service";
+import {ListChunkDomainService} from "../../domain/service/list/list-chunk.domain-service";
+import {ListSettingsDomainService} from "../../domain/service/list/list-settings.domain-service";
+import {SeriesDomainService} from "../../domain/service/series/series.domain-service";
+import {UserDomainService} from "../../domain/service/user/user.domain-service";
+import {ListMetadataDomainService} from "../../domain/service/list/list-metadata.domain-service";
+import {ListEntryDataDomainService} from "../../domain/service/list/list-entry-data.domain-service";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
-import {SyncDomainService} from "../../domain/service";
+import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";
 
 @Service()
 export class ListApplicationService

@@ -1,10 +1,10 @@
-import {SearchGlobalListDto, SearchGlobalResponse, UserDto, UserId} from "@anistats/shared";
+import {SearchGlobalListDto, SearchGlobalResponse, UserDto} from "@anistats/shared";
 import {Inject, Injectable, ProviderScope} from "@tsed/di";
-import {UserDomainService, SearchUserDomainService} from "../../../domain/service";
+import {SearchUserDomainService} from "../../../domain/service/search/search-user.domain-service";
+import {UserDomainService} from "../../../domain/service/user/user.domain-service";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {UserEntity} from "../../../domain/entity/user/user.entity";
 import {UserRepository} from "../../../domain/repository/user/user.repository";
-import {InjectSession, Session} from "@jojoxd/tsed-util/express-session";
 
 @Injectable({ scope: ProviderScope.REQUEST, })
 export class SearchGlobalApplicationService

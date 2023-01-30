@@ -1,8 +1,7 @@
-import {ApolloClient, QueryOptions} from "@apollo/client/core";
-import {Constant, Injectable, ProviderScope} from "@tsed/di";
+import {ApolloClient} from "@apollo/client/core";
+import { Context } from "@tsed/common";
+import {Constant, Injectable, InjectContext, ProviderScope} from "@tsed/di";
 import {ApolloClientBuilder} from "../../util/apollo-client-builder";
-import {InjectSession, Session} from "@jojoxd/tsed-util/express-session";
-import {Page} from "../../graphql/anilist/generated-types";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export abstract class AnilistDomainService
@@ -13,6 +12,9 @@ export abstract class AnilistDomainService
 
 	@Constant('version')
 	protected readonly appVersion!: string;
+
+	@InjectContext()
+	protected readonly context!: Context;
 
 	constructor() {
 		const builder = new ApolloClientBuilder();
@@ -32,7 +34,6 @@ export abstract class AnilistDomainService
 
 	private get bearerToken(): string | null
 	{
-		return null; // @TODO: Get token from req.user.anilistToken;
-		// return this.session?.anilistToken ?? null;
+		return this.context?.getRequest?.()?.user?.anilistToken ?? null;
 	}
 }

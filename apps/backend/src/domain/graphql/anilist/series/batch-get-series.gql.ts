@@ -1,6 +1,6 @@
 import { gql, DocumentNode } from "@apollo/client/core";
-import { SeriesViewFragment } from "./series-view.fragment.gql";
 import { PageViewFragment } from "../page/page-view.fragment.gql";
+import {SeriesViewRelatedFragment} from "./series-view-related.fragment.gql";
 
 export { BatchGetSeriesQuery, BatchGetSeriesQueryVariables } from "../generated-types";
 
@@ -10,19 +10,11 @@ export const BatchGetSeries = gql`
 			...PageView,
 
 			media(id_in: $mediaIds, type: $mediaType) {
-				...SeriesView,
-
-				relations {
-					edges {
-						node {
-							...SeriesView,
-						}
-					}
-				}
+				...SeriesViewRelated,
 			}
 		}
 	}
 
 	${PageViewFragment}
-	${SeriesViewFragment}
+	${SeriesViewRelatedFragment}
 ` as DocumentNode;

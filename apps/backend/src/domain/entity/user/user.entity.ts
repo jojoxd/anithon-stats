@@ -21,8 +21,8 @@ export class UserEntity
 	public anilistId!: AnilistUserId;
 
 	// @TODO: Use EncryptedStringDataType instead of StringType here.
-	@Property({ type: TextType, })
-	public anilistToken!: string;
+	@Property({ type: TextType, nullable: true, })
+	public anilistToken?: string;
 
 	@OneToMany(() => ListEntity, "user", { eager: true, })
 	public lists = new Collection<ListEntity>(this);

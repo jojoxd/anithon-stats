@@ -2,11 +2,11 @@ import {Inject, Service} from "@tsed/di";
 import {ListId, ListMetadataDto, UserId, UserListsResponse, UserResponse} from "@anistats/shared";
 import {UserRepository} from "../../domain/repository/user/user.repository";
 import {NotFound} from "@tsed/exceptions";
-import {UserDomainService} from "../../domain/service/user.domain-service";
-import {ListMetadataDomainService} from "../../domain/service/list-metadata.domain-service";
+import {UserDomainService} from "../../domain/service/user/user.domain-service";
+import {ListMetadataDomainService} from "../../domain/service/list/list-metadata.domain-service";
 import {UserEntity} from "../../domain/entity/user/user.entity";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
-import {SyncDomainService} from "../../domain/service";
+import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";
 
 @Service()
 export class UserApplicationService

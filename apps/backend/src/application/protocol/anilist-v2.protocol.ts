@@ -1,10 +1,10 @@
 import {Protocol, OnVerify, Arg} from "@tsed/passport";
 import { Inject } from "@tsed/di";
 import { AnilistV2Strategy, AnilistV2StrategyOptions } from "../strategy/anilist-v2.strategy";
-import { UserDomainService } from "../../domain/service/user.domain-service";
+import { UserDomainService } from "../../domain/service/user/user.domain-service";
 import { JwtDomainService } from "../../domain/service/auth/jwt.domain-service";
 import { UserRepository } from "../../domain/repository/user/user.repository";
-import { AnilistUserId, UserDto } from "@anistats/shared";
+import { AnilistUserId } from "@anistats/shared";
 import { decode } from "jsonwebtoken";
 import {Unauthorized} from "@tsed/exceptions";
 import {AnilistUserDomainService} from "../../domain/service/anilist/user/anilist-user.domain-service";

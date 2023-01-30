@@ -1,4 +1,5 @@
 import {JwtConfiguration} from "./domain/interface/jwt-configuration.interface";
+import {AppConfiguration} from "./domain/interface/app-configuration.interface";
 
 declare global
 {
@@ -7,6 +8,8 @@ declare global
 		interface Configuration
 		{
 			jwt: JwtConfiguration;
+
+			app: AppConfiguration;
 		}
 	}
 }

@@ -13,7 +13,7 @@ import "@tsed/platform-express";
 import "@tsed/platform-cache";
 import "@tsed/mikro-orm";
 
-import * as apiControllers from "./controllers/api";
+import * as apiControllers from "./application/controller/api";
 
 import "./domain/repository";
 import "./domain/service";
@@ -33,7 +33,7 @@ import "./application/protocol/anilist-v2.protocol";
 import "./application/protocol/jwt.protocol";
 
 import "@jojoxd/tsed-util/scheduler";
-import "./application/scheduler/sync-database.scheduler";
+import "./application/scheduler";
 
 @Configuration({
     ...config,

@@ -1,87 +1,82 @@
 <script lang="ts">
-	import {computed, defineComponent, PropType, ref} from "vue";
-	import {useVModels} from "@vueuse/core";
-	import {mdiContentSave} from "@mdi/js";
-  import {ListId} from "@anistats/shared";
-  import {storeToRefs} from "pinia";
-  import {useListStore} from "../../composition/store/list-store";
+    import {defineComponent, PropType, ref} from "vue";
+    import {useVModels} from "@vueuse/core";
+    import {mdiContentSave} from "@mdi/js";
+    import {ListId} from "@anistats/shared";
+    import {storeToRefs} from "pinia";
+    import {useListStore} from "../../lib/store/list-store";
 
-	export default defineComponent({
-    props: {
-			listId: {
-				type: String as unknown as PropType<ListId>,
-				required: true,
-			},
-		},
+    export default defineComponent({
+        props: {
+            listId: {
+                type: String as unknown as PropType<ListId>,
+                required: true,
+            },
+        },
 
-		setup(props, {emit}) {
-			const {listId} = useVModels(props, emit);
+        setup(props, {emit}) {
+            const {listId} = useVModels(props, emit);
 
-			const listStore = useListStore();
+            const listStore = useListStore();
 
-			listStore.loadList(listId.value);
+            listStore.loadList(listId.value);
 
-			// @TODO: Check if users are the same
-      const canEdit = ref(true);
+            // @TODO: Check if users are the same
+            const canEdit = ref(true);
 
-			const {
-			  currentList,
-        listUser,
-        embedImageUri,
-        metadata,
-        hasUnsavedChanges,
-      } = storeToRefs(listStore);
+            const {
+                currentList,
+                currentEntry,
+                rootEntries,
+                listUser,
+                embedImageUri,
+                metadata,
+                hasUnsavedChanges,
+            } = storeToRefs(listStore);
 
-			return {
-			  currentList,
-        listUser,
-        embedImageUri,
-        metadata,
-        hasUnsavedChanges,
+            return {
+                currentList,
+                currentEntry,
+                rootEntries,
+                listUser,
+                embedImageUri,
+                metadata,
+                hasUnsavedChanges,
 
-        canEdit,
+                canEdit,
 
-				mdiContentSave,
-			};
-		},
-	});
+                mdiContentSave,
+            };
+        },
+    });
 </script>
 
 <template>
 	<div v-if="currentList">
-    <v-badge :model-value="hasUnsavedChanges" content="Unsaved Changes" color="warning" offset-x="-10">
-      <h1>{{ listUser.name }} / {{ metadata.title }}</h1>
-    </v-badge>
+        <v-badge :model-value="hasUnsavedChanges" content="Unsaved Changes" color="warning" offset-x="-10">
+          <h1>{{ listUser.name }} / {{ metadata.title }}</h1>
+        </v-badge>
 
-    <p>{{ metadata.description }}</p>
+        <p>{{ metadata.description }}</p>
 
-    <list-metadata :metadata="metadata" />
+        <list-metadata :metadata="metadata" />
 
-		<list-settings-card v-if="canEdit" />
+        <list-settings-card v-if="canEdit" />
 
-<!--		<v-btn :href="embedImageUri" target="_blank">Embed Image</v-btn>-->
+        <h2>Entries</h2>
 
-<!--    <search-series @selected="addSeries($event)" :is-disabled="isSeriesDtoSearchItemDisabled" />-->
+        <div class="entries">
+            <template v-for="rootEntry of rootEntries">
+                <entry-card :entry="rootEntry" />
+            </template>
+        </div>
 
-<!--		<template v-if="userData?.isCurrentUser ?? false">-->
-<!--			<v-btn-->
-<!--				variant="tonal"-->
-<!--				color="success"-->
-<!--				:prepend-icon="mdiContentSave"-->
-<!--				@click.prevent="update"-->
-<!--			>Update</v-btn>-->
-<!--		</template>-->
+        <entry-settings-drawer :open="currentEntry !== null" />
+    </div>
 
-<!--		<div class="dev" v-if="entryData">-->
-<!--			<Sortable v-model:items="entryData" :keys="(entry) => entry.series.id" :enabled="userData?.isCurrentUser ?? false"-->
-<!--								:prop-update="(entry, idx) => entry.savedData.order = idx">-->
-<!--				<template #item="{ item, up, down, index, upEnabled, downEnabled }">-->
-<!--					<EntryContainer :entry="item" :user="userData" @move-up="up" @move-down="down" :up-enabled="upEnabled"-->
-<!--													:down-enabled="downEnabled" :index="index" @remove="removeSeries($event)"/>-->
-<!--				</template>-->
-<!--			</Sortable>-->
-<!--		</div>-->
-
-<!--		<chunk-list :chunks="chunkData.chunks" v-if="chunkStatus === ApiStatus.Ok" />-->
-	</div>
+    <!-- TODO: Embed Image URI -->
+    <!-- TODO: Allow adding items using search-series -->
+    <!-- TODO: Add save button -->
+    <!-- TODO: Add Sortable back for entries -->
+    <!-- TODO: Add Chunk List -->
 </template>

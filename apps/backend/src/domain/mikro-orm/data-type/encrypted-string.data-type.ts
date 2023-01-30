@@ -1,7 +1,6 @@
 import {TextType, Platform} from "@mikro-orm/core";
 import {TransformContext} from "@mikro-orm/core/types/Type";
 import * as crypto from "crypto";
-import {DIContext, getContext} from "@tsed/di";
 
 type ValueType<T> = T | null | undefined;
 

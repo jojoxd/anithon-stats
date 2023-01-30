@@ -28,7 +28,7 @@
     "@apollo/client": "^3.7.3",
     "@jojoxd/tsed-auth-expression": "^1.0.0",
     "@jojoxd/tsed-entity-mapper": "^1.0.0",
-    "@jojoxd/tsed-util": "^1.1.2",
+    "@jojoxd/tsed-util": "^1.2.0",
     "@mikro-orm/core": "^5.6.6",
     "@mikro-orm/knex": "^5.6.6",
     "@mikro-orm/mariadb": "^5.6.6",

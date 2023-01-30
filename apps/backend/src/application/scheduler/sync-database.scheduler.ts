@@ -20,14 +20,14 @@ export class SyncDatabaseScheduler
 	{
 		$log.info("Syncing series");
 
-		const series = await this.seriesRepository.findAll({
-			limit: 50,
-			orderBy: {
-				synchronizedAt: 'ASC',
-			},
-		});
+		const series = await this.seriesRepository.findSyncableSeries(50);
 
-		console.log(series.map(s => s.anilistId).join(','));
+		if (series.length === 0) {
+			$log.info("No series to sync");
+			return;
+		}
+
+		$log.info("Sync series: ", series.map(s => s.anilistId).join(','));
 
 		await this.syncSeriesService.syncSeries(series.map(series => series.anilistId));
 

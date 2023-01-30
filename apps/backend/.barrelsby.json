@@ -2,14 +2,14 @@
 	"delete": true,
 
 	"directory": [
-		"src/controllers/api",
-		"src/domain/entity",
-		"src/domain/service",
-		"src/domain/repository",
-		"src/domain/agenda",
+		"src/application/controller/api",
+		"src/application/scheduler",
 		"src/application/service",
+		"src/domain/entity",
 		"src/domain/graphql/anilist/list",
 		"src/domain/graphql/anilist/series",
-		"src/domain/graphql/anilist/user"
+		"src/domain/graphql/anilist/user",
+		"src/domain/repository",
+		"src/domain/service"
 	]
 }

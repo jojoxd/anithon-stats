@@ -1,17 +1,13 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [
+	"extends": "../../tsconfig.base.json",
+	"files": [],
+	"include": [
 		"./src/**.ts"
 	],
 	"references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ],
+		{ "path": "./tsconfig.app.json" },
+		{ "path": "./tsconfig.spec.json" }
+	],
 	"exclude": [
 		"dist",
 		"src/migrations/**/*",

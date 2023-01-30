@@ -1,5 +1,7 @@
 import { $log } from "@tsed/common";
-import {EntryEntity, EntryDataEntity, ListSettingsEntity} from "../../entity";
+import {EntryEntity} from "../../entity/entry/entry.entity";
+import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
+import {ListSettingsEntity} from "../../entity/list/list-settings.entity";
 import {EntryId, EntryStatusEnum} from "@anistats/shared";
 
 export class EntryView

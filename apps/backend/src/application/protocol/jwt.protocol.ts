@@ -6,6 +6,7 @@ import {UserEntity} from "../../domain/entity/user/user.entity";
 import {UserRepository} from "../../domain/repository/user/user.repository";
 import jwtConfig from "../../config/jwt";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import {cookieJwtExtractor} from "../../domain/util/jwt/cookie.jwt-extractor";
 
 @Protocol({
 	name: "jwt",
@@ -14,7 +15,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 	settings: {
 		session: false,
 
-		jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+		jwtFromRequest: cookieJwtExtractor('token'),
 		secretOrKey: jwtConfig.secret,
 		issuer: jwtConfig.issuer,
 		audience: jwtConfig.audience,

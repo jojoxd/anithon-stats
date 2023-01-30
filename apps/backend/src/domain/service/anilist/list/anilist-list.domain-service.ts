@@ -11,7 +11,6 @@ import {
 	GetUserLists,
 	GetUserListsQuery, GetUserListsQueryVariables,
 } from "../../../graphql/anilist/list";
-import {AnilistSeriesId} from "@anistats/shared";
 import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
 
 @Injectable({ scope: ProviderScope.REQUEST })

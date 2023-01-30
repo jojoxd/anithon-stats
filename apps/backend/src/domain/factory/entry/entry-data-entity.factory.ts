@@ -1,4 +1,5 @@
-import {EntryDataEntity, EntryEntity} from "../../entity";
+import {EntryEntity} from "../../entity/entry/entry.entity";
+import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
 
 export class EntryDataEntityFactory
 {

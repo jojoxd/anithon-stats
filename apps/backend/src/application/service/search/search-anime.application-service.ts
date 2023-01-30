@@ -1,7 +1,7 @@
 import {SearchAnimeResponse} from "@anistats/shared";
 import {Inject, Service} from "@tsed/di";
 import {SearchSeriesDomainService} from "../../../domain/service/search/search-series.domain-service";
-import {SeriesDomainService} from "../../../domain/service";
+import {SeriesDomainService} from "../../../domain/service/series/series.domain-service";
 
 @Service()
 export class SearchAnimeApplicationService

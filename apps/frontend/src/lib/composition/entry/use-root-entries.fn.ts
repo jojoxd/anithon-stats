@@ -22,11 +22,10 @@ export function useRootEntries(): UseRootEntries
         const _entries = get(entries);
 
         if (!Array.isArray(_entries)) {
-            // return undefined | null
             return _entries;
         }
 
-        const rootEntries = new Set();
+        const rootEntries = new Set<EntryDto>();
         for(const entry of _entries) {
             const prequel = _entries.find((_entry) => {
                 return _entry.sequel?.ref === entry.id;
@@ -43,7 +42,9 @@ export function useRootEntries(): UseRootEntries
             }
         }
 
-        return Array.from(rootEntries);
+        return Array.from(rootEntries).sort((entryA, entryB) => {
+            return listStore.getEntryData(entryB.id)!.order - listStore.getEntryData(entryA.id)!.order;
+        });
     });
 
     return {

@@ -16,23 +16,13 @@ import {defineComponent, PropType, computed, toRefs} from "vue";
                 userId,
             } = toRefs(props);
 
-            const {
-                value: userResponse,
-            } = wrapAxios((axios) => {
-                return axios.get<void, UserResponse>(`user/${userId.value}`);
-            });
-
-            const user = computed(() => {
-                return userResponse.value?.user ?? null;
-            })
-
             return {
-                user,
+                userId,
             };
         },
     });
 </script>
 
 <template>
-    <UserLists v-if="user" :user="user" />
+    <list-overview :user-id="userId" />
 </template>

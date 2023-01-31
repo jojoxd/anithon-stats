@@ -1,8 +1,9 @@
 import { get } from "@vueuse/core";
 import {computed, ComputedRef } from "vue";
 import { useListStore } from "../../store/list-store";
-import {EntryDataDto, EntryDto, EntryId} from "@anistats/shared";
+import {EntryDataDto, EntryDto, EntryId, SeriesId} from "@anistats/shared";
 import {useSeries} from "../series/use-series.fn";
+import {computedExtract} from "../../util/computed-extract.fn";
 
 interface UseEntry
 {
@@ -11,6 +12,8 @@ interface UseEntry
     entryData: ComputedRef<EntryDataDto | undefined | null>;
 
     entryTitle: ComputedRef<string | undefined | null>;
+
+    seriesId: ComputedRef<SeriesId | undefined | null>;
 
     sequels: ComputedRef<Array<EntryDto> | undefined | null>;
 }
@@ -27,9 +30,7 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
         return listStore.getEntryData(get(entryId));
     });
 
-    const seriesId = computed(() => {
-        return get(entry)?.series.ref;
-    });
+    const seriesId = computedExtract(entry, (entry) => entry?.series.ref);
 
     const sequels = computed(() => {
         const _entry = get(entry);
@@ -46,6 +47,8 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
             sequelEntry = listStore.getSequelEntry(sequelEntry);
         }
 
+        console.dir(sequels);
+
         return sequels;
     });
 
@@ -56,6 +59,7 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
     return {
         entry,
         entryData,
+        seriesId,
 
         entryTitle: seriesTitle,
 

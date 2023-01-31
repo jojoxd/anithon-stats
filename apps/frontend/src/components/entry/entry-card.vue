@@ -7,7 +7,7 @@
     export default defineComponent({
         props: {
             entryId: {
-                type: Object as PropType<EntryId>,
+                type: String as PropType<EntryId>,
                 required: true,
             },
         },
@@ -18,23 +18,26 @@
             'click:down',
         ],
 
-        setup(props) {
+        setup(props, { emit, }) {
             const {
                 entryId,
             } = toRefs(props);
 
             const {
+                entry,
                 entryTitle,
                 sequels,
             } = useEntry(entryId);
 
             return {
+                entry,
                 entryTitle,
 
                 sequels,
 
                 mdiDragVertical,
                 mdiDelete,
+                onDelete: () => emit('click:delete'),
             };
         },
     });
@@ -62,14 +65,14 @@
                     </v-system-bar>
                     <v-main>
                         <entry-info
-                            :entry="entry"
+                            :entry-id="entry.id"
                         ></entry-info>
 
                         <template v-for="sequel in sequels">
                             <v-divider />
 
                             <entry-info
-                                :entry="sequel"
+                                :entry-id="sequel.id"
                                 sequel
                             ></entry-info>
                         </template>

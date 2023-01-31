@@ -4,7 +4,7 @@
 
     export default defineComponent({
         props: {
-            listMetadata: {
+            metadata: {
                 type: Object as PropType<ListMetadataDto>,
                 required: true,
             },
@@ -12,11 +12,11 @@
 
         setup(props) {
             const {
-                listMetadata,
+                metadata,
             } = toRefs(props);
 
             return {
-                listMetadata,
+                metadata,
             };
         },
     });
@@ -24,6 +24,6 @@
 
 <template>
     <v-chip-group disabled>
-        <v-chip>{{ $moment.duration(listMetadata.time, 'minutes').format('HH:mm:ss') }}</v-chip>
+        <v-chip>{{ $moment.duration(metadata.time, 'minutes').format('HH:mm:ss') }}</v-chip>
     </v-chip-group>
 </template>

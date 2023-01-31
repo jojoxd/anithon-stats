@@ -5,11 +5,14 @@
     import {mdiApplicationCogOutline, mdiChevronDown, mdiChevronUp} from "@mdi/js";
     import {useListStore} from "../../lib/store/list-store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
+    import {useSeries} from "../../lib/composition/series/use-series.fn";
+    import {storeToRefs} from "pinia";
+    import {useAppStore} from "../../lib/store/app-store";
 
     export default defineComponent({
         props: {
             entryId: {
-                type: Object as PropType<EntryId>,
+                type: String as PropType<EntryId>,
                 required: true,
             },
 
@@ -32,10 +35,19 @@
             } = useListStore();
 
             const {
+                isDebugEnabled,
+            } = storeToRefs(useAppStore());
+
+            const {
                 entry,
-                entryTitle,
-                series,
+                seriesId,
             } = useEntry(entryId);
+
+            const {
+                series,
+                coverImage,
+                seriesTitle,
+            } = useSeries(seriesId);
 
             function onClickSettings()
             {
@@ -43,13 +55,17 @@
             }
 
             return {
+                isDebugEnabled,
+
                 entry,
 
-                entryTitle,
+                index: 0,
+
+                seriesTitle,
 
                 isSequel,
 
-                coverImage: computed(() => series.value?.coverImage),
+                coverImage,
 
                 mdiChevronUp,
                 onClickUp: () => emit('click:up'),
@@ -69,7 +85,7 @@
         <v-row class="w-100">
             <v-col cols="1" class="entry-controls" v-if="!isSequel">
                 <v-icon :icon="mdiChevronUp" @click.prevent="onClickUp" />
-                <span>{{ index ?? 0 }}</span>
+                <span>{{ index }}</span>
                 <v-icon :icon="mdiChevronDown" @click.prevent="onClickDown" />
             </v-col>
 
@@ -81,7 +97,9 @@
                 <v-container>
                     <v-row>
                         <v-col class="text-h6">
-                            {{ entryTitle }}
+                            {{ seriesTitle }}
+
+                            <debug :items="{ entryId: entry.id }"></debug>
                         </v-col>
                     </v-row>
                     <v-row>

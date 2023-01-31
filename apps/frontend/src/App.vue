@@ -19,7 +19,7 @@
 <template>
     <v-app :theme="theme">
         <overlay-provider>
-            <Header />
+            <page-header />
 
             <v-main>
                 <v-container fluid>

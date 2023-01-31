@@ -13,6 +13,9 @@ export class ListMetadataDomainService
 	{
 		return {
 			title: list.name,
+			ref: {
+				id: list.id,
+			},
 			description: 'NOTE: Lists don\'t have a description right now',
 			stats: this.createMetadataStats(list),
 		};

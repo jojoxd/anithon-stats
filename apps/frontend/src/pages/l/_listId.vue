@@ -5,11 +5,13 @@
     import {ListId} from "@anistats/shared";
     import {storeToRefs} from "pinia";
     import {useListStore} from "../../lib/store/list-store";
+    import {useCurrentListUser} from "../../lib/composition/user/use-current-list-user.fn";
+    import {useRootEntries} from "../../lib/composition/entry/use-root-entries.fn";
 
     export default defineComponent({
         props: {
             listId: {
-                type: String as unknown as PropType<ListId>,
+                type: String as PropType<ListId>,
                 required: true,
             },
         },
@@ -27,18 +29,24 @@
             const {
                 currentList,
                 currentEntry,
-                rootEntries,
-                listUser,
                 embedImageUri,
                 metadata,
                 hasUnsavedChanges,
             } = storeToRefs(listStore);
 
+            const {
+                rootEntries
+            } = useRootEntries();
+
+            const {
+                currentListUser: user,
+            } = useCurrentListUser();
+
             return {
                 currentList,
                 currentEntry,
                 rootEntries,
-                listUser,
+                user,
                 embedImageUri,
                 metadata,
                 hasUnsavedChanges,
@@ -54,7 +62,7 @@
 <template>
 	<div v-if="currentList">
         <v-badge :model-value="hasUnsavedChanges" content="Unsaved Changes" color="warning" offset-x="-10">
-          <h1>{{ listUser.name }} / {{ metadata.title }}</h1>
+          <h1>{{ user?.name }} / {{ metadata.title }}</h1>
         </v-badge>
 
         <p>{{ metadata.description }}</p>
@@ -67,7 +75,7 @@
 
         <div class="entries">
             <template v-for="rootEntry of rootEntries">
-                <entry-card :entry="rootEntry" />
+                <entry-card :entry-id="rootEntry.id" />
             </template>
         </div>
 

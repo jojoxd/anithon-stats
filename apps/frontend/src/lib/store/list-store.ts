@@ -56,7 +56,7 @@ export const useListStore = defineStore('list', () => {
             return undefined;
         }
 
-        if (seriesId === null || typeof seriesId === undefined) {
+        if (seriesId === null || typeof seriesId === 'undefined') {
             return seriesId;
         }
 

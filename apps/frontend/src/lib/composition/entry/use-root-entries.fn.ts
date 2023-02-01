@@ -1,8 +1,8 @@
 import { get } from "@vueuse/core";
 import {storeToRefs} from "pinia";
-import {computed, ComputedRef} from "vue";
+import {computed, ComputedRef, reactive} from "vue";
 import {useListStore} from "../../store/list-store";
-import {EntryDto} from "@anistats/shared";
+import {EntryDto, EntryId} from "@anistats/shared";
 
 export interface UseRootEntries
 {
@@ -17,7 +17,7 @@ export function useRootEntries(): UseRootEntries
         entries
     } = storeToRefs(listStore);
 
-    // @TODO: This ComputedRef should be pure (same order of entries)
+    // @pure
     const rootEntries = computed(() => {
         const _entries = get(entries);
 
@@ -25,7 +25,7 @@ export function useRootEntries(): UseRootEntries
             return _entries;
         }
 
-        const rootEntries = new Set<EntryDto>();
+        const rootEntryIds = new Set<EntryId>();
         for(const entry of _entries) {
             const prequel = _entries.find((_entry) => {
                 return _entry.sequel?.ref === entry.id;
@@ -34,17 +34,17 @@ export function useRootEntries(): UseRootEntries
             if (prequel) {
                 const prequelData = listStore.getEntryData(prequel.id);
 
-                if (prequelData?.splitSequelEntry) {
-                    rootEntries.add(entry);
+                if (prequelData?.splitSequelEntry === true) {
+                    rootEntryIds.add(entry.id);
                 }
             } else {
-                rootEntries.add(entry);
+                rootEntryIds.add(entry.id);
             }
         }
 
-        return Array.from(rootEntries).sort((entryA, entryB) => {
-            return listStore.getEntryData(entryB.id)!.order - listStore.getEntryData(entryA.id)!.order;
-        });
+        return Array.from(rootEntryIds).sort((entryIdA, entryIdB) => {
+            return listStore.getEntryData(entryIdA)!.order - listStore.getEntryData(entryIdB)!.order;
+        }).map(entryId => reactive(listStore.getEntry(entryId)!));
     });
 
     return {

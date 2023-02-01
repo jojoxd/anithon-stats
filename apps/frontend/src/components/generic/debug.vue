@@ -24,12 +24,12 @@
                 isDebugEnabled,
             } = storeToRefs(useAppStore());
 
-            const showTooltip = ref(false);
+            const showMenu = ref(false);
 
             return {
                 items,
                 isDebugEnabled,
-                showTooltip,
+                showMenu,
 
                 mdiBug,
             };
@@ -38,7 +38,7 @@
 </script>
 
 <template>
-    <v-tooltip v-model="showTooltip" v-if="isDebugEnabled" :close-on-content-click="false">
+    <v-menu v-model="showMenu" v-if="isDebugEnabled" :close-on-content-click="false" open-on-hover open-delay="0">
         <template #activator="{ props }">
             <v-icon
                 color="indigo"
@@ -48,7 +48,7 @@
         </template>
 
         <slot name="default">
-            <v-card min-width="75">
+            <v-card>
                 <v-list>
                     <v-list-item
                         v-for="(value, title) of items"
@@ -60,5 +60,5 @@
                 </v-list>
             </v-card>
         </slot>
-    </v-tooltip>
+    </v-menu>
 </template>

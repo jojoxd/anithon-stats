@@ -16,6 +16,8 @@ interface UseEntry
     seriesId: ComputedRef<SeriesId | undefined | null>;
 
     sequels: ComputedRef<Array<EntryDto> | undefined | null>;
+
+    hasSequel: ComputedRef<boolean>;
 }
 
 export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
@@ -34,10 +36,16 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
 
     const sequels = computed(() => {
         const _entry = get(entry);
+        const _entryData = get(entryData);
 
         if (!_entry) {
             return _entry;
         }
+
+        if (_entryData?.splitSequelEntry) {
+            return [];
+        }
+
 
         let sequelEntry = listStore.getSequelEntry(_entry);
         const sequels = [];
@@ -47,9 +55,17 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
             sequelEntry = listStore.getSequelEntry(sequelEntry);
         }
 
-        console.dir(sequels);
-
         return sequels;
+    });
+
+    const hasSequel = computed(() => {
+        const _entry = get(entry);
+
+        if (!_entry) {
+            return false;
+        }
+
+        return !!listStore.getSequelEntry(_entry);
     });
 
     const {
@@ -64,5 +80,6 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
         entryTitle: seriesTitle,
 
         sequels,
+        hasSequel,
     };
 }

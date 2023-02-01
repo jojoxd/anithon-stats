@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import { ref, readonly, computed } from "vue";
+import {ref, readonly, computed} from "vue";
 import {EntryDataDto, EntryDto, EntryId, ListDto, ListId, ListMetadataDto, ListResponse, SeriesDto, SeriesId} from "@anistats/shared";
 import {useAxios} from "../composition/use-axios.fn";
 import { get } from "@vueuse/core";

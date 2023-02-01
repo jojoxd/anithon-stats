@@ -1,13 +1,11 @@
 <script lang="ts">
     import {EntryId} from "@anistats/shared";
-    import {computed, defineComponent, PropType, toRefs} from "vue";
+    import {defineComponent, PropType, toRefs} from "vue";
     import {get} from "@vueuse/core";
     import {mdiApplicationCogOutline, mdiChevronDown, mdiChevronUp} from "@mdi/js";
     import {useListStore} from "../../lib/store/list-store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
     import {useSeries} from "../../lib/composition/series/use-series.fn";
-    import {storeToRefs} from "pinia";
-    import {useAppStore} from "../../lib/store/app-store";
 
     export default defineComponent({
         props: {
@@ -35,10 +33,6 @@
             } = useListStore();
 
             const {
-                isDebugEnabled,
-            } = storeToRefs(useAppStore());
-
-            const {
                 entry,
                 seriesId,
             } = useEntry(entryId);
@@ -55,9 +49,8 @@
             }
 
             return {
-                isDebugEnabled,
-
                 entry,
+                entryId,
 
                 index: 0,
 
@@ -99,7 +92,7 @@
                         <v-col class="text-h6">
                             {{ seriesTitle }}
 
-                            <debug :items="{ entryId: entry.id }"></debug>
+                            <debug :items="{ entryId, sequel,  }"></debug>
                         </v-col>
                     </v-row>
                     <v-row>

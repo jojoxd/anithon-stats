@@ -33,8 +33,14 @@
 <template>
     <v-app-bar app>
         <v-app-bar-title class="app-title">
-            AniStats
+            <span>
+                AniStats
+                <span class="font-italic">V3</span>
+            </span>
+
+            <firefly-background :scale="0.3" :style="{ width: '3ch', height: '60%', top: '20%', 'left': '8ch', opacity: 0.2, }" />
         </v-app-bar-title>
+
 
 
         <search-global></search-global>
@@ -46,6 +52,8 @@
         >
             Home
         </v-btn>
+
+
 
         <div v-if="currentUser">
             <user-settings-menu>

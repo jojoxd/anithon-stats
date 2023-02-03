@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Debug: typeof import('./src/components/generic/debug.vue')['default']
     'Default.overlay': typeof import('./src/components/overlay/default.overlay.vue')['default']
+    Draggable: typeof import('vuedraggable')['default']
     EntryCard: typeof import('./src/components/entry/entry-card.vue')['default']
     EntryInfo: typeof import('./src/components/entry/entry-info.vue')['default']
     EntrySettingsDrawer: typeof import('./src/components/entry/entry-settings-drawer.vue')['default']
@@ -28,6 +29,7 @@ declare module '@vue/runtime-core' {
     SearchGlobalUserEntry: typeof import('./src/components/search/global/search-global-user-entry.vue')['default']
     SearchSeries: typeof import('./src/components/search/series/search-series.vue')['default']
     SearchSeriesEntry: typeof import('./src/components/search/series/search-series-entry.vue')['default']
+    Sortable: typeof import('./src/components/sortable/sortable.vue')['default']
     ThemeSwitcher: typeof import('./src/components/generic/menu/theme-switcher.vue')['default']
     UserPreviewCard: typeof import('./src/components/user/preview/user-preview-card.vue')['default']
     UserSettingsMenu: typeof import('./src/components/user/settings/user-settings-menu.vue')['default']

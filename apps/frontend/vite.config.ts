@@ -33,6 +33,13 @@ export default defineConfig({
                 ViteIconsResolver({
                     componentPrefix: 'icon'
                 }),
+
+                (name: string) => {
+                    console.log('resolve', { name, });
+                    if (name.toLowerCase() === 'draggable') {
+                        return { name: 'default', from: 'vuedraggable', };
+                    }
+                },
             ],
         }),
 

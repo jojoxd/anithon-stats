@@ -35,7 +35,7 @@
             } = storeToRefs(listStore);
 
             const {
-                rootEntries
+                rootEntries,
             } = useRootEntries();
 
             const {
@@ -74,9 +74,14 @@
         <h2>Entries</h2>
 
         <div class="entries">
-            <template v-for="rootEntry of rootEntries">
-                <entry-card :entry-id="rootEntry.id" />
-            </template>
+            <draggable
+                v-model="rootEntries"
+                item-key="id"
+            >
+                <template #item="{ element: rootEntry }">
+                    <entry-card :entry-id="rootEntry.id" />
+                </template>
+            </draggable>
         </div>
 
         <entry-settings-drawer :open="currentEntry !== null" />

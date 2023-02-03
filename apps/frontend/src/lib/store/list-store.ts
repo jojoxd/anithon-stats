@@ -18,6 +18,7 @@ export const useListStore = defineStore('list', () => {
         const response = await axios.get<ListResponse>(`list/${id}`);
 
         currentList.value = response.data?.list ?? null;
+
         hasUnsavedChanges.value = false;
     }
 
@@ -90,6 +91,33 @@ export const useListStore = defineStore('list', () => {
         currentEntry.value = get(entries)?.find((_entry) => _entry.id === entryId) ?? null;
     }
 
+    function reindexEntries()
+    {
+        const _currentList = get(currentList);
+
+        if (!_currentList) {
+            return;
+        }
+
+        // @TODO: Should we use sequels to make indexes more coherent?
+
+        const zeroEntryData = _currentList.entries.data.filter((entryData) => entryData.order === null);
+        const sortedNonZeroEntryData = _currentList.entries.data
+            .filter((entryData) => entryData.order !== null)
+            .sort((entryDataA, entryDataB) => {
+                return entryDataB.order - entryDataA.order;
+            });
+
+        let index = 1;
+        for(const entryData of sortedNonZeroEntryData) {
+            entryData.order = index++;
+        }
+
+        for(const entryData of zeroEntryData) {
+            entryData.order = index++;
+        }
+    }
+
     return {
         currentList,
         currentEntry,
@@ -104,6 +132,8 @@ export const useListStore = defineStore('list', () => {
         getSeries,
         getSequelEntry,
         getEntryData,
+
+        reindexEntries,
 
         setCurrentEntry,
 

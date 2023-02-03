@@ -6,7 +6,8 @@ export interface EntryDataDto
 
     mult: number;
 
-    order: number;
+    // @TODO: Order should always be initialized as null
+    order: number | null;
 
     split: number | null;
     splitSequelEntry: boolean;

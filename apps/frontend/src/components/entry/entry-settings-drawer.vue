@@ -1,11 +1,12 @@
 <script lang="ts">
-    import {defineComponent, toRefs, watch} from "vue";
+import {defineComponent, nextTick, toRefs, watch} from "vue";
     import {storeToRefs} from "pinia";
     import {useListStore} from "../../lib/store/list-store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
     import {computedExtract} from "../../lib/util/computed-extract.fn";
     import {useSeries} from "../../lib/composition/series/use-series.fn";
     import {get} from "@vueuse/core";
+    import {useRootEntries} from "../../lib/composition/entry/use-root-entries.fn";
 
     export default defineComponent({
         props: {
@@ -33,15 +34,20 @@
                 entryData,
                 seriesId,
                 hasSequel,
+                rootEntry,
             } = useEntry(currentEntryId);
 
             const {
                 series,
             } = useSeries(seriesId);
 
+            const {
+                rootEntries
+            } = useRootEntries();
+
             watch(entryData, () => {
                 listStore.setHasUnsavedChanges(true);
-            }, { deep: true, });
+            }, { deep: true, immediate: false, });
 
             function onAutoSplitChange(autoSplit: boolean) {
                 console.log(autoSplit);
@@ -50,6 +56,41 @@
                 if (_entryData) {
                     console.log('Set entryData.split', autoSplit ? null : 1);
                     _entryData.split = autoSplit ? null : 1;
+                }
+            }
+
+            function onSplitSequelChange(splitSequelEntry: boolean)
+            {
+                if (splitSequelEntry) {
+                    const _rootEntry = get(rootEntry)!;
+                    const sequelEntryId = listStore.getSequelEntry(get(entry)!)!.id;
+                    const currentRootIndex = get(rootEntries)?.findIndex((rootEntry) => {
+                        return rootEntry.id === _rootEntry.id;
+                    }) ?? null;
+
+                    if (currentRootIndex !== null) {
+                        nextTick(() => {
+                            const sequelEntryIndex = currentRootIndex + 1;
+                            const sequelEntryData = listStore.getEntryData(sequelEntryId)!;
+
+                            // Get all rootEntries that will collide when pushed back
+                            const reIndexingRootEntries = get(rootEntries)!
+                                .slice(sequelEntryIndex)
+                                .filter((entry) => entry.id !== sequelEntryId)
+                                .sort((rootEntryA, rootEntryB) => {
+                                    return rootEntryA.order - rootEntryB.order;
+                                });
+
+                            // re-index
+                            let newRootEntryIndex = sequelEntryIndex + 1;
+                            for(const _rootEntry of reIndexingRootEntries) {
+                                _rootEntry.data.order = newRootEntryIndex++;
+                            }
+
+                            // Finally, set sequelEntry's index correct
+                            sequelEntryData.order = sequelEntryIndex;
+                        });
+                    }
                 }
             }
 
@@ -63,6 +104,7 @@
                 hasSequel,
 
                 onAutoSplitChange,
+                onSplitSequelChange,
             };
         },
     });
@@ -132,6 +174,7 @@
                     <v-checkbox
                         v-if="hasSequel"
                         v-model="entryData.splitSequelEntry"
+                        @update:modelValue="onSplitSequelChange"
                         label="Split Sequel"
                     ></v-checkbox>
                 </v-list-item>

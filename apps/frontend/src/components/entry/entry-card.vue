@@ -3,12 +3,22 @@
     import {EntryId} from "@anistats/shared";
     import {mdiDelete, mdiDragVertical} from "@mdi/js";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
+    import { HandleDirective } from "vue-slicksort";
 
     export default defineComponent({
+        directives: {
+            HandleDirective,
+        },
+
         props: {
             entryId: {
                 type: String as PropType<EntryId>,
                 required: true,
+            },
+
+            withHandle: {
+                type: Boolean,
+                default: false,
             },
         },
 
@@ -21,6 +31,7 @@
         setup(props, { emit, }) {
             const {
                 entryId,
+                withHandle,
             } = toRefs(props);
 
             const {
@@ -35,7 +46,9 @@
 
                 sequels,
 
+                withHandle,
                 mdiDragVertical,
+
                 mdiDelete,
                 onDelete: () => emit('click:delete'),
             };
@@ -50,8 +63,12 @@
                 <v-card-text>
                     <v-system-bar class="ma-0">
                         <v-icon
+                            v-if="withHandle"
+                            v-handle-directive
                             :icon="mdiDragVertical"
-                        ></v-icon>
+                            class="handle"
+                        ></v-icon
+>
 
                         <span>{{ entryTitle }}</span>
 
@@ -89,6 +106,10 @@
             animation: remove-btn 0.25s;
             color: red;
         }
+    }
+
+    .handle {
+        cursor: ns-resize;
     }
 
     @keyframes remove-btn {

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {defineComponent, PropType, ref} from "vue";
     import {useVModels} from "@vueuse/core";
-    import {mdiContentSave} from "@mdi/js";
+    import {mdiContentSave, mdiDragVertical} from "@mdi/js";
     import {ListId} from "@anistats/shared";
     import {storeToRefs} from "pinia";
     import {useListStore} from "../../lib/store/list-store";
@@ -53,6 +53,7 @@
 
                 canEdit,
 
+                mdiDragVertical,
                 mdiContentSave,
             };
         },
@@ -73,15 +74,21 @@
 
         <h2>Entries</h2>
 
-        <div class="entries">
-            <draggable
-                v-model="rootEntries"
-                item-key="id"
+        <div class="entries" v-if="rootEntries">
+            <slick-slick-list
+                v-model:list="rootEntries"
+                :item-key="(entryView) => entryView.id"
+                axis="y"
+                use-drag-handle
+                use-window-as-scroll-container
             >
-                <template #item="{ element: rootEntry }">
-                    <entry-card :entry-id="rootEntry.id" />
+                <template #item="{ item: rootEntry }">
+                    <entry-card
+                        :entry-id="rootEntry.id"
+                        with-handle
+                    ></entry-card>
                 </template>
-            </draggable>
+            </slick-slick-list>
         </div>
 
         <entry-settings-drawer :open="currentEntry !== null" />

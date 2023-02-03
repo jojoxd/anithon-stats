@@ -75,6 +75,15 @@ export const useListStore = defineStore('list', () => {
         return null;
     }
 
+    function getPrequelEntry(entryId: EntryId): EntryDto | undefined | null
+    {
+        const _entries = get(entries);
+
+        return _entries?.find((_entry) => {
+            return _entry.sequel?.ref === entryId;
+        });
+    }
+
     function getEntryData(entryId: EntryId): EntryDataDto | undefined | null
     {
         if (!currentList.value) {
@@ -130,6 +139,7 @@ export const useListStore = defineStore('list', () => {
 
         getEntry,
         getSeries,
+        getPrequelEntry,
         getSequelEntry,
         getEntryData,
 

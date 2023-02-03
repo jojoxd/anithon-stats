@@ -9,6 +9,8 @@ interface UseEntry
 {
     entry: ComputedRef<EntryDto | undefined | null>;
 
+    rootEntry: ComputedRef<EntryDto | undefined | null>;
+
     entryData: ComputedRef<EntryDataDto | undefined | null>;
 
     entryTitle: ComputedRef<string | undefined | null>;
@@ -68,13 +70,37 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
         return !!listStore.getSequelEntry(_entry);
     });
 
+    const rootEntry = computed(() => {
+        let _entry = get(entry);
+
+        while(_entry) {
+            const prequelEntry = listStore.getPrequelEntry(_entry.id);
+
+            if (!prequelEntry) {
+                return _entry;
+            }
+
+            const prequelEntryData = listStore.getEntryData(prequelEntry.id)!;
+            if (prequelEntryData.splitSequelEntry) {
+                return _entry;
+            }
+
+            _entry = prequelEntry;
+        }
+
+        return _entry;
+    });
+
     const {
         seriesTitle,
     } = useSeries(seriesId);
 
     return {
         entry,
+        rootEntry,
+
         entryData,
+
         seriesId,
 
         entryTitle: seriesTitle,

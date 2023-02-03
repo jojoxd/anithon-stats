@@ -35,9 +35,9 @@ export default defineConfig({
                 }),
 
                 (name: string) => {
-                    console.log('resolve', { name, });
-                    if (name.toLowerCase() === 'draggable') {
-                        return { name: 'default', from: 'vuedraggable', };
+                    if (name.startsWith('Slick')) {
+                        console.log('RESOLVE', name.slice('Slick'.length));
+                        return { name: name.slice('Slick'.length), from: 'vue-slicksort', };
                     }
                 },
             ],

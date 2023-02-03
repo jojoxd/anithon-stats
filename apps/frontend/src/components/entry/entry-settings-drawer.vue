@@ -61,37 +61,37 @@ import {defineComponent, nextTick, toRefs, watch} from "vue";
 
             function onSplitSequelChange(splitSequelEntry: boolean)
             {
-                if (splitSequelEntry) {
-                    const _rootEntry = get(rootEntry)!;
-                    const sequelEntryId = listStore.getSequelEntry(get(entry)!)!.id;
-                    const currentRootIndex = get(rootEntries)?.findIndex((rootEntry) => {
-                        return rootEntry.id === _rootEntry.id;
-                    }) ?? null;
+                const _rootEntry = get(rootEntry)!;
+                const sequelEntryId = listStore.getSequelEntry(get(entry)!)!.id;
+                const currentRootIndex = get(rootEntries)?.findIndex((rootEntry) => {
+                    return rootEntry.id === _rootEntry.id;
+                }) ?? null;
 
-                    if (currentRootIndex !== null) {
-                        nextTick(() => {
-                            const sequelEntryIndex = currentRootIndex + 1;
-                            const sequelEntryData = listStore.getEntryData(sequelEntryId)!;
-
-                            // Get all rootEntries that will collide when pushed back
-                            const reIndexingRootEntries = get(rootEntries)!
-                                .slice(sequelEntryIndex)
-                                .filter((entry) => entry.id !== sequelEntryId)
-                                .sort((rootEntryA, rootEntryB) => {
-                                    return rootEntryA.order - rootEntryB.order;
-                                });
-
-                            // re-index
-                            let newRootEntryIndex = sequelEntryIndex + 1;
-                            for(const _rootEntry of reIndexingRootEntries) {
-                                _rootEntry.data.order = newRootEntryIndex++;
-                            }
-
-                            // Finally, set sequelEntry's index correct
-                            sequelEntryData.order = sequelEntryIndex;
-                        });
-                    }
+                if (!splitSequelEntry || currentRootIndex === null) {
+                    return;
                 }
+
+                nextTick(() => {
+                    const sequelEntryIndex = currentRootIndex + 1;
+                    const sequelEntryData = listStore.getEntryData(sequelEntryId)!;
+
+                    // Get all rootEntries that will collide when pushed back
+                    const reIndexingRootEntries = get(rootEntries)!
+                        .slice(sequelEntryIndex)
+                        .filter((entry) => entry.id !== sequelEntryId)
+                        .sort((rootEntryA, rootEntryB) => {
+                            return rootEntryA.order - rootEntryB.order;
+                        });
+
+                    // re-index
+                    let newRootEntryIndex = sequelEntryIndex + 1;
+                    for(const _rootEntry of reIndexingRootEntries) {
+                        _rootEntry.data.order = newRootEntryIndex++;
+                    }
+
+                    // Finally, set sequelEntry's index correct
+                    sequelEntryData.order = sequelEntryIndex;
+                });
             }
 
             return {

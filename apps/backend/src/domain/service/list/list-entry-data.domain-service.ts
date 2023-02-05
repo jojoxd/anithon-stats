@@ -23,7 +23,7 @@ export class ListEntryDataDomainService
 			}
 
 			entry.data.mult = entryData.mult;
-			entry.data.order = entryData.order;
+			entry.data.order = entryData.order ?? undefined;
 			entry.data.split = entryData.split ?? undefined;
 			entry.data.splitSequelEntry = entryData.splitSequelEntry;
 			entry.data.startAt = entryData.startAt ?? undefined;

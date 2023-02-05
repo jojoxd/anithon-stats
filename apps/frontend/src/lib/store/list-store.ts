@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ref, readonly, computed} from "vue";
+import {ref, readonly, computed, nextTick} from "vue";
 import {EntryDataDto, EntryDto, EntryId, ListDto, ListId, ListMetadataDto, ListResponse, SeriesDto, SeriesId} from "@anistats/shared";
 import {useAxios} from "../composition/use-axios.fn";
 import { get } from "@vueuse/core";
@@ -19,7 +19,9 @@ export const useListStore = defineStore('list', () => {
 
         currentList.value = response.data?.list ?? null;
 
-        hasUnsavedChanges.value = false;
+        await nextTick(() => {
+            hasUnsavedChanges.value = false;
+        });
     }
 
     async function saveList() {
@@ -95,7 +97,7 @@ export const useListStore = defineStore('list', () => {
         }) ?? null;
     }
 
-    function setCurrentEntry(entryId: EntryId) {
+    function setCurrentEntry(entryId: EntryId | null) {
         // @ts-ignore Typing is incorrect, TODO: Fix this typing
         currentEntry.value = get(entries)?.find((_entry) => _entry.id === entryId) ?? null;
     }

@@ -1,6 +1,7 @@
 <script lang="ts">
     import {computed, defineComponent, PropType, toRefs} from "vue";
     import {SeriesDto} from "@anistats/shared";
+    import {useSeriesTitle} from "../../../lib/composition/series/use-series-title.fn";
 
     export default defineComponent({
         props: {

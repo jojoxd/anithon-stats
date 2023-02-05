@@ -18,15 +18,15 @@ export class EntryDataEntity
 	@Property({ type: 'int', precision: 1, })
 	public mult!: number;
 
-	@Property()
-	public order!: number;
+	@Property({ nullable: true, })
+	public order?: number | null;
 
 	@Property({ nullable: true, })
-	public startAt?: number;
+	public startAt?: number | null;
 
 	@Property({ nullable: true, })
-	public split?: number;
+	public split?: number | null;
 
 	@Property()
-	public splitSequelEntry: boolean = false;
+	public splitSequelEntry!: boolean;
 }

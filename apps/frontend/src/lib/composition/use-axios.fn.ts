@@ -1,6 +1,6 @@
-import {asyncComputed, get} from "@vueuse/core";
+import {get} from "@vueuse/core";
 import axios, {AxiosError, AxiosInstance, AxiosResponse} from "axios";
-import {computed, ComputedRef, Ref, ref} from "vue";
+import {computed, ComputedRef, readonly, Ref, ref, watch, WatchSource} from "vue";
 
 const getBaseUrl = (): string => {
     if(import.meta.env.DEV) {
@@ -35,7 +35,8 @@ export function useAxios()
 
 export interface WrapAxios<T>
 {
-    reload: () => void;
+    reload(): void;
+    reset(): void;
 
     isLoading: ComputedRef<boolean>;
 
@@ -43,7 +44,13 @@ export interface WrapAxios<T>
 
     error: ComputedRef<HttpError | AxiosError | Error | null>;
 
-    value: Ref<T>;
+    value: Readonly<Ref<T>>;
+}
+
+export interface WrapAxiosOptions
+{
+    immediate?: boolean;
+    watch?: WatchSource[];
 }
 
 export class HttpError extends Error
@@ -66,45 +73,64 @@ export class HttpError extends Error
     }
 }
 
-export function wrapAxios<T>(fn: (axiosInstance: AxiosInstance) => Promise<AxiosResponse<T>>): WrapAxios<T | null>
+export function wrapAxios<T, D = void>(fn: (axiosInstance: AxiosInstance) => Promise<AxiosResponse<T, D> | null>, options?: WrapAxiosOptions): WrapAxios<T | null>
 {
-    const reloadCounter = ref<number>(0);
     const isLoading = ref<boolean>(false);
     const error = ref<HttpError | AxiosError | Error | null>(null);
+    const internalValue = ref<D | null>(null);
+
+    async function load(): Promise<void>
+    {
+        isLoading.value = true;
+
+        try {
+            const response = await fn(useAxios());
+
+            console.log({response});
+
+            if (response === null) {
+                internalValue.value = null;
+                return;
+            }
+
+            if (response.status >= 400) {
+                error.value = new HttpError(response.statusText, response.status, response.data);
+            }
+
+            internalValue.value = response.data ?? null;
+
+            return;
+        } catch(e) {
+            if (e instanceof Error) {
+                error.value = e;
+            } else {
+                console.warn('Unhandled Error', e);
+            }
+        } finally {
+            isLoading.value = false;
+        }
+
+        // If all else fails, return null
+        internalValue.value = null;
+    }
+
+    if (options?.immediate ?? true) {
+        load();
+    }
+
+    if (options?.watch) {
+        watch(options.watch, load);
+    }
 
     return {
-        reload: () => reloadCounter.value += 1,
+        reload: () => load(),
+        reset: () => internalValue.value = null,
 
         isLoading: computed(() => get(isLoading)),
 
         hasErrors: computed(() => get(error) !== null),
         error: computed(() => get(error)),
 
-        value: asyncComputed<T>(async () => {
-            isLoading.value = true;
-            // @HACK: Reload uses vue's side-effects to re-run
-            get(reloadCounter);
-
-            try {
-                const response = await fn(useAxios());
-
-                if (response.status >= 400) {
-                    error.value = new HttpError(response.statusText, response.status, response.data);
-                }
-
-                return response.data ?? null;
-            } catch(e) {
-                if (e instanceof Error) {
-                    error.value = e;
-                } else {
-                    console.warn('Unhandled Error', e);
-                }
-            } finally {
-                isLoading.value = false;
-            }
-
-            // If all else fails, return null
-            return null;
-        }),
+        value: computed(() => get(internalValue)),
     }
 }

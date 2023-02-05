@@ -1,9 +1,9 @@
 <script lang="ts">
     import { mdiMagnify } from "@mdi/js";
-    import {computed, defineComponent, PropType, ref, toRefs, watch} from "vue";
+    import {defineComponent, PropType, ref, toRefs, watch} from "vue";
     import {SeriesDto, SeriesId} from "@anistats/shared";
     import {breakpointsVuetify, useBreakpoints} from "@vueuse/core";
-    import {useSearchSeries} from "../../../old/composition/useSearchSeries";
+    import {useSeriesSearch} from "../../../lib/composition/search/series/use-series-search.fn";
 
     export default defineComponent({
         props: {
@@ -16,7 +16,7 @@
             isDisabled: {
                 type: Function as PropType<(series: SeriesDto) => boolean>,
                 required: false,
-                default: false,
+                default: () => false,
             },
         },
 
@@ -39,19 +39,20 @@
             } = toRefs(props);
 
             const {
-                foundSeries,
-                resetData,
-                searchStatus,
-            } = useSearchSeries(query);
+                reload,
+                reset: resetSearchData,
+                isLoading,
+                series,
+            } = useSeriesSearch(query);
 
-            watch(foundSeries, () => {
-                console.log(foundSeries.value);
+            watch(series, () => {
+                console.log(series.value);
                 selected.value = []; // reset selected
             });
 
             function onCompleted()
             {
-                const selectedSeries = foundSeries.value?.filter((series) => {
+                const selectedSeries = series.value?.filter((series) => {
                     return selected.value.includes(series.id);
                 });
 
@@ -64,7 +65,7 @@
                 isOpened.value = false;
                 query.value = '';
                 selected.value = [];
-                resetData();
+                resetSearchData();
             }
 
             function toggleSelected(series: SeriesDto): void
@@ -80,10 +81,6 @@
                     selected.value.push(series.id);
                 }
             }
-
-            const isLoading = computed(() => {
-                return searchStatus.value !== ApiStatus.Ok && searchStatus.value !== ApiStatus.Initial;
-            });
 
             return {
                 query,
@@ -103,7 +100,7 @@
 
                 isSmallScreen,
 
-                foundSeries,
+                series,
 
                 mdiMagnify,
             };
@@ -144,18 +141,18 @@
                     Hint: You can select multiple series at once!
                 </div>
 
-                <v-list v-if="foundSeries">
+                <v-list v-if="series">
                     <slot
                         name="item"
-                        v-for="series in foundSeries"
-                        :key="series.id"
-                        :series="series"
+                        v-for="s in series"
+                        :key="s.id"
+                        :series="s"
                     >
                         <search-series-entry
-                            :series="series"
-                            :disabled="isDisabled(series)"
-                            @click="toggleSelected(series)"
-                            :selected="selected.includes(series.id)"
+                            :series="s"
+                            :disabled="isDisabled(s)"
+                            @click="toggleSelected(s)"
+                            :selected="selected.includes(s.id)"
                         ></search-series-entry>
                     </slot>
                 </v-list>

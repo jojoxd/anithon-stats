@@ -1,7 +1,6 @@
 <script lang="ts">
-import {defineComponent, PropType, computed, toRefs} from "vue";
-    import {UserId, UserResponse} from "@anistats/shared";
-    import {wrapAxios} from "../../lib/composition/use-axios.fn";
+    import {defineComponent, PropType, toRefs} from "vue";
+    import {UserId} from "@anistats/shared";
 
     export default defineComponent({
         props: {

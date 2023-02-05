@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
         reload: reloadCurrentUser,
         value: userResponse,
     } = wrapAxios<UserResponse>(async (axios) => {
-        return axios.get<void, UserResponse>('user');
+        return axios.get('user');
     });
 
     return {

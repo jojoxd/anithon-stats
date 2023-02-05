@@ -67,8 +67,7 @@
                             v-handle-directive
                             :icon="mdiDragVertical"
                             class="handle"
-                        ></v-icon
->
+                        ></v-icon>
 
                         <span>{{ entryTitle }}</span>
 
@@ -86,7 +85,7 @@
                         ></entry-info>
 
                         <template v-for="sequel in sequels">
-                            <v-divider />
+                            <v-divider class="my-4" />
 
                             <entry-info
                                 :entry-id="sequel.id"

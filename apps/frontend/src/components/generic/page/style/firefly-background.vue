@@ -1,5 +1,5 @@
 <script lang="ts">
-import {computed, defineComponent, toRefs, useAttrs} from "vue";
+    import {computed, defineComponent, toRefs, useAttrs} from "vue";
 
     export default defineComponent({
         inheritAttrs: false,

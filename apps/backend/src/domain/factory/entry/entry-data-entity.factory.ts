@@ -1,5 +1,7 @@
 import {EntryEntity} from "../../entity/entry/entry.entity";
 import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
+import { EntryDataDefaults } from "@anistats/shared";
+
 
 export class EntryDataEntityFactory
 {
@@ -8,9 +10,11 @@ export class EntryDataEntityFactory
 	{
 		const entryDataEntity = new EntryDataEntity();
 
-		entryDataEntity.splitSequelEntry = false;
-		entryDataEntity.order = -1;
-		entryDataEntity.mult = 1;
+		entryDataEntity.mult = EntryDataDefaults.MULTIPLIER;
+		entryDataEntity.order = EntryDataDefaults.ORDER;
+		entryDataEntity.split = EntryDataDefaults.SPLIT;
+		entryDataEntity.splitSequelEntry = EntryDataDefaults.SPLIT_SEQUEL_ENTRY;
+		entryDataEntity.startAt = EntryDataDefaults.START_AT;
 
 		if (entryEntity) {
 			entryDataEntity.entry = entryEntity;

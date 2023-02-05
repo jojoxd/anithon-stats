@@ -2,7 +2,7 @@ import { get } from "@vueuse/core";
 import {storeToRefs} from "pinia";
 import {Ref, customRef} from "vue";
 import {useListStore} from "../../store/list-store";
-import {EntryDto, EntryId} from "@anistats/shared";
+import {EntryId} from "@anistats/shared";
 import { EntryView } from "../../view/entry.view";
 
 export interface UseRootEntries
@@ -51,8 +51,9 @@ export function useRootEntries(): UseRootEntries
                     .map(entryId => new EntryView(listStore.getEntry(entryId)!))
                     .sort((entryViewA, entryViewB) => entryViewA.order! - entryViewB.order!);
             },
+
             set(entryViews) {
-                console.log('SET LIST', entryViews);
+                listStore.setHasUnsavedChanges(true);
 
                 if (!entryViews) {
                     return;
@@ -64,46 +65,9 @@ export function useRootEntries(): UseRootEntries
                 }
 
                 trigger();
-            }
-        }
+            },
+        };
     });
-
-    function reindex(_rootEntries: Array<EntryDto>): void
-    {
-        if (!_rootEntries) {
-            return;
-        }
-
-        const entryDatas = _rootEntries.map(rootEntry => listStore.getEntryData(rootEntry.id)!);
-
-        const zeroEntryData = entryDatas.filter((entryData) => entryData.order === null);
-        const sortedNonZeroEntryData = entryDatas
-            .filter((entryData) => entryData.order !== null)
-            .sort((entryDataA, entryDataB) => {
-                return entryDataB.order - entryDataA.order;
-            });
-
-        // Clear non-root entries to null
-        const _entries = get(entries);
-        _entries?.filter((_entry) => {
-            return !entryDatas.find((rootEntryData) => rootEntryData.ref === _entry.id);
-        }).forEach((_entry) => {
-            console.log('UNSET ORDER OF ', _entry.id);
-            listStore.getEntryData(_entry.id)!.order = null;
-        });
-
-        // re-index
-        let index = 1;
-        for(const entryData of sortedNonZeroEntryData) {
-            console.log('SET ORDER OF ', entryData.ref, index);
-            entryData.order = index++;
-        }
-
-        for(const entryData of zeroEntryData) {
-            console.log('SET ORDER OF ', entryData.ref, index);
-            entryData.order = index++;
-        }
-    }
 
     return {
         rootEntries,

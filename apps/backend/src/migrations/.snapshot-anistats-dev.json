@@ -25,30 +25,30 @@
         },
         "order": {
           "name": "order",
-          "type": "int",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
-          "mappedType": "integer"
+          "nullable": true,
+          "mappedType": "json"
         },
         "start_at": {
           "name": "start_at",
-          "type": "int",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "integer"
+          "mappedType": "json"
         },
         "split": {
           "name": "split",
-          "type": "int",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "integer"
+          "mappedType": "json"
         },
         "split_sequel_entry": {
           "name": "split_sequel_entry",
@@ -57,7 +57,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         }
       },

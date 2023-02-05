@@ -19,7 +19,7 @@
 
 <template>
     <div v-if="currentUser">
-        <UserLists :user="currentUser" />
+        <list-overview :user-id="currentUser.id" />
     </div>
     <div v-else>
         It's pretty empty here...

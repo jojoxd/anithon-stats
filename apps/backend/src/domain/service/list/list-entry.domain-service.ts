@@ -93,7 +93,7 @@ export class ListEntryDomainService
 		return {
 			ref: entry.id,
 
-			order: entry.data.order,
+			order: entry.data.order ?? null,
 
 			mult: entry.data.mult,
 

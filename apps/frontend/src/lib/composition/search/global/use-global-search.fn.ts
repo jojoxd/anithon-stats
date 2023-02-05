@@ -1,16 +1,29 @@
+import {ComputedRef, Ref} from "vue";
 import { get } from "@vueuse/core";
-import {wrapAxios} from "../../use-axios.fn";
-import {SearchGlobalRequest, SearchGlobalResponse} from "@anistats/shared";
-import {computed, Ref } from "vue";
+import { wrapAxios } from "../../use-axios.fn";
+import { computedExtract } from "../../../util/computed-extract.fn";
+import {
+    SearchGlobalRequest, SearchGlobalResponse,
+    SearchGlobalUserDto, SearchGlobalListDto,
+} from "@anistats/shared";
 
-export function useGlobalSearch(query: Ref<string | null>)
+interface UseGlobalSearch
+{
+    reload(): void;
+    isLoading: ComputedRef<boolean>;
+
+    users: ComputedRef<Array<SearchGlobalUserDto> | null>;
+    lists: ComputedRef<Array<SearchGlobalListDto> | null>;
+}
+
+export function useGlobalSearch(query: Ref<string | null>): UseGlobalSearch
 {
     const {
         reload,
         isLoading,
         value: response,
-    } = wrapAxios((axios) => {
-        return axios.get<SearchGlobalRequest, SearchGlobalResponse>(
+    } = wrapAxios<SearchGlobalResponse, SearchGlobalRequest>((axios) => {
+        return axios.get(
             'search/global',
             {
                 data: {
@@ -20,17 +33,8 @@ export function useGlobalSearch(query: Ref<string | null>)
         );
     });
 
-    const users = computed(() => {
-        const _response = get(response);
-
-        return _response?.users ?? null;
-    });
-
-    const lists = computed(() => {
-        const _response = get(response);
-
-        return _response?.lists ?? null;
-    });
+    const users = computedExtract(response, (response) => response?.users ?? null);
+    const lists = computedExtract(response, (response) => response?.lists ?? null);
 
     return {
         reload,

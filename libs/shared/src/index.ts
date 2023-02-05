@@ -16,6 +16,7 @@ export * from "./application/series/get-series.request";
 export * from "./application/series/get-series.response";
 export * from "./application/user/user-lists.response";
 export * from "./application/user/user.response";
+export * from "./defaults/entry-data.defaults";
 export * from "./domain/anilist/anilist.helper";
 export * from "./dto/anilist/series/anilist-series-id.type";
 export * from "./dto/anilist/user/anilist-user-id.type";

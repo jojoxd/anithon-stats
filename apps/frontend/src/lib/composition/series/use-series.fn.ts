@@ -1,7 +1,7 @@
 import {SeriesDto, SeriesId} from "@anistats/shared";
 import { get } from "@vueuse/core";
 import { computed, ComputedRef, Ref } from "vue";
-import {useListStore} from "../../store/list-store";
+import {useListStore} from "../../store/list.store";
 import { computedExtract } from "../../util/computed-extract.fn";
 import {useSeriesTitle} from "./use-series-title.fn";
 

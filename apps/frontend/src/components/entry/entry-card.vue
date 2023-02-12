@@ -50,7 +50,7 @@
                 mdiDragVertical,
 
                 mdiDelete,
-                onDelete: () => emit('click:delete'),
+                onRemoveEntry: (entryId: EntryId) => emit('click:remove', entryId),
             };
         },
     });
@@ -76,12 +76,13 @@
                         <v-icon
                             class="remove-entry-btn"
                             :icon="mdiDelete"
-                            @click.prevent="onDelete"
+                            @click.prevent="onRemoveEntry(entry.id)"
                         ></v-icon>
                     </v-system-bar>
                     <v-main>
                         <entry-info
                             :entry-id="entry.id"
+                            @click:remove="onRemoveEntry(entry.id)"
                         ></entry-info>
 
                         <template v-for="sequel in sequels">
@@ -89,6 +90,7 @@
 
                             <entry-info
                                 :entry-id="sequel.id"
+                                @click:remove="onRemoveEntry(sequel.id)"
                                 sequel
                             ></entry-info>
                         </template>

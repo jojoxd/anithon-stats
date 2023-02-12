@@ -17,9 +17,11 @@ export class SearchAnimeApplicationService
 		const series = await this.searchSeriesService.searchSeries(query);
 
 		return {
-			series: series.map(series => {
-				return this.seriesService.mapToDto(series)
-			}),
+			series: await Promise.all(
+				series.map(series => {
+					return this.seriesService.mapToDto(series);
+				}),
+			),
 		};
 	}
 }

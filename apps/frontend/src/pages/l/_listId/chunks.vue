@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {useListStore} from "../../../lib/store/list-store";
+    import {useListStore} from "../../../lib/store/list.store";
     import {defineComponent, PropType} from "vue";
     import {storeToRefs} from "pinia";
     import {EntryId, ListId} from "@anistats/shared";

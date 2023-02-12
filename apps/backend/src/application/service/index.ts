@@ -4,5 +4,6 @@
 
 export * from "./list.application-service";
 export * from "./user.application-service";
+export * from "./metrics/database-metrics.application-service";
 export * from "./search/search-anime.application-service";
 export * from "./search/search-global.application-service";

@@ -3,7 +3,7 @@
     import {mdiTranslate} from "@mdi/js";
     import {storeToRefs} from "pinia";
     import {Language} from "../../../lib/store/types/language.enum";
-    import {useAppStore} from "../../../lib/store/app-store";
+    import {useAppStore} from "../../../lib/store/app.store";
 
     export default defineComponent({
         setup() {

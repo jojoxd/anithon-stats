@@ -17,9 +17,11 @@ export class SeriesDomainService
 	{
 		await list.entries.init({ populate: true });
 
-		return list.entries.getItems().map(entry => {
-			return this.mapToDto(entry.series.getEntity());
-		});
+		return Promise.all(
+			list.entries.getItems().map(entry => {
+				return this.mapToDto(entry.series.getEntity());
+			}),
+		);
 	}
 
 	public getTotalDuration(series: SeriesEntity): number | null
@@ -31,8 +33,11 @@ export class SeriesDomainService
 		return series.duration * series.episodes;
 	}
 
-	public mapToDto(seriesEntity: SeriesEntity): SeriesDto
+	public async mapToDto(seriesEntity: SeriesEntity): Promise<SeriesDto>
 	{
+		await seriesEntity.prequels.loadItems();
+		await seriesEntity.sequels.loadItems();
+
 		return {
 			id: seriesEntity.id,
 			title: seriesEntity.title,
@@ -42,6 +47,14 @@ export class SeriesDomainService
 
 			duration: seriesEntity.duration,
 			episodes: seriesEntity.episodes ?? null,
+
+			prequelIds: seriesEntity.prequels
+				.getItems()
+				.map(prequel => prequel.id),
+
+			sequelIds: seriesEntity.sequels
+				.getItems()
+				.map(sequel => sequel.id),
 		}
 	}
 }

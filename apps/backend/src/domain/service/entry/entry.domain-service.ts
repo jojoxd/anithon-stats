@@ -68,16 +68,6 @@ export class EntryDomainService
 		return sequel ?? null;
 	}
 
-	public async addEntry(seriesId: SeriesId, list: ListEntity): Promise<EntryDto>
-	{
-		throw new NotImplemented("Adding entries is not implemented yet");
-	}
-
-	public async removeEntry(seriesId: SeriesId, list: ListEntity): Promise<void>
-	{
-		throw new NotImplemented("Removing entries is not implemented yet");
-	}
-
 	public async sync(list: ListEntity): Promise<void>
 	{
 		// @TODO: Sync list with anilist, and back

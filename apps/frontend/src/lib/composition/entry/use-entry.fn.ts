@@ -1,6 +1,6 @@
 import { get } from "@vueuse/core";
 import {computed, ComputedRef } from "vue";
-import { useListStore } from "../../store/list-store";
+import { useListStore } from "../../store/list.store";
 import {EntryDataDto, EntryDto, EntryId, SeriesId} from "@anistats/shared";
 import {useSeries} from "../series/use-series.fn";
 import {computedExtract} from "../../util/computed-extract.fn";
@@ -54,6 +54,12 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
 
         while(sequelEntry) {
             sequels.push(sequelEntry);
+
+            const _sequelEntryData = listStore.getEntryData(sequelEntry.id);
+            if (_sequelEntryData?.splitSequelEntry) {
+                break;
+            }
+
             sequelEntry = listStore.getSequelEntry(sequelEntry);
         }
 

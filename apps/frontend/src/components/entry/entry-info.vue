@@ -3,7 +3,7 @@
     import {defineComponent, PropType, toRefs} from "vue";
     import {get} from "@vueuse/core";
     import {mdiApplicationCogOutline, mdiChevronDown, mdiChevronUp, mdiTrashCanOutline} from "@mdi/js";
-    import {useListStore} from "../../lib/store/list-store";
+    import {useListStore} from "../../lib/store/list.store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
     import {useSeries} from "../../lib/composition/series/use-series.fn";
     import {useBreakpoints} from "../../lib/composition/app/use-breakpoints.fn";
@@ -21,7 +21,9 @@
             },
         },
 
-        emits: [],
+        emits: [
+            'click:remove',
+        ],
 
         setup(props, { emit, }) {
             const {
@@ -77,7 +79,7 @@
                 onClickSettings,
 
                 mdiTrashCanOutline,
-                onClickRemove: () => emit('click:remove'),
+                onClickRemove: () => emit('click:remove', entryId.value),
             };
         },
     });

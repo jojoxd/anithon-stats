@@ -2,9 +2,9 @@
     import {defineComponent, PropType, ref} from "vue";
     import {useVModels} from "@vueuse/core";
     import {mdiDragVertical, mdiContentSaveOutline} from "@mdi/js";
-    import {ListId} from "@anistats/shared";
+    import {EntryId, ListId, SeriesDto} from "@anistats/shared";
     import {storeToRefs} from "pinia";
-    import {useListStore} from "../../../lib/store/list-store";
+    import {useListStore} from "../../../lib/store/list.store";
     import {useCurrentListUser} from "../../../lib/composition/user/use-current-list-user.fn";
     import {useRootEntries} from "../../../lib/composition/entry/use-root-entries.fn";
     import {useBreakpoints} from "../../../lib/composition/app/use-breakpoints.fn";
@@ -47,6 +47,23 @@
                 isMobile,
             } = useBreakpoints();
 
+            function onRemoveEntry(entryId: EntryId): void
+            {
+                listStore.removeEntry(entryId);
+            }
+
+            function onAddSeries(series: Array<SeriesDto>): void
+            {
+                for(const _series of series) {
+                    listStore.addEntryBySeries(_series);
+                }
+            }
+
+            function searchSeriesDisabled(series: SeriesDto): boolean
+            {
+                return !!listStore.getSeries(series.id);
+            }
+
             return {
                 currentList,
                 currentEntry,
@@ -64,6 +81,11 @@
 
                 mdiContentSaveOutline,
                 onSaveClick: () => listStore.saveList(),
+
+                onRemoveEntry,
+                onAddSeries,
+
+                searchSeriesDisabled,
             };
         },
     });
@@ -99,6 +121,8 @@
             Save
         </v-btn>
 
+        <search-series multiple @selected="onAddSeries" :is-disabled="searchSeriesDisabled" />
+
         <h2>Entries</h2>
 
         <div class="entries" v-if="rootEntries">
@@ -112,6 +136,7 @@
                 <template #item="{ item: rootEntry }">
                     <entry-card
                         :entry-id="rootEntry.id"
+                        @click:remove="onRemoveEntry"
                         with-handle
                     ></entry-card>
                 </template>

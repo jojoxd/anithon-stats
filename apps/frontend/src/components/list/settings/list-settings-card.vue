@@ -1,7 +1,7 @@
 <script lang="ts">
     import { defineComponent, watch } from "vue";
     import {storeToRefs} from "pinia";
-    import {useListStore} from "../../../lib/store/list-store";
+    import {useListStore} from "../../../lib/store/list.store";
 
     export default defineComponent({
         setup() {
@@ -23,39 +23,54 @@
 </script>
 
 <template>
-<v-card variant="outlined">
-<v-card-title>Settings</v-card-title>
+    <v-card variant="outlined">
+        <v-card-title>Settings</v-card-title>
 
-<v-card-text>
-<v-checkbox-btn
-label="Allow Chunk Merge"
-v-model="listSettings.allowChunkMerge"
-class="mb-2"
-></v-checkbox-btn>
+        <v-card-text>
+            <v-checkbox-btn
+                label="Allow Chunk Merge"
+                v-model="listSettings.allowChunkMerge"
+                class="mb-2"
+            ></v-checkbox-btn>
 
-<v-text-field
-type="number"
-v-model="listSettings.maxChunkLength"
-variant="outlined"
-class="mb-2"
-label="Max Chunk Length (Minutes)"
->
-<template #details>
-Maximum length a chunk can be in minutes.
-</template>
-</v-text-field>
+            <v-text-field
+                type="number"
+                v-model.number="listSettings.stackSize"
+                variant="outlined"
+                min="1"
+                max="10"
+                class="mb-2"
+                label="Stack Size"
+            >
+                <template #details>
+                    Number of entries to interweave together
+                </template>
+            </v-text-field>
 
-<v-text-field
-type="number"
-v-model="listSettings.maxChunkJoinLength"
-variant="outlined"
-class="mb-2"
-label="Max Chunk Join Length"
->
-<template #details>
-Maximum length in minutes that can join a chunk.
-</template>
-</v-text-field>
-</v-card-text>
-</v-card>
+            <v-text-field
+                type="number"
+                v-model.number="listSettings.maxChunkLength"
+                variant="outlined"
+                class="mb-2"
+                label="Max Chunk Length (Minutes)"
+            >
+                <template #details>
+                    Maximum length a chunk can be in minutes.
+                </template>
+            </v-text-field>
+
+            <v-text-field
+                type="number"
+                v-model.number="listSettings.maxChunkJoinLength"
+                variant="outlined"
+                :min="listSettings.maxChunkLength"
+                class="mb-2"
+                label="Max Chunk Join Length"
+            >
+                <template #details>
+                    Maximum length in minutes that can join a chunk.
+                </template>
+            </v-text-field>
+        </v-card-text>
+    </v-card>
 </template>

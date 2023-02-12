@@ -1,7 +1,7 @@
 import { get } from "@vueuse/core";
 import {storeToRefs} from "pinia";
 import {Ref, customRef} from "vue";
-import {useListStore} from "../../store/list-store";
+import {useListStore} from "../../store/list.store";
 import {EntryId} from "@anistats/shared";
 import { EntryView } from "../../view/entry.view";
 

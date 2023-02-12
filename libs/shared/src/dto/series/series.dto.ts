@@ -14,4 +14,8 @@ export interface SeriesDto
     episodes: number | null;
 
     description: string | null;
+
+    prequelIds: Array<SeriesId>;
+
+    sequelIds: Array<SeriesId>;
 }

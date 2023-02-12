@@ -1,7 +1,7 @@
 <script lang="ts">
     import {computed, customRef, defineComponent, nextTick, watch} from "vue";
     import {storeToRefs} from "pinia";
-    import {useListStore} from "../../lib/store/list-store";
+    import {useListStore} from "../../lib/store/list.store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
     import {computedExtract} from "../../lib/util/computed-extract.fn";
     import {useSeries} from "../../lib/composition/series/use-series.fn";

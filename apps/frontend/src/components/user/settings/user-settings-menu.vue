@@ -4,7 +4,7 @@
     import {useTheme} from "vuetify";
     import {storeToRefs} from "pinia";
     import {useAuthStore} from "../../../lib/store/auth.store";
-    import {useAppStore} from "../../../lib/store/app-store";
+    import {useAppStore} from "../../../lib/store/app.store";
 
     export default defineComponent({
         setup() {

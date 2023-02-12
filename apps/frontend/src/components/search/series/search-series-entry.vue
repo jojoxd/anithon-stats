@@ -66,12 +66,7 @@
     >
         <v-list-item-title class="search-series-item-title">{{ title }}</v-list-item-title>
 
-        <v-chip-group disabled>
-            <v-chip>{{ series.episodes }} episodes</v-chip>
-            <v-chip>{{ $moment.duration(series.duration, 'minutes').format('HH:mm:ss') }} / episode</v-chip>
-
-            <v-chip>Test 123</v-chip>
-        </v-chip-group>
+        <series-metadata :series="series"></series-metadata>
     </v-list-item>
 </template>
 

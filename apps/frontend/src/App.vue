@@ -1,7 +1,7 @@
 <script lang="ts">
     import {defineComponent} from "vue";
     import {storeToRefs} from "pinia";
-    import {useAppStore} from "./lib/store/app-store";
+    import {useAppStore} from "./lib/store/app.store";
 
     export default defineComponent({
         setup() {

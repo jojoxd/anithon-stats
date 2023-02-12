@@ -9,8 +9,7 @@
   "dependencies": {
     "@vueuse/core": "^9.10.0",
     "axios": "^1.2.2",
-    "moment": "^2.29.4",
-    "moment-duration-format": "^2.3.2",
+    "luxon": "^3.2.1",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",

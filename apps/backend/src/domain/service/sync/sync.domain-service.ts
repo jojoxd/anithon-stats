@@ -50,6 +50,8 @@ export class SyncDomainService
 			await this.listRepository.persist(list);
 		}
 
+		await this.listRepository.flush();
+
 		for (const removedList of diff.removed) {
 			user.lists.set(
 				user.lists
@@ -70,7 +72,7 @@ export class SyncDomainService
 
 		user.synchronizedAt = new Date();
 
-		await this.userRepository.persist(user);
+		await this.userRepository.persistAndFlush(user);
 	}
 
 	/**

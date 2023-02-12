@@ -1,6 +1,7 @@
 <script lang="ts">
     import {defineComponent, PropType, toRefs} from "vue";
     import {ListMetadataDto} from "@anistats/shared";
+    import {formatTime} from "../../../lib/filter/format-time.filter";
 
     export default defineComponent({
         props: {
@@ -17,6 +18,8 @@
 
             return {
                 metadata,
+
+                formatTime,
             };
         },
     });
@@ -24,6 +27,6 @@
 
 <template>
     <v-chip-group disabled>
-        <v-chip>{{ $moment.duration(metadata.time, 'minutes').format('HH:mm:ss') }}</v-chip>
+        <v-chip>{{ formatTime({ minutes: metadata.stats.time, }) }}</v-chip>
     </v-chip-group>
 </template>

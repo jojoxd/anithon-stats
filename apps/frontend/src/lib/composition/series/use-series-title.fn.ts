@@ -1,7 +1,7 @@
 import { SeriesTitleDto } from "@anistats/shared";
 import {get, MaybeRef } from "@vueuse/core";
 import {computed, ComputedRef} from "vue";
-import { useAppStore } from "../../store/app-store";
+import { useAppStore } from "../../store/app.store";
 import { storeToRefs } from "pinia";
 import { Language } from "../../store/types/language.enum";
 

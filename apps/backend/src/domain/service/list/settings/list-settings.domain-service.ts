@@ -13,6 +13,8 @@ export class ListSettingsDomainService
 
 	async updateListSettings(listSettings: ListSettingsDto, list: ListEntity): Promise<void>
 	{
+		list.settings.stackSize = listSettings.stackSize;
+
 		list.settings.allowChunkMerge = listSettings.allowChunkMerge;
 
 		list.settings.maxChunkLength = listSettings.maxChunkLength;
@@ -24,6 +26,8 @@ export class ListSettingsDomainService
 	async getSettings(list: ListEntity): Promise<ListSettingsDto>
 	{
 		return {
+			stackSize: list.settings.stackSize,
+
 			allowChunkMerge: list.settings.allowChunkMerge,
 
 			maxChunkLength: list.settings.maxChunkLength,

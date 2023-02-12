@@ -12,6 +12,9 @@ export class ListSettingsEntity
 	public id: string = createId();
 
 	@Property()
+	public stackSize!: number;
+
+	@Property()
 	public allowChunkMerge!: boolean;
 
 	@Property()

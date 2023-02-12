@@ -93,13 +93,14 @@ export class ListApplicationService
 
 		console.log("Update List", updateListRequest);
 
-		for(const seriesId of updateListRequest.addSeries ?? []) {
-			await this.listEntryService.addEntry(seriesId, list);
-		}
-
-		for(const seriesId of updateListRequest.removeSeries ?? []) {
-			await this.listEntryService.removeEntry(seriesId, list);
-		}
+		// @TODO: Get diff of updateListRequest.entries and list.entries
+//		for(const seriesId of updateListRequest.addSeries ?? []) {
+//			await this.listEntryService.addEntry(seriesId, list);
+//		}
+//
+//		for(const seriesId of updateListRequest.removeSeries ?? []) {
+//			await this.listEntryService.removeEntry(seriesId, list);
+//		}
 
 		await this.listSettingsService.updateListSettings(updateListRequest.settings, list);
 

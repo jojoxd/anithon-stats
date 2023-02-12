@@ -1,6 +1,6 @@
 import {EntryDataDto, EntryDto, EntryId, SeriesDto} from "@anistats/shared";
 import {get, MaybeRef} from "@vueuse/core";
-import {useListStore} from "../store/list-store";
+import {useListStore} from "../store/list.store";
 
 export class EntryView
 {

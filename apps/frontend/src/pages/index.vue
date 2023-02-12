@@ -24,6 +24,4 @@
     <div v-else>
         It's pretty empty here...
     </div>
-
-    <search-series multiple />
 </template>

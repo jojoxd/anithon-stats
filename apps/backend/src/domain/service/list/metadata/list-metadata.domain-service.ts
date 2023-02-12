@@ -1,7 +1,7 @@
 import {Inject, Service} from "@tsed/di";
-import {ListEntity} from "../../entity/list/list.entity";
+import {ListEntity} from "../../../entity/list/list.entity";
 import {ListMetadataDto, ListMetadataStatsDto} from "@anistats/shared";
-import {SeriesDomainService} from "../series/series.domain-service";
+import {SeriesDomainService} from "../../series/series.domain-service";
 
 @Service()
 export class ListMetadataDomainService

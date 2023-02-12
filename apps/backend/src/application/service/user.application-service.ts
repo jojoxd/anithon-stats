@@ -3,7 +3,7 @@ import {ListId, ListMetadataDto, UserId, UserListsResponse, UserResponse} from "
 import {UserRepository} from "../../domain/repository/user/user.repository";
 import {NotFound} from "@tsed/exceptions";
 import {UserDomainService} from "../../domain/service/user/user.domain-service";
-import {ListMetadataDomainService} from "../../domain/service/list/list-metadata.domain-service";
+import {ListMetadataDomainService} from "../../domain/service/list/metadata/list-metadata.domain-service";
 import {UserEntity} from "../../domain/entity/user/user.entity";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";

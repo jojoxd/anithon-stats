@@ -11,6 +11,8 @@ import {TimeUtil} from "../../util/time.util";
 import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import { $log } from "@tsed/common";
+import {MetricService} from "@jojoxd/tsed-util/prometheus";
+import { Histogram } from "prom-client";
 
 @Service()
 export class SyncSeriesDomainService
@@ -23,6 +25,15 @@ export class SyncSeriesDomainService
 
 	@Constant('app.series.syncTimeout')
 	protected readonly seriesSyncTimeout!: DurationLike;
+
+	protected readonly syncHistogram: Histogram;
+
+	constructor(@Inject() metrics: MetricService) {
+		this.syncHistogram = metrics.createHistogram({
+			name: "sync_series",
+			help: "Synced Series",
+		});
+	}
 
 	protected static readonly MAX_RELATION_DEPTH = 1;
 
@@ -58,6 +69,9 @@ export class SyncSeriesDomainService
 			return series;
 		}
 
+		this.syncHistogram.observe(1);
+		const endHistogramTimer = this.syncHistogram.startTimer();
+
 		const seriesViewProvided = typeof anilistSeriesView !== "undefined";
 		anilistSeriesView ??= await this.anilistSeriesService.getSeries(anilistId);
 		const excludeIdsInner = excludeIds ?? [];
@@ -72,6 +86,7 @@ export class SyncSeriesDomainService
 		console.log(`sync(${series.anilistId})`);
 
 		if(depth >= SyncSeriesDomainService.MAX_RELATION_DEPTH || !seriesViewProvided) {
+			endHistogramTimer();
 			return series;
 		}
 		depth += 1;
@@ -117,6 +132,8 @@ export class SyncSeriesDomainService
 		// @TODO: Remove id's not included in anilistSeriesView.prequels/.sequels
 
 		await this.seriesRepository.persistAndFlush(series);
+
+		endHistogramTimer();
 
 		return series;
 	}

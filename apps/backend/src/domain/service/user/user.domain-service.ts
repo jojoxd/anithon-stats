@@ -3,7 +3,7 @@ import {UserDto} from "@anistats/shared";
 import {UserEntity} from "../../entity/user/user.entity";
 import {ListEntity} from "../../entity/list/list.entity";
 import {UserRepository} from "../../repository/user/user.repository";
-import {ListMetadataDomainService} from "../list/list-metadata.domain-service";
+import {ListMetadataDomainService} from "../list/metadata/list-metadata.domain-service";
 import {SyncDomainService} from "../sync/sync.domain-service";
 import {AnilistUserDomainService} from "../anilist/user/anilist-user.domain-service";
 import {$log} from "@tsed/common";

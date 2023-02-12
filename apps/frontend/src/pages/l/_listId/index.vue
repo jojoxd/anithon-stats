@@ -1,13 +1,13 @@
 <script lang="ts">
     import {defineComponent, PropType, ref} from "vue";
     import {useVModels} from "@vueuse/core";
-    import {mdiContentSave, mdiDragVertical} from "@mdi/js";
+    import {mdiDragVertical, mdiContentSaveOutline} from "@mdi/js";
     import {ListId} from "@anistats/shared";
     import {storeToRefs} from "pinia";
-    import {useListStore} from "../../lib/store/list-store";
-    import {useCurrentListUser} from "../../lib/composition/user/use-current-list-user.fn";
-    import {useRootEntries} from "../../lib/composition/entry/use-root-entries.fn";
-    import {useBreakpoints} from "../../lib/composition/app/use-breakpoints.fn";
+    import {useListStore} from "../../../lib/store/list-store";
+    import {useCurrentListUser} from "../../../lib/composition/user/use-current-list-user.fn";
+    import {useRootEntries} from "../../../lib/composition/entry/use-root-entries.fn";
+    import {useBreakpoints} from "../../../lib/composition/app/use-breakpoints.fn";
 
     export default defineComponent({
         props: {
@@ -61,7 +61,9 @@
                 canEdit,
 
                 mdiDragVertical,
-                mdiContentSave,
+
+                mdiContentSaveOutline,
+                onSaveClick: () => listStore.saveList(),
             };
         },
     });
@@ -89,6 +91,13 @@
         <list-metadata :metadata="metadata" />
 
         <list-settings-card v-if="canEdit" />
+
+        <v-btn
+            :prepend-icon="mdiContentSaveOutline"
+            @click.prevent="onSaveClick"
+        >
+            Save
+        </v-btn>
 
         <h2>Entries</h2>
 

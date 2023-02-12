@@ -7,7 +7,7 @@ import {EntryId, EntryStatusEnum} from "@anistats/shared";
 export class EntryView
 {
 	constructor(
-		protected entry: EntryEntity
+		public entry: EntryEntity
 	) {}
 
 	protected get listSettings(): ListSettingsEntity
@@ -18,6 +18,15 @@ export class EntryView
 	protected get entryData(): EntryDataEntity
 	{
 		return this.entry.data;
+	}
+
+	get order(): number | null
+	{
+		if (this.entryData.order === -1) {
+			return null;
+		}
+
+		return this.entryData.order ?? null;
 	}
 
 	get id(): EntryId
@@ -54,6 +63,10 @@ export class EntryView
 
 	get chunkCount(): number
 	{
+		if (this.episodeCount === 1) {
+			return 1;
+		}
+
 		if ((this.entryData.split ?? 0) > 0) {
 			// Ensure we are into range 1 - episodeCount
 			return Math.min(Math.max(this.entryData.split!, 1), this.episodeCount);

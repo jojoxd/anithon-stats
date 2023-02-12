@@ -11,6 +11,7 @@ import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {TimeUtil} from "../../util/time.util";
 import {DateTime} from "luxon";
 import {SyncSeriesDomainService} from "../sync/sync-series.domain-service";
+import {CountCall} from "@jojoxd/tsed-util/prometheus";
 
 @Service()
 export class SyncDomainService
@@ -35,6 +36,7 @@ export class SyncDomainService
 	 *
 	 * NOTE: Syncing entries will result in a 429 on anilist API when a user has way too many items
 	 */
+	@CountCall("sync_user", "Times a user has been synced")
 	public async syncUser(user: UserEntity, force: boolean = false): Promise<void>
 	{
 		console.log("SYNC USER", user);
@@ -75,6 +77,7 @@ export class SyncDomainService
 	 * Synchronizes a single list
 	 */
 	//@Transactional()
+	@CountCall("sync_list", "Times a list has been synced")
 	public async syncList(list: ListEntity, anilistListView?: AnilistListView): Promise<void>
 	{
 		if (!anilistListView) {

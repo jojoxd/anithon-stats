@@ -35,6 +35,8 @@ import "./application/protocol/jwt.protocol";
 import "@jojoxd/tsed-util/scheduler";
 import "./application/scheduler";
 
+import "@jojoxd/tsed-util/prometheus";
+
 @Configuration({
     ...config,
     acceptMimes: ["application/json"],
@@ -46,6 +48,20 @@ import "./application/scheduler";
 			...Object.values(apiControllers),
         ],
     },
+
+	prometheus: {
+		enabled: true,
+		path: '/api/metrics',
+
+		collectDefaultMetrics: true,
+
+		options: {
+			includeMethod: true,
+			includePath: true,
+			includeStatusCode: true,
+			includeUp: false,
+		},
+	},
 
 	swagger: isProduction ? undefined : [
 		defineRedocSettings({

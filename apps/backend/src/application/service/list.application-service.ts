@@ -3,16 +3,17 @@ import {ListId, ListResponse, UpdateListRequest} from "@anistats/shared";
 import {InternalServerError, NotFound} from "@tsed/exceptions";
 import {ListRepository} from "../../domain/repository/list/list.repository";
 import {ListEntity} from "../../domain/entity/list/list.entity";
-import {ListEntryDomainService} from "../../domain/service/list/list-entry.domain-service";
-import {ListImageDomainService} from "../../domain/service/list/list-image.domain-service";
-import {ListChunkDomainService} from "../../domain/service/list/list-chunk.domain-service";
-import {ListSettingsDomainService} from "../../domain/service/list/list-settings.domain-service";
+import {EntryDomainService} from "../../domain/service/entry/entry.domain-service";
+import {ListImageDomainService} from "../../domain/service/list/image/list-image.domain-service";
+import {ListChunkDomainService} from "../../domain/service/list/chunk/list-chunk.domain-service";
+import {ListSettingsDomainService} from "../../domain/service/list/settings/list-settings.domain-service";
 import {SeriesDomainService} from "../../domain/service/series/series.domain-service";
 import {UserDomainService} from "../../domain/service/user/user.domain-service";
-import {ListMetadataDomainService} from "../../domain/service/list/list-metadata.domain-service";
-import {ListEntryDataDomainService} from "../../domain/service/list/list-entry-data.domain-service";
+import {ListMetadataDomainService} from "../../domain/service/list/metadata/list-metadata.domain-service";
+import {EntryDataDomainService} from "../../domain/service/entry/entry-data.domain-service";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";
+import { Transactional } from "@tsed/mikro-orm";
 
 @Service()
 export class ListApplicationService
@@ -21,7 +22,7 @@ export class ListApplicationService
 	protected listImageService!: ListImageDomainService;
 
 	@Inject()
-	protected listEntryService!: ListEntryDomainService;
+	protected listEntryService!: EntryDomainService;
 
 	@Inject()
 	protected listChunkService!: ListChunkDomainService;
@@ -39,7 +40,7 @@ export class ListApplicationService
 	protected userService!: UserDomainService;
 
 	@Inject()
-	protected listEntryDataService!: ListEntryDataDomainService;
+	protected listEntryDataService!: EntryDataDomainService;
 
 	@InjectRepository(ListEntity)
 	protected listRepository!: ListRepository;
@@ -85,10 +86,12 @@ export class ListApplicationService
 		};
 	}
 
-	//@Transactional()
+	@Transactional()
 	public async updateList(updateListRequest: UpdateListRequest): Promise<void>
 	{
 		const list = await this.getListOrThrow(updateListRequest.id);
+
+		console.log("Update List", updateListRequest);
 
 		for(const seriesId of updateListRequest.addSeries ?? []) {
 			await this.listEntryService.addEntry(seriesId, list);

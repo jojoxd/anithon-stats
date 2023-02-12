@@ -11,6 +11,7 @@ import { EntryRepository } from "../../repository/entry/entry.repository";
 import { ListRepository } from "../../repository/list/list.repository";
 import { SeriesRepository } from "../../repository/series/series.repository";
 import {EntryEntityFactory} from "../../factory/entry/entry-entity.factory";
+import {CountCall} from "@jojoxd/tsed-util/prometheus";
 
 @Service()
 export class SyncEntriesDomainService
@@ -30,6 +31,7 @@ export class SyncEntriesDomainService
 	@InjectRepository(EntryDataEntity)
 	protected entryDataRepository!: EntryDataRepository;
 
+	@CountCall("sync_entries", "Times list entries have been synced")
 	async syncEntries(list: ListEntity, anilistListView: AnilistListView): Promise<void>
 	{
 		// anilistListView is the source of truth

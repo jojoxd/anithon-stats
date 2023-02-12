@@ -1,4 +1,4 @@
-import { Catch, ExceptionFilterMethods, PlatformContext } from "@tsed/common";
+import {$log, Catch, ExceptionFilterMethods, PlatformContext} from "@tsed/common";
 import {Exception, InternalServerError} from "@tsed/exceptions";
 import { ExceptionResponse } from "@anistats/shared";
 
@@ -15,8 +15,9 @@ export class PlatformExceptionFilter implements ExceptionFilterMethods
 
 		const error = this.mapError(exception, id);
 
-		logger.error({
-			error,
+		$log.error({
+			exception,
+			id,
 		});
 
 		response

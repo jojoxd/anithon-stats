@@ -1,5 +1,5 @@
 import {Service} from "@tsed/di";
-import {ListEntity} from "../../entity/list/list.entity";
+import {ListEntity} from "../../../entity/list/list.entity";
 import {NotImplemented} from "@tsed/exceptions";
 
 @Service()

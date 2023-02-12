@@ -6,13 +6,15 @@ import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {EntryDataEntity} from "../../entity/entry/entry-data.entity";
 
 @Service()
-export class ListEntryDataDomainService
+export class EntryDataDomainService
 {
 	@InjectRepository(EntryDataEntity)
 	protected entryDataRepository!: EntryDataRepository;
 
 	public async updateEntryData(data: Array<EntryDataDto>, list: ListEntity): Promise<void>
 	{
+		await list.entries.loadItems();
+
 		for(const entryData of data) {
 			const entry = list.entries.getItems().find((entry) => entry.id === entryData.ref);
 

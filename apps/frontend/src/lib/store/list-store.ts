@@ -1,8 +1,23 @@
 import {defineStore} from "pinia";
 import {ref, readonly, computed, nextTick} from "vue";
-import {EntryDataDto, EntryDto, EntryId, ListDto, ListId, ListMetadataDto, ListResponse, SeriesDto, SeriesId} from "@anistats/shared";
+import {
+    BaseResponse,
+    EntryDataDto,
+    EntryDto,
+    EntryId,
+    ListDto,
+    ListId,
+    ListMetadataDto,
+    ListResponse,
+    SeriesDto,
+    SeriesId,
+    UpdateListRequest
+} from "@anistats/shared";
 import {useAxios} from "../composition/use-axios.fn";
 import { get } from "@vueuse/core";
+import {wrapOverlay} from "../../components/overlay/wrap-overlay.composition";
+import { AxiosResponse } from "axios";
+import {computedExtract} from "../util/computed-extract.fn";
 
 export const useListStore = defineStore('list', () => {
     const currentList = ref<ListDto | null>(null);
@@ -25,7 +40,29 @@ export const useListStore = defineStore('list', () => {
     }
 
     async function saveList() {
-        console.log('Save List');
+        const axios = useAxios();
+
+        const _currentList = get(currentList);
+
+        // @TODO: Throw error or smth
+        if (!_currentList) {
+            return;
+        }
+
+        const updateListRequest: UpdateListRequest = {
+            id: _currentList.id,
+
+            settings: _currentList.settings,
+
+            data: _currentList.entries.data,
+//            addSeries: [],
+//            removeSeries: [],
+        };
+
+        // @TODO: Overlay
+        const response = await axios.post<UpdateListRequest, AxiosResponse<BaseResponse>>('list/update', updateListRequest);
+
+        response.data.message
     }
 
     const metadata = computed<ListMetadataDto | null>(() => {
@@ -43,6 +80,8 @@ export const useListStore = defineStore('list', () => {
     const listSettings = computed(() => {
         return currentList.value?.settings ?? null;
     });
+
+    const chunks = computedExtract(currentList, (currentList) => currentList?.chunks.items ?? null);
 
     function getEntry(entryId: EntryId): EntryDto | undefined | null
     {
@@ -134,6 +173,7 @@ export const useListStore = defineStore('list', () => {
         currentEntry,
         metadata,
         entries,
+        chunks,
 
         listSettings,
 

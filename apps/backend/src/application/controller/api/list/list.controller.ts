@@ -4,6 +4,7 @@ import {ListResponse, UpdateListRequest, BaseResponse, ListId} from "@anistats/s
 import {BodyParams, PathParams} from "@tsed/common";
 import {UseCache} from "@tsed/platform-cache";
 import {ListApplicationService} from "../../../service/list.application-service";
+import {Authorize} from "@tsed/passport";
 
 @Controller("/list")
 export class ListController
@@ -19,6 +20,7 @@ export class ListController
 	}
 
 	@Post("/update")
+	@Authorize("jwt")
 	async updateList(@BodyParams() updateListRequest: UpdateListRequest): Promise<BaseResponse>
 	{
 		// @TODO: Auth

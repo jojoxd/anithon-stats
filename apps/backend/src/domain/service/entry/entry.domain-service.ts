@@ -7,7 +7,7 @@ import {EntryView} from "../../view/entry/entry.view";
 import { $log } from "@tsed/common";
 
 @Service()
-export class ListEntryDomainService
+export class EntryDomainService
 {
 	public async getEntryList(list: ListEntity): Promise<EntryListDto>
 	{

@@ -13,6 +13,8 @@ export * from "./list/chunk/list-chunk.domain-service";
 export * from "./list/image/list-image.domain-service";
 export * from "./list/metadata/list-metadata.domain-service";
 export * from "./list/settings/list-settings.domain-service";
+export * from "./metrics/anilist-metrics.domain-service";
+export * from "./metrics/database-metrics.domain-service";
 export * from "./search/search-series.domain-service";
 export * from "./search/search-user.domain-service";
 export * from "./series/series.domain-service";

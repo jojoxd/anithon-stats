@@ -2,8 +2,7 @@ import {Get} from "@tsed/schema";
 import {Controller, Inject} from "@tsed/di";
 import {UserId, UserResponse, UserListsResponse} from "@anistats/shared";
 import {UserApplicationService} from "../../../service/user.application-service";
-import { PathParams, Req, Session } from "@tsed/common";
-import {Unauthorized} from "@tsed/exceptions";
+import { PathParams, Req } from "@tsed/common";
 import {Authorize} from "@tsed/passport";
 import {UserEntity} from "../../../../domain/entity";
 

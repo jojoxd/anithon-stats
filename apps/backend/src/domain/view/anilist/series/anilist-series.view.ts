@@ -1,6 +1,6 @@
 import {MediaRelation, MediaType} from "../../../graphql/anilist/generated-types";
 import {AnilistSeriesId, SeriesTitleDto} from "@anistats/shared";
-import {isSeriesView} from "../../../graphql/anilist/series";
+import {isSeriesView} from "../../../graphql/anilist/series/series-view.fragment.gql";
 import { SeriesViewRelated } from "../../../graphql/anilist/series/series-view-related.fragment.gql";
 
 export class AnilistSeriesView

@@ -9,7 +9,7 @@ import {get} from "@vueuse/core";
 import { useListApi } from "./list/use-list-api";
 import { useListExtractors } from "./list/use-list-extractors";
 import { useListGetters } from "./list/use-list-getters";
-import {useListCrud} from "./list/use-list-crud";
+import { useListCrud } from "./list/use-list-crud";
 
 export const useListStore = defineStore('list', () => {
     const currentList = ref<ListDto | null>(null);

@@ -1,5 +1,5 @@
 import {Service, Constant} from "@tsed/di";
-import {UserEntity} from "../../entity";
+import {UserEntity} from "../../entity/user/user.entity";
 import * as jwt from "jsonwebtoken";
 import {JwtConfiguration} from "../../interface/jwt-configuration.interface";
 

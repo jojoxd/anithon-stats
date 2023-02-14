@@ -23,9 +23,11 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 {
 	async getSeries(seriesId: any): Promise<AnilistSeriesView>
 	{
+		const endHistogram = this.metrics.startHistogram("GetSeries", "QUERY");
+
 		console.log(`[AL] getSeries(${seriesId})`);
 
-		const { data, errors } = await this.client.query<GetSeriesQuery, GetSeriesQueryVariables>({
+		const { data, errors, error, } = await this.client.query<GetSeriesQuery, GetSeriesQueryVariables>({
 			query: GetSeries,
 			variables: {
 				mediaId: seriesId,
@@ -35,11 +37,11 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			fetchPolicy: "no-cache",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.error(`[AL] Failed to getSeries(${seriesId})`);
 			throw new InternalServerError(`Failed to fetch series ${seriesId} from anilist`, errors);
 		}
-
 		return new AnilistSeriesView(data.Media!);
 	}
 
@@ -50,9 +52,11 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			return new Map();
 		}
 
+		const endHistogram = this.metrics.startHistogram("BatchGetSeries", "QUERY");
+
 		console.log(`[AL] batchGetSeries(${seriesIds.join(', ')}, withRelated: ${withRelated ? 'true' : 'false'})`);
 
-		const { data, errors } = await this.client.query<BatchGetSeriesQuery, BatchGetSeriesQueryVariables>({
+		const { data, errors, error, } = await this.client.query<BatchGetSeriesQuery, BatchGetSeriesQueryVariables>({
 			query: BatchGetSeries,
 
 			variables: {
@@ -65,9 +69,9 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			fetchPolicy: "no-cache",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.error(`[AL] Failed to batchGetSeries(${seriesIds.join(', ')})`);
-
 			throw new InternalServerError(`Failed to get multiple series`, errors);
 		}
 
@@ -88,7 +92,9 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 
 	async searchSeries(query: string, mediaType: MediaType = MediaType.Anime, page: number = 1): Promise<Array<AnilistSeriesView> | null>
 	{
-		const { data, errors } = await this.client.query<SearchSeriesQuery, SearchSeriesQueryVariables>({
+		const endHistogram = this.metrics.startHistogram("SearchSeries", "QUERY");
+
+		const { data, errors, error, } = await this.client.query<SearchSeriesQuery, SearchSeriesQueryVariables>({
 			query: SearchSeries,
 			variables: {
 				query,
@@ -101,6 +107,7 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			fetchPolicy: "no-cache",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			throw new InternalServerError(`Failed to search series (${mediaType}) "${query}" from anilist`, errors);
 		}

@@ -1,19 +1,20 @@
 import { AfterInit } from "@tsed/common";
-import { Inject, Service } from "@tsed/di";
+import { Inject, Injectable, ProviderScope } from "@tsed/di";
 import { MetricService } from "@jojoxd/tsed-util/prometheus";
 import { InjectRepository } from "@jojoxd/tsed-util/mikro-orm";
-import { BaseEntityRepository } from "../../../domain/repository/base-entity.repository";
-import { UserRepository } from "../../../domain/repository/user/user.repository";
-import { EntryRepository } from "../../../domain/repository/entry/entry.repository";
-import { ListRepository } from "../../../domain/repository/list/list.repository";
-import { SeriesRepository } from "../../../domain/repository/series/series.repository";
-import { UserEntity } from "../../../domain/entity/user/user.entity";
-import { EntryEntity } from "../../../domain/entity/entry/entry.entity";
-import { ListEntity } from "../../../domain/entity/list/list.entity";
-import { SeriesEntity } from "../../../domain/entity/series/series.entity";
+import { BaseEntityRepository } from "../../repository/base-entity.repository";
+import { UserRepository } from "../../repository/user/user.repository";
+import { EntryRepository } from "../../repository/entry/entry.repository";
+import { ListRepository } from "../../repository/list/list.repository";
+import { SeriesRepository } from "../../repository/series/series.repository";
+import { UserEntity } from "../../entity/user/user.entity";
+import { EntryEntity } from "../../entity/entry/entry.entity";
+import { ListEntity } from "../../entity/list/list.entity";
+import { SeriesEntity } from "../../entity/series/series.entity";
+import { Gauge } from "prom-client";
 
-@Service()
-export class DatabaseMetricsApplicationService implements AfterInit
+@Injectable({ scope: ProviderScope.SINGLETON, })
+export class DatabaseMetricsDomainService implements AfterInit
 {
 	@Inject()
 	protected readonly metricService!: MetricService;
@@ -30,7 +31,7 @@ export class DatabaseMetricsApplicationService implements AfterInit
 	@InjectRepository(UserEntity)
 	protected readonly userRepository!: UserRepository;
 
-	$afterInit(): void
+	public $afterInit(): void
 	{
 		this.createGauge("series", () => this.seriesRepository);
 		this.createGauge("entries", () => this.entryRepository);
@@ -38,7 +39,7 @@ export class DatabaseMetricsApplicationService implements AfterInit
 		this.createGauge("users", () => this.userRepository);
 	}
 
-	createGauge<T extends object>(entityName: string, getRepository: () => BaseEntityRepository<T>)
+	protected createGauge<T extends object>(entityName: string, getRepository: () => BaseEntityRepository<T>): Gauge
 	{
 		return this.metricService.createGauge({
 			name: `db_total_${entityName}`,

@@ -4,6 +4,7 @@ import { useListStore } from "../../store/list.store";
 import {EntryDataDto, EntryDto, EntryId, SeriesId} from "@anistats/shared";
 import {useSeries} from "../series/use-series.fn";
 import {computedExtract} from "../../util/computed-extract.fn";
+import {useDynamicListStore} from "../store/list/use-dynamic-list-store.fn";
 
 interface UseEntry
 {
@@ -26,13 +27,13 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
 {
     const listStore = useListStore();
 
-    const entry = computed(() => {
-        return listStore.getEntry(get(entryId));
-    });
+    const {
+        fetchEntry,
+        fetchEntryData,
+    } = useDynamicListStore();
 
-    const entryData = computed(() => {
-        return listStore.getEntryData(get(entryId));
-    });
+    const entry = fetchEntry(entryId);
+    const entryData = fetchEntryData(entryId);
 
     const seriesId = computedExtract(entry, (entry) => entry?.series.ref);
 

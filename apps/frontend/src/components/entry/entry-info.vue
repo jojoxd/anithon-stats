@@ -110,7 +110,9 @@
             <debug :items="{ entryId, sequel,  }"></debug>
         </span>
 
-        <span class="stats">Stats</span>
+        <span class="stats">
+            <entry-metadata :entry-id="entryId"></entry-metadata>
+        </span>
 
         <span class="content">
             Content

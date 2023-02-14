@@ -14,6 +14,8 @@ import {EntryDataDomainService} from "../../domain/service/entry/entry-data.doma
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";
 import { Transactional } from "@tsed/mikro-orm";
+import { $log } from "@tsed/common";
+import { SyncEntriesDomainService } from "../../domain/service/sync/sync-entries.domain-service";
 
 @Service()
 export class ListApplicationService
@@ -47,6 +49,9 @@ export class ListApplicationService
 
 	@Inject()
 	protected syncService!: SyncDomainService;
+
+	@Inject()
+	protected syncEntriesService!: SyncEntriesDomainService;
 
 	public async getList(listId: ListId): Promise<ListResponse>
 	{
@@ -90,17 +95,45 @@ export class ListApplicationService
 	public async updateList(updateListRequest: UpdateListRequest): Promise<void>
 	{
 		const list = await this.getListOrThrow(updateListRequest.id);
+		await list.entries.loadItems();
 
-		console.log("Update List", updateListRequest);
+		for(const entryDto of updateListRequest.entries) {
+			let entryEntity = list.entries.getItems().find((entryEntity) => entryEntity.id === entryDto.id);
 
-		// @TODO: Get diff of updateListRequest.entries and list.entries
-//		for(const seriesId of updateListRequest.addSeries ?? []) {
-//			await this.listEntryService.addEntry(seriesId, list);
-//		}
-//
-//		for(const seriesId of updateListRequest.removeSeries ?? []) {
-//			await this.listEntryService.removeEntry(seriesId, list);
-//		}
+			if (!entryEntity) {
+				entryEntity = await this.listEntryService.createFromDto(entryDto);
+
+				list.entries.add(entryEntity);
+
+				$log.info('New entry from frontend', entryEntity.id);
+
+				// Overwrite ID's in updateListRequest to newly generated ID's
+				// Will save entryData with updateEntryData below
+				const entryData = updateListRequest.data.find(entryData => entryData.ref === entryDto.id);
+
+				entryDto.id = entryEntity.id;
+				if (entryData) {
+					entryData.ref = entryEntity.id;
+				}
+			}
+		}
+
+		// @TODO: Remove old entries
+		for(const entryEntity of list.entries.getItems()) {
+			const entryDto = updateListRequest.entries.find((entryDto) => {
+				return entryDto.id === entryEntity.id;
+			});
+
+			// Removed
+			if (!entryDto) {
+				$log.info('List Entry Removed', entryEntity.id);
+				list.entries.remove(entryEntity);
+			}
+		}
+
+		await this.listRepository.persistAndFlush(list);
+
+		// await this.syncEntriesService.syncToAnilist(list);
 
 		await this.listSettingsService.updateListSettings(updateListRequest.settings, list);
 

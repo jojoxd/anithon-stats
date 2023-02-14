@@ -1,7 +1,8 @@
 import {ApolloClient} from "@apollo/client/core";
 import { Context } from "@tsed/common";
-import {Constant, Injectable, InjectContext, ProviderScope} from "@tsed/di";
+import {Constant, Inject, Injectable, InjectContext, ProviderScope} from "@tsed/di";
 import {ApolloClientBuilder} from "../../util/apollo-client-builder";
+import {AnilistMetricsDomainService} from "../metrics/anilist-metrics.domain-service";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export abstract class AnilistDomainService
@@ -15,6 +16,9 @@ export abstract class AnilistDomainService
 
 	@InjectContext()
 	protected readonly context!: Context;
+
+	@Inject()
+	protected readonly metrics!: AnilistMetricsDomainService;
 
 	constructor() {
 		const builder = new ApolloClientBuilder();

@@ -1,32 +1,27 @@
-import {AnilistDomainService} from "../anilist.domain-service";
-import {Injectable, ProviderScope} from "@tsed/di";
-import {AnilistUserView} from "../../../view/anilist/anilist-user.view";
-import {InternalServerError, NotFound, Unauthorized} from "@tsed/exceptions";
-import {$log} from "@tsed/common";
-
-import {
-	GetUser,
-	GetUserQuery, GetUserQueryVariables,
-
-	GetCurrentUser,
-	GetCurrentUserQuery, GetCurrentUserQueryVariables,
-
-	SearchUsers,
-	SearchUsersQuery, SearchUsersQueryVariables,
-} from "../../../graphql/anilist/user";
+import { AnilistDomainService } from "../anilist.domain-service";
+import { Injectable, ProviderScope } from "@tsed/di";
+import { AnilistUserView } from "../../../view/anilist/anilist-user.view";
+import { InternalServerError, NotFound, Unauthorized } from "@tsed/exceptions";
+import { $log } from "@tsed/common";
+import { GetUser, GetUserQuery, GetUserQueryVariables } from "../../../graphql/anilist/user/get-user.gql";
+import { GetCurrentUser, GetCurrentUserQuery, GetCurrentUserQueryVariables } from "../../../graphql/anilist/user/get-current-user.gql";
+import { SearchUsers, SearchUsersQuery, SearchUsersQueryVariables } from "../../../graphql/anilist/user/search-users.gql";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistUserDomainService extends AnilistDomainService
 {
 	async getUser(userId: any): Promise<AnilistUserView>
 	{
-		const { data, errors } = await this.client.query<GetUserQuery, GetUserQueryVariables>({
+		const endHistogram = this.metrics.startHistogram("GetUser", "QUERY");
+
+		const { data, errors, error, } = await this.client.query<GetUserQuery, GetUserQueryVariables>({
 			query: GetUser,
 			variables: {
 				userId,
 			}
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.warn(`Failed to get anilist user ${userId}`, { errors });
 			throw new InternalServerError(`Failed to get anilist user ${userId}`, errors);
@@ -41,13 +36,16 @@ export class AnilistUserDomainService extends AnilistDomainService
 
 	async getCurrentUser(): Promise<AnilistUserView>
 	{
-		const { data, errors } = await this.client.query<GetCurrentUserQuery, GetCurrentUserQueryVariables>({
+		const endHistogram = this.metrics.startHistogram("GetCurrentUser", "QUERY");
+
+		const { data, errors, error, } = await this.client.query<GetCurrentUserQuery, GetCurrentUserQueryVariables>({
 			query: GetCurrentUser,
 
 			// Important, might bleed session otherwise
 			fetchPolicy: "no-cache",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.warn(`Failed to get current user`, { errors });
 			throw new InternalServerError(`Failed to get current user`, errors);
@@ -62,7 +60,9 @@ export class AnilistUserDomainService extends AnilistDomainService
 
 	async searchUsers(query: string, page: number = 1): Promise<Array<AnilistUserView> | null>
 	{
-		const { data, errors } = await this.client.query<SearchUsersQuery, SearchUsersQueryVariables>({
+		const endHistogram = this.metrics.startHistogram("SearchUsers", "QUERY");
+
+		const { data, errors, error, } = await this.client.query<SearchUsersQuery, SearchUsersQueryVariables>({
 			query: SearchUsers,
 
 			variables: {
@@ -74,6 +74,7 @@ export class AnilistUserDomainService extends AnilistDomainService
 			fetchPolicy: "cache-first",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.warn(`Failed to get current user`, { errors });
 			throw new InternalServerError(`Failed to get current user`, errors);

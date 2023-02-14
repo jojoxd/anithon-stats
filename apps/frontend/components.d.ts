@@ -11,7 +11,7 @@ declare module '@vue/runtime-core' {
     'Default.overlay': typeof import('./src/components/overlay/default.overlay.vue')['default']
     EntryCard: typeof import('./src/components/entry/entry-card.vue')['default']
     EntryInfo: typeof import('./src/components/entry/entry-info.vue')['default']
-    EntryMetadata: typeof import('./src/components/generic/metadata/entry/entry-metadata.vue')['default']
+    EntryMetadata: typeof import('./src/components/entry/entry-metadata.vue')['default']
     EntrySettingsDrawer: typeof import('./src/components/entry/entry-settings-drawer.vue')['default']
     FireflyBackground: typeof import('./src/components/generic/page/style/firefly-background.vue')['default']
     LanguageSwitcher: typeof import('./src/components/generic/menu/language-switcher.vue')['default']

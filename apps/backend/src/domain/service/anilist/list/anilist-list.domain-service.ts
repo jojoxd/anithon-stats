@@ -19,8 +19,9 @@ export class AnilistListDomainService extends AnilistDomainService
 	public async getLists(user: UserEntity): Promise<Array<AnilistListView>>
 	{
 		console.log('Get userlists of ', user.anilistId);
+		const endHistogram = this.metrics.startHistogram('GetUserLists', 'QUERY');
 
-		const { data, errors } = await this.client.query<GetUserListsQuery, GetUserListsQueryVariables>({
+		const { data, errors, error, } = await this.client.query<GetUserListsQuery, GetUserListsQueryVariables>({
 			query: GetUserLists,
 
 			variables: {
@@ -32,6 +33,7 @@ export class AnilistListDomainService extends AnilistDomainService
 			fetchPolicy: "no-cache",
 		});
 
+		endHistogram(error?.name);
 		if (errors) {
 			$log.warn(`Getting lists of ${user.anilistId} failed`, { errors });
 			throw new InternalServerError("Failed to fetch user lists", errors);

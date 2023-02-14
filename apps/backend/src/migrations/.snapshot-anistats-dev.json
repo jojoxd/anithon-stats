@@ -87,6 +87,15 @@
           "length": 36,
           "mappedType": "string"
         },
+        "stack_size": {
+          "name": "stack_size",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
         "allow_chunk_merge": {
           "name": "allow_chunk_merge",
           "type": "tinyint(1)",

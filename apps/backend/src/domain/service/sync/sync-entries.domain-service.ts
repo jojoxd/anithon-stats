@@ -12,6 +12,7 @@ import { ListRepository } from "../../repository/list/list.repository";
 import { SeriesRepository } from "../../repository/series/series.repository";
 import {EntryEntityFactory} from "../../factory/entry/entry-entity.factory";
 import {CountCall} from "@jojoxd/tsed-util/prometheus";
+import {NotImplemented} from "@tsed/exceptions";
 
 @Service()
 export class SyncEntriesDomainService
@@ -59,5 +60,10 @@ export class SyncEntriesDomainService
 		// @TODO: Reverse match to remove old entries
 
 		await this.listRepository.persistAndFlush(list);
+	}
+
+	async syncToAnilist(list: ListEntity): Promise<void>
+	{
+		throw new NotImplemented("SYNCING UP TO ANILIST IS NOT IMPLEMENTED YET");
 	}
 }

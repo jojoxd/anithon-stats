@@ -12,13 +12,17 @@ import { ListRepository } from "../../repository/list/list.repository";
 import { SeriesRepository } from "../../repository/series/series.repository";
 import {EntryEntityFactory} from "../../factory/entry/entry-entity.factory";
 import {CountCall} from "@jojoxd/tsed-util/prometheus";
-import {NotImplemented} from "@tsed/exceptions";
+import {NotFound} from "@tsed/exceptions";
+import {AnilistListDomainService} from "../anilist/list/anilist-list.domain-service";
 
 @Service()
 export class SyncEntriesDomainService
 {
 	@Inject()
 	protected syncSeriesService!: SyncSeriesDomainService;
+
+	@Inject()
+	protected anilistListService!: AnilistListDomainService;
 
 	@InjectRepository(SeriesEntity)
 	protected seriesRepository!: SeriesRepository;
@@ -44,7 +48,7 @@ export class SyncEntriesDomainService
 		for(const anilistSeriesView of anilistListView.entries) {
 			// try to find a local entry to update
 			let entry = list.entries.getItems().find((entry) => entry.series.getEntity().anilistId === anilistSeriesView.id);
-			let series = await this.syncSeriesService.findOrCreateSeriesEntity(anilistSeriesView.id, 10, undefined, anilistSeriesView);
+			const series = await this.syncSeriesService.findOrCreateSeriesEntity(anilistSeriesView.id, 10, undefined, anilistSeriesView);
 
 			if (!entry) {
 				entry = EntryEntityFactory.create(list, series);
@@ -62,8 +66,41 @@ export class SyncEntriesDomainService
 		await this.listRepository.persistAndFlush(list);
 	}
 
-	async syncToAnilist(list: ListEntity): Promise<void>
+	public async syncToAnilist(list: ListEntity): Promise<void>
 	{
-		throw new NotImplemented("SYNCING UP TO ANILIST IS NOT IMPLEMENTED YET");
+		const anilistListView = await this.anilistListService.getList(list);
+
+		await list.entries.loadItems();
+		await Promise.all(list.entries.getItems().map((listEntry) => {
+			return listEntry.series.load();
+		}));
+
+		if (!anilistListView) {
+			throw new NotFound("Anilist List not found");
+		}
+
+		for(const entry of list.entries) {
+			const anilistListViewEntry = anilistListView.entries.find((anilistListViewEntry) => {
+				return anilistListViewEntry.id === entry.series.getEntity().anilistId;
+			});
+
+			if (!anilistListViewEntry) {
+				// added from local
+				await this.anilistListService.addToList(list, entry.series.getEntity().anilistId);
+			}
+		}
+
+		for (const anilistListViewEntry of anilistListView.entries) {
+			const listEntry = list.entries.getItems().find((listEntry) => {
+				return listEntry.series.getEntity().anilistId === anilistListViewEntry.id;
+			});
+
+			if (!listEntry) {
+				// no way to know if added from AniList, or removed from local.
+				// local should have synced before page loading,
+				// so we are expecting local to be correct here, remove it from AniList
+				await this.anilistListService.removeFromList(list, anilistListViewEntry.id);
+			}
+		}
 	}
 }

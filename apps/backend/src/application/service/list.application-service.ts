@@ -133,7 +133,7 @@ export class ListApplicationService
 
 		await this.listRepository.persistAndFlush(list);
 
-		// await this.syncEntriesService.syncToAnilist(list);
+		await this.syncEntriesService.syncToAnilist(list);
 
 		await this.listSettingsService.updateListSettings(updateListRequest.settings, list);
 

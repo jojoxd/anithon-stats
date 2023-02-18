@@ -86,8 +86,18 @@ export class ApolloClientBuilder
 			link = this.authLink.concat(link);
 		}
 
-		link = onError(({ graphQLErrors, networkError, forward, operation, response }) => {
-			$log.error(inspect({ error: graphQLErrors ?? networkError, opName: operation.operationName, variables: operation.variables }, { depth: null, colors: true, }));
+		link = onError(({ graphQLErrors, networkError, operation }) => {
+			$log.error(
+				inspect({
+					graphQLErrors,
+					networkError,
+					opName: operation.operationName,
+					variables: operation.variables
+				}, {
+					depth: null,
+					colors: true,
+				})
+			);
 		}).concat(link);
 
 		return new ApolloClient({

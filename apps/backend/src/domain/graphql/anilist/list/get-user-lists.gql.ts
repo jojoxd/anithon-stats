@@ -3,7 +3,7 @@ import {SeriesViewRelatedFragment} from "../series/series-view-related.fragment.
 
 export { GetUserListsQuery, GetUserListsQueryVariables } from "../generated-types";
 
-export const GetUserLists = gql`	
+export const GetUserLists = gql`
 	query getUserLists($userId: Int!, $mediaType: MediaType!) {
 		MediaListCollection(userId: $userId, type: $mediaType) {
 			lists {

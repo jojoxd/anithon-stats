@@ -3,6 +3,7 @@ import { Context } from "@tsed/common";
 import {Constant, Inject, Injectable, InjectContext, ProviderScope} from "@tsed/di";
 import {ApolloClientBuilder} from "../../util/apollo-client-builder";
 import {AnilistMetricsDomainService} from "../metrics/anilist-metrics.domain-service";
+import {AnilistConfiguration} from "../../interface/anilist-configuration.interface";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export abstract class AnilistDomainService
@@ -14,6 +15,9 @@ export abstract class AnilistDomainService
 	@Constant('version')
 	protected readonly appVersion!: string;
 
+	@Constant('anilist')
+	protected readonly configuration!: AnilistConfiguration;
+
 	@InjectContext()
 	protected readonly context!: Context;
 
@@ -22,8 +26,6 @@ export abstract class AnilistDomainService
 
 	constructor() {
 		const builder = new ApolloClientBuilder();
-
-		console.log('UA', `AniStats/${this.appVersion} (got; got-fetch; ${this.constructor.name}; +https://gitlab.jojoxd.nl/jojoxd/anithon-stats)`);
 
 		this.client = builder
 			.withUri(AnilistDomainService.GRAPHQL_ENDPOINT, {
@@ -34,6 +36,11 @@ export abstract class AnilistDomainService
 			.withAuth(() => this.bearerToken)
 			.withMemoryCache()
 			.build();
+	}
+
+	protected get safeMode(): boolean
+	{
+		return this.configuration.safeMode ?? false;
 	}
 
 	private get bearerToken(): string | null

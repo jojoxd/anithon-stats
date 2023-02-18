@@ -8,6 +8,7 @@ import {loggerConfig} from "./logger";
 import mikroOrmConfig from './mikro-orm';
 import jwt from "./jwt";
 import app from "./app";
+import anilist from "./anilist";
 
 export const config: Partial<TsED.Configuration> = {
 	version,
@@ -22,6 +23,8 @@ export const config: Partial<TsED.Configuration> = {
 	],
 
 	jwt,
+
+	anilist,
 
 	passport: {
 		disableSession: true,

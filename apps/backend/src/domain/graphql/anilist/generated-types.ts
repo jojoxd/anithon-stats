@@ -4664,6 +4664,14 @@ export type YearStats = {
   year?: Maybe<Scalars['Int']>;
 };
 
+export type GetCustomListsContainingQueryVariables = Exact<{
+  mediaId: Scalars['Int'];
+  userId: Scalars['Int'];
+}>;
+
+
+export type GetCustomListsContainingQuery = { __typename?: 'Query', MediaList?: { __typename?: 'MediaList', customLists?: any | null } | null };
+
 export type GetUserListsQueryVariables = Exact<{
   userId: Scalars['Int'];
   mediaType: MediaType;
@@ -4671,6 +4679,14 @@ export type GetUserListsQueryVariables = Exact<{
 
 
 export type GetUserListsQuery = { __typename?: 'Query', MediaListCollection?: { __typename?: 'MediaListCollection', lists?: Array<{ __typename?: 'MediaListGroup', name?: string | null, entries?: Array<{ __typename?: 'MediaList', media?: { __typename?: 'Media', id: number, type?: MediaType | null, description?: string | null, duration?: number | null, episodes?: number | null, relations?: { __typename?: 'MediaConnection', edges?: Array<{ __typename?: 'MediaEdge', relationType?: MediaRelation | null, node?: { __typename?: 'Media', id: number, type?: MediaType | null, description?: string | null, duration?: number | null, episodes?: number | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null } | null } | null> | null } | null, title?: { __typename?: 'MediaTitle', english?: string | null, native?: string | null, romaji?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null } | null } | null> | null } | null> | null } | null };
+
+export type SetEntryForCustomListsMutationVariables = Exact<{
+  mediaId: Scalars['Int'];
+  listNames: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type SetEntryForCustomListsMutation = { __typename?: 'Mutation', SaveMediaListEntry?: { __typename?: 'MediaList', id: number } | null };
 
 export type PageViewFragment = { __typename?: 'Page', pageInfo?: { __typename?: 'PageInfo', total?: number | null, currentPage?: number | null, hasNextPage?: boolean | null } | null };
 

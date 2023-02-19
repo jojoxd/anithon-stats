@@ -23,3 +23,4 @@ reviewdog:eslint:
 
   variables:
     COMMAND: 'yarn lint'
+    RD_FORMAT: 'eslint'

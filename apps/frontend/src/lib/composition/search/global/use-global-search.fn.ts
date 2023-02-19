@@ -23,15 +23,16 @@ export function useGlobalSearch(query: Ref<string | null>): UseGlobalSearch
         isLoading,
         value: response,
     } = wrapAxios<SearchGlobalResponse, SearchGlobalRequest>((axios) => {
-        return axios.get(
+        return axios.post(
             'search/global',
             {
-                data: {
-                    query: get(query),
-                },
+				query: get(query),
             }
         );
-    });
+    }, {
+		immediate: false,
+		watch: [query],
+	});
 
     const users = computedExtract(response, (response) => response?.users ?? null);
     const lists = computedExtract(response, (response) => response?.lists ?? null);

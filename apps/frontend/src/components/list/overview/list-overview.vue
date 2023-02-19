@@ -23,7 +23,10 @@
             } = wrapAxios<UserListsResponse>((axios) => {
                 const _userId = get(userId);
                 return axios.get(`user/${_userId}/lists`);
-            });
+            }, {
+				immediate: true,
+				watch: [userId],
+			});
 
             const lists = computed(() => {
                 const _userListsResponse = get(userListsResponse);

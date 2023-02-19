@@ -10,7 +10,15 @@ reviewdog:eslint:
   stage: review
 
   before_script:
-    - apk add --update --no-cache python3 make g++ libc6-compat fontconfig
+    - apk add --update --no-cache
+        python3 make g++ libc6-compat
+        fontconfig freetype-dev
+        imagemagick
+        cairo cairo-dev
+        libjpeg jpeg-dev libjpeg-turbo-dev
+        pango pango-dev
+        giflib giflib-dev
+        pixman pixman-dev pangomm-dev
     - yarn install
 
   variables:

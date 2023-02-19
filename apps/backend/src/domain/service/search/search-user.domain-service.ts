@@ -6,6 +6,7 @@ import {AnilistUserDomainService} from "../anilist/user/anilist-user.domain-serv
 import {AnilistUserView} from "../../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../../factory/user/user-entity.factory";
 import {InternalServerError} from "@tsed/exceptions";
+import { $log } from "@tsed/common";
 
 @Service()
 export class SearchUserDomainService
@@ -24,11 +25,15 @@ export class SearchUserDomainService
 			throw new InternalServerError("Could not load users from anilist");
 		}
 
-		return Promise.all(
+		const userViews = await Promise.all(
 			anilistUserViews.map((anilistUserView) => {
 				return this.findOrCreateUserByUserView(anilistUserView);
 			}),
 		);
+
+		await this.userRepository.flush();
+
+		return userViews;
 	}
 
 	protected async findOrCreateUserByUserView(anilistUserView: AnilistUserView): Promise<UserEntity>
@@ -37,6 +42,8 @@ export class SearchUserDomainService
 
 		if (!userEntity) {
 			userEntity = UserEntityFactory.createFromAnilistUser(anilistUserView);
+
+			$log.info(`Creating user entity for ${anilistUserView.userName} (${anilistUserView.id}) due to search`, { uid: userEntity.id, });
 
 			this.userRepository.persist(userEntity);
 		}

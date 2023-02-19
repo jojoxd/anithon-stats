@@ -8,7 +8,8 @@ import {ListEntity} from "../../../entity/list/list.entity";
 import {UserEntity} from "../../../entity/user/user.entity";
 import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
 import {AnilistSeriesId} from "@anistats/shared";
-import {ApolloError, ServerError} from "@apollo/client/core";
+import {ApolloError} from "@apollo/client/core";
+import {CustomListView} from "../../../view/anilist/list/custom-list.view";
 
 import {
 	GetUserLists,
@@ -24,7 +25,6 @@ import {
 	SetEntryForCustomLists,
 	SetEntryForCustomListsMutation, SetEntryForCustomListsMutationVariables
 } from "../../../graphql/anilist/list/mutation/set-entry-for-custom-lists.gql";
-import {CustomListView} from "../../../view/anilist/list/custom-list.view";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistListDomainService extends AnilistDomainService

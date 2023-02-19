@@ -21,12 +21,12 @@ export class SearchGlobalApplicationService
 	@InjectRepository(UserEntity)
 	protected userRepository!: UserRepository;
 
-	public async search(query: string): Promise<SearchGlobalResponse>
+	public async search(query: string, user?: UserEntity): Promise<SearchGlobalResponse>
 	{
 		return {
 			users: await this.searchUsers(query),
 
-			lists: await this.searchLists(query),
+			lists: user ? await this.searchLists(query, user) : [],
 		};
 	}
 
@@ -37,7 +37,7 @@ export class SearchGlobalApplicationService
 		return users.map(user => this.userService.convertUserToDto(user));
 	}
 
-	protected async searchLists(query: string): Promise<Array<SearchGlobalListDto>>
+	protected async searchLists(query: string, user: UserEntity): Promise<Array<SearchGlobalListDto>>
 	{
 		return []; // @TODO: Use req.user instead of session
 //		const userId = this.session?.userId ?? null;

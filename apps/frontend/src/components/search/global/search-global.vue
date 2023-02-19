@@ -10,8 +10,7 @@
 
     export default defineComponent({
         setup() {
-            const query = ref<string>(null);
-            const textField = ref<HTMLElement>(null);
+            const query = ref<string>('');
 
             const {
                 isLoading,
@@ -64,7 +63,6 @@
 
             return {
                 query,
-                textField,
 
                 isLoading,
                 users,
@@ -94,7 +92,6 @@
         <v-row>
             <v-col cols="12">
                 <v-text-field
-                    ref="textField"
                     v-model="query"
                     :loading="isLoading"
                     variant="solo"
@@ -105,8 +102,8 @@
                 ></v-text-field>
             </v-col>
 
-            <v-col cols="12" lg="6" v-if="query">
-                <v-card>
+            <v-col cols="12" lg="6" v-if="query && !isLoading">
+                <v-card v-show="users">
                     <v-card-title>Users</v-card-title>
 
                     <v-card-text>

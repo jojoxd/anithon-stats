@@ -22,4 +22,4 @@ reviewdog:eslint:
     - yarn install
 
   variables:
-    COMMAND: 'yarn ci:lint'
+    COMMAND: 'yarn lint'

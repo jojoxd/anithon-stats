@@ -10,6 +10,7 @@ reviewdog:eslint:
   stage: review
 
   before_script:
+    - apk add --no-cache --virtual .gyp python make g++ libc6-compat
     - yarn install
 
   variables:

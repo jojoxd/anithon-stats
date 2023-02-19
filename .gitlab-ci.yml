@@ -6,7 +6,7 @@ include:
 stages:
   - review
 
-reviewdog-eslint:
+reviewdog:eslint:
   stage: review
 
   before_script:

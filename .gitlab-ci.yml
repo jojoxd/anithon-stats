@@ -1,0 +1,16 @@
+include:
+  - project: tools/reviewdog
+    ref: main
+    file: /templates/eslint.yml
+
+stages:
+  - review
+
+reviewdog-eslint:
+  stage: review
+
+  before_script:
+    - yarn install
+
+  variables:
+    COMMAND: 'yarn ci:lint'

@@ -2,7 +2,6 @@ import {Inject, Service} from "@tsed/di";
 import {UserEntity} from "../../entity/user/user.entity";
 import {ListEntity} from "../../entity/list/list.entity";
 import {AnilistListDomainService} from "../anilist/list/anilist-list.domain-service";
-import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {UserRepository} from "../../repository/user/user.repository";
 import {ListRepository} from "../../repository/list/list.repository";
 import {ListEntityFactory} from "../../factory/list/list-entity.factory";
@@ -12,6 +11,9 @@ import {TimeUtil} from "../../util/time.util";
 import {DateTime} from "luxon";
 import {SyncSeriesDomainService} from "../sync/sync-series.domain-service";
 import {CountCall} from "@jojoxd/tsed-util/prometheus";
+import {MediaListGroupView} from "../../view/anilist/list/get-user-lists/media-list-group.view";
+import {MediaListCollectionView} from "../../view/anilist/list/get-user-lists/media-list-collection.view";
+import { $log } from "@tsed/common";
 
 @Service()
 export class SyncDomainService
@@ -41,8 +43,8 @@ export class SyncDomainService
 	{
 		console.log("SYNC USER", user);
 
-		const anilistLists = await this.anilistListService.getLists(user);
-		const diff = this.getListDiff(user, anilistLists);
+		const mediaListCollectionView = await this.anilistListService.getLists(user);
+		const diff = this.getListDiff(user, mediaListCollectionView);
 
 		for (const addedList of diff.added) {
 			const list = ListEntityFactory.create(addedList.name, user);
@@ -62,11 +64,16 @@ export class SyncDomainService
 
 		for(const list of user.lists) {
 			const hasTimedOut = TimeUtil.hasTimedOut(list.synchronizedAt, { day: 1,  }, DateTime.now());
+
+			const mediaListGroupView = mediaListCollectionView.lists.find(mediaListGroupView => mediaListGroupView.name === list.name);
+
+			if (!mediaListGroupView) {
+				$log.warn(`Failed to get mediaListGroupView of ${user.name}/${list.name}`);
+				continue;
+			}
+
 			if (force || hasTimedOut) {
-				await this.syncList(
-					list,
-					anilistLists.find(anilistList => anilistList.name === list.name)!
-				);
+				await this.syncList(list, mediaListGroupView);
 			}
 		}
 
@@ -80,38 +87,49 @@ export class SyncDomainService
 	 */
 	//@Transactional()
 	@CountCall("sync_list", "Times a list has been synced")
-	public async syncList(list: ListEntity, anilistListView?: AnilistListView): Promise<void>
+	public async syncList(list: ListEntity, mediaListGroupView?: MediaListGroupView): Promise<void>
 	{
-		if (!anilistListView) {
-			anilistListView = await this.anilistListService.getList(list) ?? undefined;
+		if (!mediaListGroupView) {
+			mediaListGroupView = await this.anilistListService.getList(list) ?? undefined;
 
 			// @TODO: Is it correct to throw here?
-			if (!anilistListView) {
+			if (!mediaListGroupView) {
 				throw new Error("No listview found on anilist that matches the list");
 			}
 		}
 
 		// @TODO: Ensure list names are correct?
 
-		await this.syncEntriesService.syncEntries(list, anilistListView);
+		await this.syncEntriesService.syncEntries(list, mediaListGroupView);
 
 		list.synchronizedAt = new Date();
 
 		await this.listRepository.persist(list);
 	}
 
-	protected getListDiff(user: UserEntity, anilistLists: Array<AnilistListView>): { added: Array<AnilistListView>, removed: Array<ListEntity>, }
+	protected getListDiff(user: UserEntity, mediaListCollectionView: MediaListCollectionView): { added: Array<MediaListGroupView>, removed: Array<ListEntity>, }
 	{
 		const userListNames = user.lists.getItems().map(list => list.name);
-		const anilistListNames = anilistLists.map(list => list.name);
+		const anilistListNames = mediaListCollectionView.lists.map(list => list.name);
 
 		const added = anilistListNames
-			.filter(anilistListName => !userListNames.includes(anilistListName))
-			.map(anilistListName => anilistLists.find(anilistList => anilistList.name === anilistListName)!);
+			.filter((anilistListName) => {
+				return !userListNames.includes(anilistListName);
+			})
+			.map((anilistListName) => {
+				return mediaListCollectionView.lists.find((mediaListCollectionView) => {
+					return mediaListCollectionView.name === anilistListName;
+				})!;
+			});
 
 		const removed = userListNames
-			.filter(userListName => !anilistListNames.includes(userListName))
-			.map(userListName => user.lists.getItems().find(userList => userList.name === userListName)!);
+			.filter((userListName) => {
+				return !anilistListNames.includes(userListName);
+			})
+			.map((userListName) => {
+				return user.lists.getItems()
+					.find(userList => userList.name === userListName)!;
+			});
 
 		return {
 			added,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {defineComponent, PropType, ref} from "vue";
+    import {defineComponent, PropType} from "vue";
     import {useVModels} from "@vueuse/core";
     import {mdiDragVertical, mdiContentSaveOutline} from "@mdi/js";
     import {EntryId, ListId, SeriesDto} from "@anistats/shared";
@@ -8,6 +8,7 @@
     import {useCurrentListUser} from "../../../lib/composition/user/use-current-list-user.fn";
     import {useRootEntries} from "../../../lib/composition/entry/use-root-entries.fn";
     import {useBreakpoints} from "../../../lib/composition/app/use-breakpoints.fn";
+	import {useCanEditCurrentList} from "../../../lib/composition/auth/use-can-edit-current-list.fn";
 
     export default defineComponent({
         props: {
@@ -24,8 +25,9 @@
 
             listStore.loadList(listId.value);
 
-            // @TODO: Check if users are the same
-            const canEdit = ref(true);
+            const {
+				canEdit,
+			} = useCanEditCurrentList();
 
             const {
                 currentList,
@@ -112,16 +114,18 @@
 
         <list-metadata :metadata="metadata" />
 
-        <list-settings-card v-if="canEdit" />
+		<div class="controls" v-if="canEdit">
+	        <list-settings-card />
 
-        <v-btn
-            :prepend-icon="mdiContentSaveOutline"
-            @click.prevent="onSaveClick"
-        >
-            Save
-        </v-btn>
+	        <v-btn
+	            :prepend-icon="mdiContentSaveOutline"
+	            @click.prevent="onSaveClick"
+	        >
+	            Save
+	        </v-btn>
 
-        <search-series multiple @selected="onAddSeries" :is-disabled="searchSeriesDisabled" />
+	        <search-series multiple @selected="onAddSeries" :is-disabled="searchSeriesDisabled" />
+		</div>
 
         <h2>Entries</h2>
 
@@ -130,6 +134,7 @@
                 v-model:list="rootEntries"
                 :item-key="(entryView) => entryView.id"
                 axis="y"
+				:should-cancel-start="canEdit ? undefined : () => true"
                 use-drag-handle
                 use-window-as-scroll-container
             >
@@ -143,7 +148,10 @@
             </slick-slick-list>
         </div>
 
-        <entry-settings-drawer :open="currentEntry !== null" />
+        <entry-settings-drawer
+			v-if="canEdit"
+			:open="currentEntry !== null"
+		></entry-settings-drawer>
     </div>
 
     <!-- TODO: Embed Image URI -->

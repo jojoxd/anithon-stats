@@ -1,27 +1,30 @@
 import {AnilistDomainService} from "../anilist.domain-service";
 import {Injectable, ProviderScope} from "@tsed/di";
-import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
 import {InternalServerError} from "@tsed/exceptions";
 import {MediaType} from "../../../graphql/anilist/generated-types";
 import {$log} from "@tsed/common";
+import { MediaFragmentView } from "../../../view/anilist/media/media-fragment.view";
+import { MediaRelatedFragmentView } from "../../../view/anilist/media/media-related-fragment.view";
+import { AnilistMediaId } from "@anistats/shared";
 
 import {
 	BatchGetSeries,
-	BatchGetSeriesQuery,
-	BatchGetSeriesQueryVariables,
+	BatchGetSeriesQuery, BatchGetSeriesQueryVariables,
+} from "../../../graphql/anilist/series/batch-get-series.gql";
+import {
 	GetSeries,
-	GetSeriesQuery,
-	GetSeriesQueryVariables,
+	GetSeriesQuery, GetSeriesQueryVariables,
+} from "../../../graphql/anilist/series/get-series.gql";
+
+import {
 	SearchSeries,
-	SearchSeriesQuery,
-	SearchSeriesQueryVariables
-} from "../../../graphql/anilist/series";
-import {AnilistSeriesId} from "@anistats/shared";
+	SearchSeriesQuery, SearchSeriesQueryVariables
+} from "../../../graphql/anilist/series/search-series.gql";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistSeriesDomainService extends AnilistDomainService
 {
-	async getSeries(seriesId: any): Promise<AnilistSeriesView>
+	async getSeries(seriesId: any): Promise<MediaFragmentView>
 	{
 		const endHistogram = this.metrics.startHistogram("GetSeries", "QUERY");
 
@@ -42,19 +45,19 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			$log.error(`[AL] Failed to getSeries(${seriesId})`);
 			throw new InternalServerError(`Failed to fetch series ${seriesId} from anilist`, errors);
 		}
-		return new AnilistSeriesView(data.Media!);
+		return new MediaFragmentView(data.Media!);
 	}
 
-	async batchGetSeries(seriesIds: AnilistSeriesId[], withRelated: boolean = true, mediaType: MediaType = MediaType.Anime): Promise<Map<AnilistSeriesId, AnilistSeriesView>>
+	async batchGetSeries(seriesIds: Array<AnilistMediaId>, mediaType: MediaType = MediaType.Anime): Promise<Array<MediaRelatedFragmentView>>
 	{
 		// short-circuit
 		if (seriesIds.length === 0) {
-			return new Map();
+			return [];
 		}
 
 		const endHistogram = this.metrics.startHistogram("BatchGetSeries", "QUERY");
 
-		console.log(`[AL] batchGetSeries(${seriesIds.join(', ')}, withRelated: ${withRelated ? 'true' : 'false'})`);
+		console.log(`[AL] batchGetSeries(${seriesIds.join(', ')})`);
 
 		const { data, errors, error, } = await this.client.query<BatchGetSeriesQuery, BatchGetSeriesQueryVariables>({
 			query: BatchGetSeries,
@@ -75,22 +78,12 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			throw new InternalServerError(`Failed to get multiple series`, errors);
 		}
 
-		return data.Page!.media!.reduce((acc, media) => {
-			acc.set(media!.id, new AnilistSeriesView(media!));
-
-			if (withRelated) {
-				for(const edge of media!.relations!.edges ?? []) {
-					if (edge!.node!.type! === mediaType) {
-						acc.set(edge!.node!.id as AnilistSeriesId, new AnilistSeriesView(edge!.node!));
-					}
-				}
-			}
-
-			return acc;
-		}, new Map());
+		return data.Page!.media!.map((media) => {
+			return new MediaRelatedFragmentView(media!);
+		});
 	}
 
-	async searchSeries(query: string, mediaType: MediaType = MediaType.Anime, page: number = 1): Promise<Array<AnilistSeriesView> | null>
+	async searchSeries(query: string, mediaType: MediaType = MediaType.Anime, page: number = 1): Promise<Array<MediaFragmentView> | null>
 	{
 		const endHistogram = this.metrics.startHistogram("SearchSeries", "QUERY");
 
@@ -112,6 +105,6 @@ export class AnilistSeriesDomainService extends AnilistDomainService
 			throw new InternalServerError(`Failed to search series (${mediaType}) "${query}" from anilist`, errors);
 		}
 
-		return data.Page?.media?.map((media) => new AnilistSeriesView(media!)) ?? null;
+		return data.Page?.media?.map((media) => new MediaFragmentView(media!)) ?? null;
 	}
 }

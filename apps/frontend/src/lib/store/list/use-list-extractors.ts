@@ -30,7 +30,11 @@ export function useListExtractors(currentList: Ref<ListDto | null>): UseListExtr
 
     const chunks = computedExtract(currentList, (_currentList) => {
         return _currentList?.chunks.items ?? null;
-    })
+    });
+
+	const user = computedExtract(currentList, (_currentList) => {
+		return _currentList?.user ?? null;
+	});
 
     return {
         metadata,
@@ -40,5 +44,7 @@ export function useListExtractors(currentList: Ref<ListDto | null>): UseListExtr
         listSettings,
 
         chunks,
+
+		user,
     };
 }

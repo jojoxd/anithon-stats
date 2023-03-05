@@ -5,5 +5,3 @@
 export * from "./batch-get-series.gql";
 export * from "./get-series.gql";
 export * from "./search-series.gql";
-export * from "./series-view-related.fragment.gql";
-export * from "./series-view.fragment.gql";

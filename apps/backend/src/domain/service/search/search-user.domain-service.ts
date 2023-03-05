@@ -3,10 +3,10 @@ import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import {UserEntity} from "../../entity/user/user.entity";
 import {Inject, Service} from "@tsed/di";
 import {AnilistUserDomainService} from "../anilist/user/anilist-user.domain-service";
-import {AnilistUserView} from "../../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../../factory/user/user-entity.factory";
 import {InternalServerError} from "@tsed/exceptions";
 import { $log } from "@tsed/common";
+import { AnilistUserView } from "../../view/anilist/user/anilist-user.view";
 
 @Service()
 export class SearchUserDomainService

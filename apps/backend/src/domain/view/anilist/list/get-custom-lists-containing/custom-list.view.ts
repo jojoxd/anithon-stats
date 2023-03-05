@@ -1,4 +1,4 @@
-import { Scalars } from "../../../graphql/anilist/generated-types";
+import { Scalars } from "../../../../graphql/anilist/generated-types";
 
 export class CustomListView
 {

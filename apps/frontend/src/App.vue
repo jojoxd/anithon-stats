@@ -23,7 +23,11 @@
 
             <v-main>
                 <v-container fluid>
-                    <router-view />
+					<router-view v-slot="{ Component, route }">
+						<transition name="slide-x-transition">
+							<component :is="Component" :key="route.path" />
+						</transition>
+					</router-view>
                 </v-container>
             </v-main>
         </overlay-provider>

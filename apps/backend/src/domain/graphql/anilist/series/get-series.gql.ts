@@ -1,14 +1,14 @@
 import { gql, DocumentNode } from "@apollo/client/core";
-import { SeriesViewFragment } from "./series-view.fragment.gql";
+import { MediaFragment } from "../media/media.fragment.gql";
 
 export { GetSeriesQuery, GetSeriesQueryVariables } from "../generated-types";
 
 export const GetSeries = gql`
 	query getSeries($mediaId: Int!) {
 		Media(id: $mediaId) {
-			...SeriesView
+			...MediaFragment
 		}
 	}
 	
-	${SeriesViewFragment}
+	${MediaFragment}
 ` as DocumentNode;

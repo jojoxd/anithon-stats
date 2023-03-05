@@ -1,4 +1,4 @@
-import {EntryId, EntryStatusEnum} from "@anistats/shared";
+import {AnilistEntryId, EntryId, EntryStatusEnum} from "@anistats/shared";
 import {Cascade, Entity, Enum, ManyToOne, OneToOne, PrimaryKey, Property, Ref} from "@mikro-orm/core";
 import {ListEntity} from "../list/list.entity";
 import {SeriesEntity} from "../series/series.entity";
@@ -14,6 +14,9 @@ export class EntryEntity
 {
 	@PrimaryKey({ type: 'varchar', length: 36, })
 	public id: EntryId = createId<EntryId>();
+
+	@Property()
+	public anilistId!: AnilistEntryId;
 
 	@ManyToOne(() => ListEntity, { ref: true, })
 	public list!: Ref<ListEntity>;

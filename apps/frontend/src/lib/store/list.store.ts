@@ -29,6 +29,8 @@ export const useListStore = defineStore('list', () => {
         listSettings,
 
         chunks,
+
+		user,
     } = useListExtractors(currentList);
 
     const embedImageUri = computed(() => {
@@ -65,6 +67,7 @@ export const useListStore = defineStore('list', () => {
         metadata,
         entries,
         chunks,
+		user,
 
         listSettings,
 

@@ -19,6 +19,8 @@ export * from "./application/user/user.response";
 export * from "./defaults/entry-data.defaults";
 export * from "./defaults/list-settings.defaults";
 export * from "./domain/anilist/anilist.helper";
+export * from "./dto/anilist/entry/anilist-entry-id.type";
+export * from "./dto/anilist/media/anilist-media-id.type";
 export * from "./dto/anilist/series/anilist-series-id.type";
 export * from "./dto/anilist/user/anilist-user-id.type";
 export * from "./dto/chunk/chunk-list.dto";

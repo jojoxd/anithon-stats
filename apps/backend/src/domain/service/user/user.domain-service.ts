@@ -7,9 +7,9 @@ import {ListMetadataDomainService} from "../list/metadata/list-metadata.domain-s
 import {SyncDomainService} from "../sync/sync.domain-service";
 import {AnilistUserDomainService} from "../anilist/user/anilist-user.domain-service";
 import {$log} from "@tsed/common";
-import {AnilistUserView} from "../../view/anilist/anilist-user.view";
 import {UserEntityFactory} from "../../factory/user/user-entity.factory";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
+import { AnilistUserView } from "../../view/anilist/user/anilist-user.view";
 
 @Injectable({ scope: ProviderScope.REQUEST, })
 export class UserDomainService
@@ -62,6 +62,9 @@ export class UserDomainService
 		return user;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public async getCurrentUser(): Promise<UserEntity | null>
 	{
 		// @TODO: use req.user instead of session

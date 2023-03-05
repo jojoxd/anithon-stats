@@ -3,14 +3,20 @@
     import {mdiHome, mdiLoginVariant} from "@mdi/js";
     import {storeToRefs} from "pinia";
     import {useAuthStore} from "../../../lib/store/auth.store";
+	import {useAppStore} from "../../../lib/store/app.store";
 
     export default defineComponent({
         setup() {
             const authStore = useAuthStore();
+			const appStore = useAppStore();
 
             const {
                 currentUser,
             } = storeToRefs(authStore);
+
+			const {
+				isLoading,
+			} = storeToRefs(appStore);
 
             authStore.reloadCurrentUser();
 
@@ -25,6 +31,8 @@
 
                 mdiHome,
                 mdiLoginVariant,
+
+				isLoading,
             };
         },
     });
@@ -41,8 +49,6 @@
             <firefly-background :scale="0.3" :style="{ width: '3ch', height: '60%', top: '20%', 'left': '8ch', opacity: 0.2, }" />
         </v-app-bar-title>
 
-
-
         <search-global></search-global>
 
         <v-btn
@@ -52,8 +58,6 @@
         >
             Home
         </v-btn>
-
-
 
         <div v-if="currentUser">
             <user-settings-menu>
@@ -79,5 +83,7 @@
                 Log in
             </v-btn>
         </div>
+
+		<v-progress-linear :active="isLoading" absolute indeterminate color="blue-lighten-3" />
     </v-app-bar>
 </template>

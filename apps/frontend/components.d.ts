@@ -7,6 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ChunkTimeline: typeof import('./src/components/list/chunk/chunk-timeline.vue')['default']
+    ChunkTimelineItem: typeof import('./src/components/list/chunk/chunk-timeline-item.vue')['default']
     Debug: typeof import('./src/components/generic/debug.vue')['default']
     'Default.overlay': typeof import('./src/components/overlay/default.overlay.vue')['default']
     EntryCard: typeof import('./src/components/entry/entry-card.vue')['default']
@@ -14,6 +16,7 @@ declare module '@vue/runtime-core' {
     EntryMetadata: typeof import('./src/components/entry/entry-metadata.vue')['default']
     EntrySettingsDrawer: typeof import('./src/components/entry/entry-settings-drawer.vue')['default']
     FireflyBackground: typeof import('./src/components/generic/page/style/firefly-background.vue')['default']
+    FullPage: typeof import('./src/components/layout/full-page.vue')['default']
     LanguageSwitcher: typeof import('./src/components/generic/menu/language-switcher.vue')['default']
     ListMetadata: typeof import('./src/components/list/metadata/list-metadata.vue')['default']
     ListOverview: typeof import('./src/components/list/overview/list-overview.vue')['default']
@@ -30,6 +33,7 @@ declare module '@vue/runtime-core' {
     SearchSeriesEntry: typeof import('./src/components/search/series/search-series-entry.vue')['default']
     SeriesMetadata: typeof import('./src/components/generic/metadata/series/series-metadata.vue')['default']
     SlickSlickList: typeof import('vue-slicksort')['SlickList']
+    Tabs: typeof import('./src/components/layout/tabs.vue')['default']
     ThemeSwitcher: typeof import('./src/components/generic/menu/theme-switcher.vue')['default']
     UserPreviewCard: typeof import('./src/components/user/preview/user-preview-card.vue')['default']
     UserSettingsMenu: typeof import('./src/components/user/settings/user-settings-menu.vue')['default']
@@ -62,11 +66,14 @@ declare module '@vue/runtime-core' {
     VNavigationDrawer: typeof import('vuetify/components')['VNavigationDrawer']
     VOverlay: typeof import('vuetify/components')['VOverlay']
     VProgressCircular: typeof import('vuetify/components')['VProgressCircular']
+    VProgressLinear: typeof import('vuetify/components')['VProgressLinear']
     VRow: typeof import('vuetify/components')['VRow']
     VSelect: typeof import('vuetify/components')['VSelect']
     VSpacer: typeof import('vuetify/components')['VSpacer']
     VSwitch: typeof import('vuetify/components')['VSwitch']
     VSystemBar: typeof import('vuetify/components')['VSystemBar']
     VTextField: typeof import('vuetify/components')['VTextField']
+    VTimeline: typeof import('vuetify/components')['VTimeline']
+    VTimelineItem: typeof import('vuetify/components')['VTimelineItem']
   }
 }

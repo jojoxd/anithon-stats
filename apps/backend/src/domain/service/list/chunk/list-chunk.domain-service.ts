@@ -160,10 +160,10 @@ export class ListChunkDomainService
 
 			start: chunkView.start,
 			end: chunkView.end,
-			progress: 0, // @TODO: Chunk Progress
+			progress: chunkView.progress,
 
 			isJoined: chunkView.isJoined,
 			state: chunkView.state,
-		}
+		};
 	}
 }

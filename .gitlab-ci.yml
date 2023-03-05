@@ -3,11 +3,34 @@ include:
     ref: main
     file: /templates/eslint.yml
 
+cache: &global-cache
+  key:
+    files:
+      - yarn.lock
+
+  paths:
+    - .yarn/cache
+
 stages:
+  - build
   - review
+
+build:
+  stage: build
+
+  script:
+    - yarn install
+
+  cache:
+    <<: *global-cache
+    policy: pull-push
 
 reviewdog:eslint:
   stage: review
+
+  cache:
+    <<: *global-cache
+    policy: pull
 
   before_script:
     - apk add --update --no-cache

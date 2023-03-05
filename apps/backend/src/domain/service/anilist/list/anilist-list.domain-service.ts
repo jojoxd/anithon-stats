@@ -1,15 +1,15 @@
-import {AnilistDomainService} from "../anilist.domain-service";
-import {AnilistListView} from "../../../view/anilist/list/anilist-list.view";
+import { AnilistDomainService } from "../anilist.domain-service";
 import { MediaType } from "../../../graphql/anilist/generated-types";
-import {Injectable, ProviderScope} from "@tsed/di";
+import { Injectable, ProviderScope } from "@tsed/di";
 import { $log } from "@tsed/common";
-import {InternalServerError} from "@tsed/exceptions";
-import {ListEntity} from "../../../entity/list/list.entity";
-import {UserEntity} from "../../../entity/user/user.entity";
-import {AnilistSeriesView} from "../../../view/anilist/series/anilist-series.view";
-import {AnilistSeriesId} from "@anistats/shared";
-import {ApolloError} from "@apollo/client/core";
-import {CustomListView} from "../../../view/anilist/list/custom-list.view";
+import { InternalServerError } from "@tsed/exceptions";
+import { ListEntity } from "../../../entity/list/list.entity";
+import { UserEntity } from "../../../entity/user/user.entity";
+import { AnilistMediaId } from "@anistats/shared";
+import { ApolloError } from "@apollo/client/core";
+import { MediaListCollectionView } from "../../../view/anilist/list/get-user-lists/media-list-collection.view";
+import { MediaListGroupView } from "../../../view/anilist/list/get-user-lists/media-list-group.view";
+import { CustomListView } from "../../../view/anilist/list/get-custom-lists-containing/custom-list.view";
 
 import {
 	GetUserLists,
@@ -29,7 +29,7 @@ import {
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistListDomainService extends AnilistDomainService
 {
-	public async getLists(user: UserEntity): Promise<Array<AnilistListView>>
+	public async getLists(user: UserEntity): Promise<MediaListCollectionView>
 	{
 		console.log('Get userlists of ', user.anilistId);
 		const endHistogram = this.metrics.startHistogram('GetUserLists', 'QUERY');
@@ -52,24 +52,20 @@ export class AnilistListDomainService extends AnilistDomainService
 			throw new InternalServerError("Failed to fetch user lists", errors);
 		}
 
-		return data!.MediaListCollection!.lists!.map((list) => {
-			const anilistSeriesViews = list!.entries!.map<AnilistSeriesView>(entry => new AnilistSeriesView(entry!.media!));
-
-			return new AnilistListView(list!.name!, anilistSeriesViews);
-		});
+		return new MediaListCollectionView(data!.MediaListCollection!);
 	}
 
-	public async getList(list: ListEntity): Promise<AnilistListView | null>
+	public async getList(list: ListEntity): Promise<MediaListGroupView | null>
 	{
-		// @TODO: Optimize, use new query
-
 		await list.user.load();
-		const lists = await this.getLists(list.user.getEntity());
+		const mediaListCollectionView = await this.getLists(list.user.getEntity());
 
-		return lists.find(anilistListView => anilistListView.name === list.name) ?? null;
+		return mediaListCollectionView.lists.find((mediaListGroupView) => {
+			return mediaListGroupView.name === list.name;
+		}) ?? null;
 	}
 
-	public async addToList(list: ListEntity, mediaId: AnilistSeriesId): Promise<void>
+	public async addToList(list: ListEntity, mediaId: AnilistMediaId): Promise<void>
 	{
 		await list.user.load();
 
@@ -123,7 +119,7 @@ export class AnilistListDomainService extends AnilistDomainService
 		}
 	}
 
-	public async removeFromList(list: ListEntity, mediaId: AnilistSeriesId): Promise<void>
+	public async removeFromList(list: ListEntity, mediaId: AnilistMediaId): Promise<void>
 	{
 		await list.user.load();
 
@@ -167,7 +163,7 @@ export class AnilistListDomainService extends AnilistDomainService
 		}
 	}
 
-	public async getCustomListsContaining(mediaId: AnilistSeriesId, user: UserEntity): Promise<Array<CustomListView>>
+	public async getCustomListsContaining(mediaId: AnilistMediaId, user: UserEntity): Promise<Array<CustomListView>>
 	{
 		const endHistogram = this.metrics.startHistogram('GetCustomListsContainingSeries', 'QUERY');
 

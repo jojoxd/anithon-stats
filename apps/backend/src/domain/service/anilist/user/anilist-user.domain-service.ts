@@ -1,11 +1,11 @@
 import { AnilistDomainService } from "../anilist.domain-service";
 import { Injectable, ProviderScope } from "@tsed/di";
-import { AnilistUserView } from "../../../view/anilist/anilist-user.view";
 import { InternalServerError, NotFound, Unauthorized } from "@tsed/exceptions";
 import { $log } from "@tsed/common";
 import { GetUser, GetUserQuery, GetUserQueryVariables } from "../../../graphql/anilist/user/get-user.gql";
 import { GetCurrentUser, GetCurrentUserQuery, GetCurrentUserQueryVariables } from "../../../graphql/anilist/user/get-current-user.gql";
 import { SearchUsers, SearchUsersQuery, SearchUsersQueryVariables } from "../../../graphql/anilist/user/search-users.gql";
+import { AnilistUserView } from "../../../view/anilist/user/anilist-user.view";
 
 @Injectable({ scope: ProviderScope.REQUEST })
 export class AnilistUserDomainService extends AnilistDomainService

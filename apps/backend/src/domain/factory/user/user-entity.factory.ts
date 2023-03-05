@@ -1,4 +1,4 @@
-import {AnilistUserView} from "../../view/anilist/anilist-user.view";
+import {AnilistUserView} from "../../view/anilist/user/anilist-user.view";
 import {UserEntity} from "../../entity/user/user.entity";
 
 export class UserEntityFactory

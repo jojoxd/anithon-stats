@@ -1,4 +1,6 @@
 declare const AnilistSeriesIdSymbol: unique symbol;
 
-// We don't assume types of external entity id's
+/**
+ * @deprecated use AnilistMediaId instead
+ */
 export type AnilistSeriesId = number & { [AnilistSeriesIdSymbol]: never; };

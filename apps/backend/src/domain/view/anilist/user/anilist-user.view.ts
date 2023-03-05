@@ -1,6 +1,9 @@
-import {UserViewFragment} from "../../graphql/anilist/generated-types";
+import {UserViewFragment} from "../../../graphql/anilist/generated-types";
 import {AnilistUserId} from "@anistats/shared";
 
+/**
+ * @TODO: Rename to UserFragmentView
+ */
 export class AnilistUserView
 {
 	constructor(

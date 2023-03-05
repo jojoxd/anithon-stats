@@ -1,22 +1,39 @@
 import { gql, DocumentNode } from "@apollo/client/core";
-import {SeriesViewRelatedFragment} from "../series/series-view-related.fragment.gql";
+import {GetUserListsQuery, GetUserListsQueryVariables} from "../generated-types";
+import {MediaRelatedFragment} from "../media/media-related.fragment.gql";
 
-export { GetUserListsQuery, GetUserListsQueryVariables } from "../generated-types";
-
-export const GetUserLists = gql`
+const GetUserLists = gql`
 	query getUserLists($userId: Int!, $mediaType: MediaType!) {
 		MediaListCollection(userId: $userId, type: $mediaType) {
 			lists {
 				name,
 				
 				entries {
+					id,
+					status,
+					progress,
+
 					media {
-						...SeriesViewRelated
+						...MediaRelatedFragment
 					}
 				}
 			}
 		}
 	}
 	
-	${SeriesViewRelatedFragment}
+	${MediaRelatedFragment}
 ` as DocumentNode;
+
+type MediaListCollection = NonNullable<GetUserListsQuery['MediaListCollection']>;
+type MediaListGroup = NonNullable<NonNullable<MediaListCollection['lists']>[number]>;
+type MediaListGroupEntry = NonNullable<NonNullable<MediaListGroup['entries']>[number]>;
+
+export {
+	GetUserLists,
+	type GetUserListsQuery,
+	type GetUserListsQueryVariables,
+
+	type MediaListCollection,
+	type MediaListGroup,
+	type MediaListGroupEntry,
+};

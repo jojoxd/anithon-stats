@@ -15,19 +15,14 @@ export class SearchSeriesDomainService
 
 	public async searchSeries(query: string): Promise<Array<SeriesEntity>> | never
 	{
-		const anilistSeriesViews = await this.anilistSeriesService.searchSeries(query);
+		const mediaFragmentViews = await this.anilistSeriesService.searchSeries(query);
 
-		if (!anilistSeriesViews) {
+		if (!mediaFragmentViews) {
 			throw new InternalServerError("Could not get anilist series views");
 		}
 
-		return Promise.all(anilistSeriesViews.map((anilistSeriesView) => {
-			return this.syncSeriesService.findOrCreateSeriesEntity(
-				anilistSeriesView.id,
-				undefined,
-				undefined,
-				anilistSeriesView
-			);
+		return Promise.all(mediaFragmentViews.map((mediaFragmentView) => {
+			return this.syncSeriesService.findOrCreateSeriesEntity(mediaFragmentView);
 		}));
 	}
 }

@@ -4,15 +4,15 @@ import {AnilistSeriesDomainService} from "../anilist/series/anilist-series.domai
 import {SeriesEntityFactory} from "../../factory/series/series-entity.factory";
 import {SeriesEntity} from "../../entity/series/series.entity";
 import {DateTime, DurationLike} from "luxon";
-import {AnilistSeriesView} from "../../view/anilist/series/anilist-series.view";
-import {AnilistSeriesId} from "@anistats/shared";
-import {InternalServerError} from "@tsed/exceptions";
+import {AnilistMediaId} from "@anistats/shared";
 import {TimeUtil} from "../../util/time.util";
-import {AnilistListView} from "../../view/anilist/list/anilist-list.view";
 import {InjectRepository} from "@jojoxd/tsed-util/mikro-orm";
 import { $log } from "@tsed/common";
 import {MetricService} from "@jojoxd/tsed-util/prometheus";
 import { Histogram } from "prom-client";
+import {MediaListGroupView} from "../../view/anilist/list/get-user-lists/media-list-group.view";
+import {MediaFragmentView} from "../../view/anilist/media/media-fragment.view";
+import {MediaRelatedFragmentView} from "../../view/anilist/media/media-related-fragment.view";
 
 @Service()
 export class SyncSeriesDomainService
@@ -35,106 +35,71 @@ export class SyncSeriesDomainService
 		});
 	}
 
-	protected static readonly MAX_RELATION_DEPTH = 1;
-
-	public async syncSeries(anilistIds: Array<AnilistSeriesId>): Promise<void>
+	public async syncSeries(anilistIds: Array<AnilistMediaId>): Promise<void>
 	{
 		$log.info('count ids', anilistIds.length);
-		const seriesViews = await this.anilistSeriesService.batchGetSeries(anilistIds, true);
-		$log.info('Count Series', seriesViews.size);
+		const mediaRelatedFragmentViews = await this.anilistSeriesService.batchGetSeries(anilistIds);
+		$log.info('Count Series', mediaRelatedFragmentViews.length);
 
-		for(const [anilistSeriesId, anilistSeriesView] of seriesViews.entries()) {
-			if (anilistSeriesView === null) {
-				throw new InternalServerError(`Tried to sync non-existant series ${anilistSeriesId}`);
-			}
-
-			// We already use withRelated, depth can be set to 1
-			await this.findOrCreateSeriesEntity(anilistSeriesId, 0, undefined, anilistSeriesView);
+		for(const mediaRelatedFragmentView of mediaRelatedFragmentViews) {
+			await this.findOrCreateSeriesEntity(mediaRelatedFragmentView);
 		}
 	}
 
-	public async syncList(anilistListView: AnilistListView): Promise<void>
+	public async syncList(mediaListGroupView: MediaListGroupView): Promise<void>
 	{
-		for(const anilistSeriesView of anilistListView.entries) {
-			await this.findOrCreateSeriesEntity(anilistSeriesView.id, 0, undefined, anilistSeriesView);
+		for(const mediaListGroupEntryView of mediaListGroupView.entries) {
+			await this.findOrCreateSeriesEntity(mediaListGroupEntryView.media);
 		}
 	}
 
-	public async findOrCreateSeriesEntity(anilistId: AnilistSeriesId, depth = 0, excludeIds?: Array<any>, anilistSeriesView?: AnilistSeriesView): Promise<SeriesEntity>
+	public async findOrCreateSeriesEntity(mediaFragmentView: MediaFragmentView): Promise<SeriesEntity>
 	{
-		let series = await this.seriesRepository.findOne({ anilistId });
+		let series = await this.seriesRepository.findOne({ anilistId: mediaFragmentView.id, });
 
 		if (series && !this.shouldSynchronize(series)) {
 			console.log(`no-sync(${series.anilistId})`);
+
 			return series;
 		}
 
 		this.syncHistogram.observe(1);
 		const endHistogramTimer = this.syncHistogram.startTimer();
 
-		const seriesViewProvided = typeof anilistSeriesView !== "undefined";
-		anilistSeriesView ??= await this.anilistSeriesService.getSeries(anilistId);
-		const excludeIdsInner = excludeIds ?? [];
+		if(!series) {
+			console.log(`create(${mediaFragmentView.id})`);
 
-		if (!series) {
-			console.log(`create(${anilistId})`);
-
-			series = SeriesEntityFactory.create(anilistSeriesView);
+			series = SeriesEntityFactory.create(mediaFragmentView);
 			await this.seriesRepository.persistAndFlush(series);
 		}
 
-		console.log(`sync(${series.anilistId})`);
-
-		if(depth >= SyncSeriesDomainService.MAX_RELATION_DEPTH || !seriesViewProvided) {
-			endHistogramTimer();
-			return series;
-		}
-		depth += 1;
-
-		excludeIdsInner.push(series.anilistId);
-
 		await Promise.all([
-			series.prequels.init({ populate: true, }),
-			series.sequels.init({ populate: true, }),
+			series.prequels.loadItems(),
+			series.sequels.loadItems(),
 		]);
 
-		// @TODO: Maybe use prequelIds/sequelIds when we have no relations?
-		if (anilistSeriesView.relations !== null) {
-			for (const relation of anilistSeriesView.relations) {
-				if (excludeIdsInner.includes(relation.id)) {
-					continue;
-				}
+		if (mediaFragmentView instanceof MediaRelatedFragmentView) {
+			console.log(`sync(${series.anilistId})`);
 
-				// If not prequel or sequel, continue
-				if (![...anilistSeriesView.prequelIds, ...anilistSeriesView.sequelIds].includes(relation.id)) {
-					continue;
-				}
+			// @TODO: Reverse match to remove (or maybe set items to empty?)
 
-				const relationSeriesEntity = await this.findOrCreateSeriesEntity(
-						relation.id,
-						depth,
-						excludeIdsInner,
-						relation
-						);
+			for(const prequelFragmentView of mediaFragmentView.prequels) {
+				const prequelEntity = await this.findOrCreateSeriesEntity(prequelFragmentView);
 
-				if (anilistSeriesView.prequelIds.includes(relation.id)) {
-					series.prequels.add(relationSeriesEntity);
-				} else if(anilistSeriesView.sequelIds.includes(relation.id)) {
-					series.sequels.add(relationSeriesEntity);
-				}
-
-				await this.seriesRepository.persist(series);
+				series.prequels.add(prequelEntity);
 			}
 
-			series.synchronizedAt = new Date();
+			for(const sequelFragmentView of mediaFragmentView.sequels) {
+				const sequelEntity = await this.findOrCreateSeriesEntity(sequelFragmentView);
+
+				series.sequels.add(sequelEntity);
+			}
 		}
 
-		// @TODO: Remove id's not included in anilistSeriesView.prequels/.sequels
-
+		series.synchronizedAt = new Date();
 		await this.seriesRepository.persistAndFlush(series);
 
 		endHistogramTimer();
-
 		return series;
 	}
 

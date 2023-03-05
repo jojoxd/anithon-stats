@@ -44,6 +44,8 @@
     <div class="chunks" v-if="currentList">
         <h1>Chunks (DEBUG)</h1>
 
+		<chunk-timeline :chunk-list="currentList.chunks"></chunk-timeline>
+
         <div v-for="chunk of chunks">
             {{ getSeries(chunk.entry.ref).title.romaji }}
 

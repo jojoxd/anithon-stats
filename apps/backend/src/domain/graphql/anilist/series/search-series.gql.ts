@@ -1,6 +1,6 @@
 import { gql, DocumentNode } from "@apollo/client/core";
+import { MediaRelatedFragment } from "../media/media-related.fragment.gql";
 import {PageViewFragment} from "../page/page-view.fragment.gql";
-import {SeriesViewRelatedFragment} from "./series-view-related.fragment.gql";
 
 export { SearchSeriesQuery, SearchSeriesQueryVariables } from "../generated-types";
 
@@ -10,11 +10,11 @@ export const SearchSeries = gql`
 			...PageView,
 
 			media(search: $query, type: $mediaType) {
-				...SeriesViewRelated
+				...MediaRelatedFragment
 			}
 		}
 	}
 	
 	${PageViewFragment}
-	${SeriesViewRelatedFragment}
+	${MediaRelatedFragment}
 ` as DocumentNode;

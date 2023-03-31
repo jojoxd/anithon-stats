@@ -85,12 +85,14 @@ export class SyncSeriesDomainService
 
 			for(const prequelFragmentView of mediaFragmentView.prequels) {
 				const prequelEntity = await this.findOrCreateSeriesEntity(prequelFragmentView);
+				console.log(`link(${series.anilistId}, prequel:${prequelEntity.anilistId})`);
 
 				series.prequels.add(prequelEntity);
 			}
 
 			for(const sequelFragmentView of mediaFragmentView.sequels) {
 				const sequelEntity = await this.findOrCreateSeriesEntity(sequelFragmentView);
+				console.log(`link(${series.anilistId}, sequel:${sequelEntity.anilistId})`);
 
 				series.sequels.add(sequelEntity);
 			}

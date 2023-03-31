@@ -3,6 +3,7 @@ import {MediaListGroupEntry} from "../../../../graphql/anilist/list/get-user-lis
 import {MediaListStatus} from "../../../../graphql/anilist/generated-types";
 import {MediaFragmentView} from "../../media/media-fragment.view";
 import {InternalServerError} from "@tsed/exceptions";
+import {MediaRelatedFragmentView} from "../../media/media-related-fragment.view";
 
 export class MediaListGroupEntryView
 {
@@ -45,8 +46,8 @@ export class MediaListGroupEntryView
 		return this.entryData.progress ?? 0;
 	}
 
-	public get media(): MediaFragmentView
+	public get media(): MediaRelatedFragmentView
 	{
-		return new MediaFragmentView(this.entryData.media!);
+		return new MediaRelatedFragmentView(this.entryData.media!);
 	}
 }

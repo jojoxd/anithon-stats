@@ -1,0 +1,3 @@
+<template>
+	Default layout!
+</template>

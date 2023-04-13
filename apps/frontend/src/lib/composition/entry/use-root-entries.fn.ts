@@ -32,14 +32,18 @@ export function useRootEntries(): UseRootEntries
 
                 const rootEntryIds = new Set<EntryId>();
                 for(const entry of _entries) {
-                    const prequel = _entries.find((_entry) => {
+					const customPrequel = _entries.find((_entry) => {
+						return _entry.customSequel?.ref === entry.id;
+					});
+
+                    const prequel = customPrequel ?? _entries.find((_entry) => {
                         return _entry.sequel?.ref === entry.id;
                     });
 
                     if (prequel) {
                         const prequelData = listStore.getEntryData(prequel.id);
 
-                        if (prequelData?.splitSequelEntry === true) {
+                        if (prequelData?.splitSequelEntry === true && !customPrequel) {
                             rootEntryIds.add(entry.id);
                         }
                     } else {

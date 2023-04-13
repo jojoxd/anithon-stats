@@ -4,6 +4,7 @@ import {ChunkView} from "./chunk.view";
 export class ChunkTreeView
 {
 	private _child: ChunkTreeView | null = null;
+	private _parent: ChunkTreeView | null = null;
 
 	constructor(
 		public readonly entryView: EntryView,
@@ -18,6 +19,24 @@ export class ChunkTreeView
 	set child(child: ChunkTreeView | null)
 	{
 		this._child = child;
+
+		if (child && child?.parent !== this) {
+			child.parent = this;
+		}
+	}
+
+	get parent(): ChunkTreeView | null
+	{
+		return this._parent;
+	}
+
+	set parent(parent: ChunkTreeView | null)
+	{
+		this._parent = parent;
+
+		if (parent && parent.child !== this) {
+			parent.child = this;
+		}
 	}
 
 	/**
@@ -26,7 +45,7 @@ export class ChunkTreeView
 	*iterate(): Generator<ChunkView>
 	{
 		for (const chunkView of this.chunkViews) {
-			console.log('yield', { chunkView });
+			chunkView.chunkTreeView = this;
 			yield chunkView;
 		}
 

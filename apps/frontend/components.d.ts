@@ -7,6 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ChunkMetadata: typeof import('./src/components/list/chunk/chunk-metadata.vue')['default']
+    ChunkStats: typeof import('./src/components/list/chunk/chunk-stats.vue')['default']
     ChunkTimeline: typeof import('./src/components/list/chunk/chunk-timeline.vue')['default']
     ChunkTimelineItem: typeof import('./src/components/list/chunk/chunk-timeline-item.vue')['default']
     Debug: typeof import('./src/components/generic/debug.vue')['default']
@@ -16,7 +18,6 @@ declare module '@vue/runtime-core' {
     EntryMetadata: typeof import('./src/components/entry/entry-metadata.vue')['default']
     EntrySettingsDrawer: typeof import('./src/components/entry/entry-settings-drawer.vue')['default']
     FireflyBackground: typeof import('./src/components/generic/page/style/firefly-background.vue')['default']
-    FullPage: typeof import('./src/components/layout/full-page.vue')['default']
     LanguageSwitcher: typeof import('./src/components/generic/menu/language-switcher.vue')['default']
     ListMetadata: typeof import('./src/components/list/metadata/list-metadata.vue')['default']
     ListOverview: typeof import('./src/components/list/overview/list-overview.vue')['default']
@@ -33,7 +34,6 @@ declare module '@vue/runtime-core' {
     SearchSeriesEntry: typeof import('./src/components/search/series/search-series-entry.vue')['default']
     SeriesMetadata: typeof import('./src/components/generic/metadata/series/series-metadata.vue')['default']
     SlickSlickList: typeof import('vue-slicksort')['SlickList']
-    Tabs: typeof import('./src/components/layout/tabs.vue')['default']
     ThemeSwitcher: typeof import('./src/components/generic/menu/theme-switcher.vue')['default']
     UserPreviewCard: typeof import('./src/components/user/preview/user-preview-card.vue')['default']
     UserSettingsMenu: typeof import('./src/components/user/settings/user-settings-menu.vue')['default']

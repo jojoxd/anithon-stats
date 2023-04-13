@@ -42,6 +42,25 @@ export class ListChunkDomainService
 
 			$log.info('> LOADED ENTRY AND SERIES', entrySeries.title);
 
+			if (entry.customSequel) {
+				const customSequelChunkTreeView = chunkTreeViews.find((_chunkTreeView) => {
+					return entry.customSequel!.id === _chunkTreeView.entryView.entry.id;
+				});
+
+				if (chunkTreeView.child && customSequelChunkTreeView) {
+					$log.warn("MULTIPLE SEQUELS FOUND, WE ARE OVERWRITING STUFF", { chunkTreeView, customSequelChunkTreeView, });
+				}
+
+				if (customSequelChunkTreeView) {
+					$log.info(' NOTE: REMOVING CUSTOM SEQUEL CHUNK', { customSequelChunkTreeView, });
+					sequelChunkTreeViews.push(customSequelChunkTreeView);
+				}
+
+				chunkTreeView.child = customSequelChunkTreeView ?? null;
+
+				continue;
+			}
+
 			// Map sequel
 			if (!entry.data.splitSequelEntry) {
 				const sequelSeriesIds = entrySeries.sequels.getIdentifiers();
@@ -143,12 +162,26 @@ export class ListChunkDomainService
 			throw new Error("Entries are not the same, cannot merge");
 		}
 
-		return new ChunkView(
+		const chunkView = new ChunkView(
 			a.entryView,
 			Math.min(a.start, b.start),
 			Math.max(a.end, b.end),
 			true,
 		);
+
+		chunkView.chunkTreeView = a.chunkTreeView;
+
+		return chunkView;
+	}
+
+	protected getRootChunkTreeView(chunkTreeView: ChunkTreeView): ChunkTreeView
+	{
+		let last = chunkTreeView;
+		while((last.parent ?? null) !== null) {
+			last = last.parent!;
+		}
+
+		return last;
 	}
 
 	public createDto(chunkView: ChunkView): ChunkDto
@@ -156,6 +189,10 @@ export class ListChunkDomainService
 		return {
 			entry: {
 				ref: chunkView.entryView.id,
+			},
+
+			rootEntry: {
+				ref: this.getRootChunkTreeView(chunkView.chunkTreeView).entryView.id,
 			},
 
 			start: chunkView.start,

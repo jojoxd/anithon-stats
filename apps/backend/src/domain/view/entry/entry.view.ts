@@ -95,4 +95,11 @@ export class EntryView
 	{
 		return this.entry.progress;
 	}
+
+	get customSequel(): EntryView | null
+	{
+		return this.entry.customSequel
+			? new EntryView(this.entry.customSequel)
+			: null;
+	}
 }

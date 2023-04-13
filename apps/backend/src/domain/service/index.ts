@@ -3,6 +3,7 @@
  */
 
 export * from "./anilist/anilist.domain-service";
+export * from "./anilist/entry/anilist-entry.domain-service";
 export * from "./anilist/list/anilist-list.domain-service";
 export * from "./anilist/series/anilist-series.domain-service";
 export * from "./anilist/user/anilist-user.domain-service";

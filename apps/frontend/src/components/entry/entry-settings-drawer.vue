@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {computed, customRef, defineComponent, nextTick, watch} from "vue";
+    import {computed, customRef, defineComponent, nextTick, watch, ref, customRef} from "vue";
     import {storeToRefs} from "pinia";
     import {useListStore} from "../../lib/store/list.store";
     import {useEntry} from "../../lib/composition/entry/use-entry.fn";
@@ -15,6 +15,7 @@
 
             const {
                 currentEntry: entry,
+				entries,
             } = storeToRefs(listStore);
 
             const currentEntryId = computedExtract(entry, (entry) => entry?.id);
@@ -78,9 +79,63 @@
                 return directSequelEntry?.series.ref;
             });
 
+			const customSequels = computed(() => {
+				return get(rootEntries)?.map((rootEntry) => {
+					const {
+						seriesTitle,
+					} = useSeries(ref(rootEntry.series.id));
+
+					console.log(rootEntry.series.id, seriesTitle);
+
+					return {
+						value: rootEntry.id,
+						title: get(seriesTitle),
+					};
+				})?.filter((values) => {
+					const _rootEntries = get(rootEntries);
+					const _entryId = get(entry).id;
+
+					for(const _rootEntry of _rootEntries) {
+						let _entry = _rootEntry;
+
+						if (values.value === _rootEntry.id) {
+							do {
+								console.log('checkEquals(root=%s, current=%s, toCheck=%s) = %s', _rootEntry.id, _entry.id, _entryId, _entry.id === _entryId);
+								if (_entry.id === _entryId) {
+									return false;
+								}
+							} while(_entry = listStore.getSequelEntry(_entry));
+						}
+					}
+
+					return values.value !== _entryId;
+				}) ?? [];
+			});
+
             const {
                 seriesTitle: directSequelSeriesTitle,
             } = useSeries(directSequelSeriesId);
+
+			const customSequel = customRef((track, trigger) => {
+				return {
+					get() {
+						track();
+						const _entry = get(entry);
+
+						return _entry.customSequel?.ref ?? null;
+					},
+
+					set(_customSequel) {
+						const _entry = get(entry);
+
+						_entry.customSequel = {
+							ref: _customSequel,
+						};
+
+						trigger();
+					},
+				};
+			});
 
             function onAutoSplitChange(autoSplit: boolean): void
             {
@@ -142,6 +197,9 @@
 
                 onAutoSplitChange,
                 onSplitSequelChange,
+
+				customSequel,
+				customSequels,
             };
         },
     });
@@ -212,8 +270,9 @@
                         </v-text-field>
                     </template>
 
+					<div :class="entry.episodes > 1 ? ['text-subtitle-2', 'mb-2', 'mt-n4'] : ['text-subtitle-2', 'my-2']">Sequel</div>
+
                     <template v-if="hasSequel">
-                        <div :class="entry.episodes > 1 ? ['text-subtitle-2', 'mb-2', 'mt-n4'] : ['text-subtitle-2', 'my-2']">Sequel</div>
                         <span class="w-100 text-subtitle-1 text-truncate d-inline-block font-italic">{{ directSequelSeriesTitle }}</span>
                         <v-checkbox
                             v-model="entryData.splitSequelEntry"
@@ -221,6 +280,15 @@
                             label="Split Sequel"
                         ></v-checkbox>
                     </template>
+
+					<v-select
+						v-model="customSequel"
+						label="Custom Sequel"
+						:items="customSequels"
+						clearable
+						underlined
+					></v-select>
+
                 </v-list-item>
             </v-list>
         </template>

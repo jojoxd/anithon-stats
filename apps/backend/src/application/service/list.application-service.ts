@@ -116,6 +116,15 @@ export class ListApplicationService
 					entryData.ref = entryEntity.id;
 				}
 			}
+
+			// @NOTE: May fail if customSequel is new?
+			if(entryDto.customSequel) {
+				const customSequelEntity = list.entries.getItems().find((_entry) => {
+					return _entry.id === entryDto.customSequel!.ref;
+				});
+
+				entryEntity.customSequel = customSequelEntity;
+			}
 		}
 
 		// @TODO: Remove old entries

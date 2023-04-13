@@ -11,6 +11,7 @@ import { MediaListCollectionView } from "../../../view/anilist/list/get-user-lis
 import { MediaListGroupView } from "../../../view/anilist/list/get-user-lists/media-list-group.view";
 import { CustomListView } from "../../../view/anilist/list/get-custom-lists-containing/custom-list.view";
 
+
 import {
 	GetUserLists,
 	GetUserListsQuery, GetUserListsQueryVariables
@@ -204,4 +205,6 @@ export class AnilistListDomainService extends AnilistDomainService
 			throw e;
 		}
 	}
+
+
 }

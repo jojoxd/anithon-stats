@@ -1,9 +1,12 @@
 import {EntryView} from "../entry/entry.view";
 import {ChunkStateEnum, EntryStatusEnum} from "@anistats/shared";
 import {MathUtil} from "../../util/math.util";
+import {ChunkTreeView} from "./chunk-tree.view";
 
 export class ChunkView
 {
+	protected _chunkTreeView: ChunkTreeView | null = null;
+
 	constructor(
 		public readonly entryView: EntryView,
 		public readonly start: number,
@@ -40,6 +43,16 @@ export class ChunkView
 			return 0;
 		}
 
-		return MathUtil.clamp(entryProgress, this.start, this.end) - this.start;
+		return MathUtil.clamp(entryProgress, this.start, this.end) - this.start + 1;
+	}
+
+	public get chunkTreeView(): ChunkTreeView
+	{
+		return this._chunkTreeView!;
+	}
+
+	public set chunkTreeView(chunkTreeView: ChunkTreeView)
+	{
+		this._chunkTreeView = chunkTreeView;
 	}
 }

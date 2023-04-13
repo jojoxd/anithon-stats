@@ -38,6 +38,16 @@ export function useListGetters(currentList: Ref<ListDto | null>): UseListGetters
     {
         const _currentList = get(currentList);
 
+		// First check customSequel
+		const customPrequel = _currentList?.entries?.items.find((_entry) => {
+			return _entry.customSequel?.ref === entryId;
+		});
+
+		if (customPrequel) {
+			return customPrequel;
+		}
+
+
         return _currentList && entryId
             ? _currentList.entries.items.find((_entry) => {
                 return _entry.sequel?.ref === entryId;
@@ -48,6 +58,10 @@ export function useListGetters(currentList: Ref<ListDto | null>): UseListGetters
     function getSequelEntry(entryId: Maybe<EntryId>): Maybe<EntryDto>
     {
         const entry = getEntry(entryId);
+
+		if (entry?.customSequel?.ref) {
+			return getEntry(entry.customSequel.ref);
+		}
 
         return entry?.sequel?.ref
             ? getEntry(entry.sequel.ref)

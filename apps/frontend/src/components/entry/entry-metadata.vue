@@ -10,7 +10,7 @@ import {useEntryMetadata} from "../../lib/composition/entry/use-entry-metadata.f
     export default defineComponent({
         props: {
             entryId: {
-                type: Object as PropType<EntryId>,
+                type: String as PropType<EntryId>,
                 required: true,
             },
         },

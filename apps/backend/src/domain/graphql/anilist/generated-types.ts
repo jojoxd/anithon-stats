@@ -4664,6 +4664,23 @@ export type YearStats = {
   year?: Maybe<Scalars['Int']>;
 };
 
+export type GetEntryQueryVariables = Exact<{
+  entryId: Scalars['Int'];
+}>;
+
+
+export type GetEntryQuery = { __typename?: 'Query', MediaList?: { __typename?: 'MediaList', id: number, status?: MediaListStatus | null, progress?: number | null, repeat?: number | null } | null };
+
+export type UpdateEntryMutationVariables = Exact<{
+  entryId: Scalars['Int'];
+  status: MediaListStatus;
+  progress: Scalars['Int'];
+  repeats: Scalars['Int'];
+}>;
+
+
+export type UpdateEntryMutation = { __typename?: 'Mutation', UpdateMediaListEntries?: Array<{ __typename?: 'MediaList', id: number } | null> | null };
+
 export type GetCustomListsContainingQueryVariables = Exact<{
   mediaId: Scalars['Int'];
   userId: Scalars['Int'];

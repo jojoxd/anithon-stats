@@ -17,7 +17,11 @@ export interface EntryDto
         time: number;
     };
 
+	progress: number;
+
     status: EntryStatusEnum;
 
-    sequel?: EntryRef | null;
+	sequel?: EntryRef | null;
+
+	customSequel?: EntryRef | null;
 }

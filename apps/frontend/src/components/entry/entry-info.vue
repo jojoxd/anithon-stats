@@ -107,7 +107,7 @@
 
         <span class="title text-h6 text-truncate">
             {{ seriesTitle }}
-            <debug :items="{ entryId, sequel,  }"></debug>
+            <debug :items="{ entryId, sequel, customSequel: entry.customSequel?.ref ?? 'null', }"></debug>
         </span>
 
         <span class="stats">

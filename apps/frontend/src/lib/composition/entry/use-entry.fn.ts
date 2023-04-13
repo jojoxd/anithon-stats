@@ -45,7 +45,7 @@ export function useEntry(entryId: ComputedRef<EntryId>): UseEntry
             return _entry;
         }
 
-        if (_entryData?.splitSequelEntry) {
+        if (_entryData?.splitSequelEntry && !_entry.customSequel) {
             return [];
         }
 

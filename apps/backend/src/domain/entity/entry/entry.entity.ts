@@ -32,4 +32,7 @@ export class EntryEntity
 
 	@Property()
 	public progress!: number;
+
+	@OneToOne(() => EntryEntity, { owner: true, eager: true, nullable: true, })
+	public customSequel?: EntryEntity;
 }

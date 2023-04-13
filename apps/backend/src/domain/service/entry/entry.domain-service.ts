@@ -56,8 +56,12 @@ export class EntryDomainService
 					time: entryView.totalTime,
 				},
 
+				progress: entry.progress,
+
 				// @ts-ignore TODO: Something is wrong with this type
 				sequel: sequelEntry ? { ref: sequelEntry.id, } : null,
+
+				customSequel: entryView.customSequel ? { ref: entryView.customSequel.id } : null,
 
 				status: entryView.state,
 			});

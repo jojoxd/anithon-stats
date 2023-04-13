@@ -3,6 +3,8 @@ import {EntryRef} from "../entry/entry-ref";
 
 export interface ChunkDto
 {
+	rootEntry: EntryRef;
+
     entry: EntryRef;
 
     start: number;

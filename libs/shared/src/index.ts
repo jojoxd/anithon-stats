@@ -7,6 +7,7 @@ export * from "./application/generic/exception/exception.response";
 export * from "./application/generic/exception/unauthorized-exception.response";
 export * from "./application/list/list.response";
 export * from "./application/list/update-list.request";
+export * from "./application/list/entry/update-entry-progress.request";
 export * from "./application/login/login.response";
 export * from "./application/search/anime/search-anime.request";
 export * from "./application/search/anime/search-anime.response";

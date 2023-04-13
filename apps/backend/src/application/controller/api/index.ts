@@ -4,6 +4,7 @@
 
 export * from "./auth/auth.controller";
 export * from "./list/list.controller";
+export * from "./list/entry/entry-progress.controller";
 export * from "./search/search-anime.controller";
 export * from "./search/search-global.controller";
 export * from "./user/user.controller";

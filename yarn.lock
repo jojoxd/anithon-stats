@@ -2439,12 +2439,12 @@ __metadata:
   linkType: hard
 
 "@iconify/json@npm:^2.2.6":
-  version: 2.2.10
-  resolution: "@iconify/json@npm:2.2.10"
+  version: 2.2.126
+  resolution: "@iconify/json@npm:2.2.126"
   dependencies:
     "@iconify/types": "*"
-    pathe: ^1.0.0
-  checksum: 03b8bd35e4a45a0438ad1561a47f326f487f88a2b34116db76ed8b36ebf017ee6e8fc98fc53f451cac76fc967e88fcd8e938b7edcce37058b1296cf0d7cef59a
+    pathe: ^1.1.0
+  checksum: a09bfd6c5e4aa2a189f8e04f85fc499990b98621378ff9dcb4d8653b200284f05ad0b8b986044cda3cf284a2c91d3a20715c36b4b0cce6623b2bec8385a974d4
   languageName: node
   linkType: hard
 
@@ -18444,10 +18444,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pathe@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "pathe@npm:1.1.0"
-  checksum: 6b9be9968ea08a90c0824934799707a1c6a1ad22ac1f22080f377e3f75856d5e53a331b01d327329bfce538a14590587cfb250e8e7947f64408797c84c252056
+"pathe@npm:^1.1.0":
+  version: 1.1.1
+  resolution: "pathe@npm:1.1.1"
+  checksum: 34ab3da2e5aa832ebc6a330ffe3f73d7ba8aec6e899b53b8ec4f4018de08e40742802deb12cf5add9c73b7bf719b62c0778246bd376ca62b0fb23e0dde44b759
   languageName: node
   linkType: hard
 

@@ -50,14 +50,31 @@
 
 <template>
 	<v-container fluid>
-        <v-row v-if="isLoading">
-            Loading (TODO: Skeleton Loader should go here)
-        </v-row>
-
-		<v-row v-if="!isLoading && user && lists">
+		<v-row>
 			<v-col cols="12">
-				<user-preview-card :user="user" />
+                <v-skeleton-loader
+                    :loading="isLoading"
+                    type="avatar, heading, text"
+                >
+                    <user-preview-card :user="user" />
+                </v-skeleton-loader>
 			</v-col>
+
+            <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                v-for="i in 6"
+                v-if="isLoading"
+            >
+                <!-- @TODO(#32): Fix this skeleton loader when a fix for vuetify is merged -->
+                <v-skeleton-loader
+                    :loading="true"
+                    max-height="550"
+                    type="heading, chip@3, text, button"
+                >Hello</v-skeleton-loader>
+            </v-col>
+
 
 			<v-col
 				v-for="(metadata, listId) of lists"

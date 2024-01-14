@@ -1,4 +1,5 @@
-import {AnilistSeriesId, AnilistUserId} from "@anistats/shared";
+import { AnilistSeriesId } from "../../dto/anilist/series/anilist-series-id.type";
+import { AnilistUserId } from "../../dto/anilist/user/anilist-user-id.type";
 
 export class AnilistHelper
 {

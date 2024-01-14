@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../../libs-anilist.old/anilist/src/lib/types/CustomListJson.ts"],"sourcesContent":["export interface CustomListJson\n{\n    name: string;\n    enabled: boolean;\n}"],"names":[],"mappings":"AAAA"}

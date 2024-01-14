@@ -1,3 +1,17 @@
+@import "@fontsource/roboto/100.css";
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/400-italic.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/roboto/900.css";
+
 body {
 	overflow: hidden;
+}
+
+.v-skeleton-loader__bone.v-skeleton-loader__divider {
+	background-color: red;
+	width: 100%;
+	height: 10px;
 }

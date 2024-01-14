@@ -5,6 +5,9 @@
     "barrelsby": "^2.5.1",
     "tsup": "^5.12.6"
   },
+  "peerDependencies": {
+    "luxon": "^3.3.0"
+  },
   "scripts": {
     "build:package-shared": "yarn clean && yarn barrels && yarn tsc",
     "clean:package-anilist": "yarn clean",

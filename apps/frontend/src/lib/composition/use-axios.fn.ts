@@ -1,5 +1,5 @@
 import {get} from "@vueuse/core";
-import axios, {AxiosError, AxiosInstance, AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosInstance, AxiosResponse, CanceledError} from "axios";
 import {computed, ComputedRef, readonly, Ref, ref, watch, WatchSource} from "vue";
 
 const getBaseUrl = (): string => {
@@ -73,18 +73,25 @@ export class HttpError extends Error
     }
 }
 
-export function wrapAxios<T, D = void>(fn: (axiosInstance: AxiosInstance) => Promise<AxiosResponse<T, D> | null>, options?: WrapAxiosOptions): WrapAxios<T | null>
+export function wrapAxios<T, D = void>(fn: (axiosInstance: AxiosInstance, signal: AbortSignal) => Promise<AxiosResponse<T, D> | null>, options?: WrapAxiosOptions): WrapAxios<T | null>
 {
     const isLoading = ref<boolean>(false);
     const error = ref<HttpError | AxiosError | Error | null>(null);
     const internalValue = ref<D | null>(null);
+    const abortController = ref<AbortController | null>(null);
 
     async function load(): Promise<void>
     {
         isLoading.value = true;
 
+        if (abortController.value) {
+            abortController.value.abort();
+        }
+
+        abortController.value = new AbortController();
+
         try {
-            const response = await fn(useAxios());
+            const response = await fn(useAxios(), abortController.value.signal);
 
             console.log({response});
 
@@ -98,18 +105,24 @@ export function wrapAxios<T, D = void>(fn: (axiosInstance: AxiosInstance) => Pro
             }
 
             internalValue.value = response.data ?? null;
+            isLoading.value = false;
 
             return;
         } catch(e) {
+            if (e instanceof CanceledError) {
+                internalValue.value = null;
+                error.value = null;
+                return;
+            }
+
             if (e instanceof Error) {
                 error.value = e;
             } else {
                 console.warn('Unhandled Error', e);
             }
-        } finally {
-            isLoading.value = false;
         }
 
+        isLoading.value = false;
         // If all else fails, return null
         internalValue.value = null;
     }

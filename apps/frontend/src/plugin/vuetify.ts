@@ -2,16 +2,14 @@ import { createVuetify } from "vuetify";
 import {md2} from "vuetify/blueprints";
 import 'vuetify/styles';
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
-
-let test: any = {};
-test['background-color'] = "rgb(11, 22, 34)";
-test['text-color'] = "rgb(159, 173, 189)";
-test['foreground-color'] = "rgb(21, 31, 46)";
-test['link-text-color'] = "rgb(61,180,242)";
-
+import * as labsComponents from "vuetify/labs/components";
 
 export default createVuetify({
 	blueprint: md2,
+
+	components: {
+		...labsComponents,
+	},
 
 	icons: {
 		defaultSet: 'mdi',

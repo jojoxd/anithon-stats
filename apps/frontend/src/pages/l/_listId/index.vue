@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {defineComponent, PropType} from "vue";
+    import {defineComponent, PropType, computed} from "vue";
     import {useVModels} from "@vueuse/core";
     import {mdiDragVertical, mdiContentSaveOutline} from "@mdi/js";
     import {EntryId, ListId, SeriesDto} from "@anistats/shared";
@@ -49,6 +49,15 @@
                 isMobile,
             } = useBreakpoints();
 
+            const skeletonLoaderType = computed(() => {
+                let edit = '';
+                if (canEdit.value) {
+                    edit = 'heading@5, button@2';
+                }
+
+                return `heading, paragraph, chip@3, divider, ${edit}, heading`;
+            })
+
             function onRemoveEntry(entryId: EntryId): void
             {
                 listStore.removeEntry(entryId);
@@ -78,6 +87,7 @@
                 isMobile,
 
                 canEdit,
+                skeletonLoaderType,
 
                 mdiDragVertical,
 
@@ -94,6 +104,12 @@
 </script>
 
 <template>
+    <v-skeleton-loader :loading="!currentList" :type="skeletonLoaderType">
+        Hello
+    </v-skeleton-loader>
+
+    <entry-card-skeleton v-for="i in 3" class="my-4" :loading="!currentList" />
+
 	<div v-if="currentList">
         <v-badge
             :model-value="hasUnsavedChanges"

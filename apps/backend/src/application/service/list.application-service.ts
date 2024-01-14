@@ -16,6 +16,7 @@ import {SyncDomainService} from "../../domain/service/sync/sync.domain-service";
 import { Transactional } from "@tsed/mikro-orm";
 import { $log } from "@tsed/common";
 import { SyncEntriesDomainService } from "../../domain/service/sync/sync-entries.domain-service";
+import { StaticCanvas } from "fabric/node";
 
 @Service()
 export class ListApplicationService
@@ -149,11 +150,11 @@ export class ListApplicationService
 		await this.listEntryDataService.updateEntryData(updateListRequest.data, list);
 	}
 
-	public async generateListImage(listId: ListId): Promise<Buffer>
+	public async generateListImage(listId: ListId, params: { embed: boolean, withStats: boolean, }): Promise<StaticCanvas>
 	{
 		const list = await this.getListOrThrow(listId);
 
-		return this.listImageService.generateImage(list);
+		return this.listImageService.generateImage(list, params.embed, params.withStats);
 	}
 
 	public async getListOrThrow(listId: ListId): Promise<ListEntity | never>

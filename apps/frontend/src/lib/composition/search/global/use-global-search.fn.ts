@@ -22,11 +22,14 @@ export function useGlobalSearch(query: Ref<string | null>): UseGlobalSearch
         reload,
         isLoading,
         value: response,
-    } = wrapAxios<SearchGlobalResponse, SearchGlobalRequest>((axios) => {
+    } = wrapAxios<SearchGlobalResponse, SearchGlobalRequest>((axios, signal) => {
         return axios.post(
             'search/global',
             {
 				query: get(query),
+            },
+            {
+                signal,
             }
         );
     }, {

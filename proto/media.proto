@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "uuid.proto";
+
+package anistats.media;
+
+message Media {
+    uuid.Uuid id = 1;
+}
+
+service MediaService {
+    rpc GetMedia (GetMediaRequest) returns (Media);
+    rpc SearchMedia (SearchMediaRequest) returns (SearchMediaResponse);
+}
+
+message GetMediaRequest {
+    oneof identifier {
+        uuid.Uuid id = 1;
+        int64 anilistId = 2;
+    }
+}
+
+message SearchMediaRequest {
+    oneof query {
+        string name = 1;
+    }
+}
+
+message SearchMediaResponse {
+    repeated Media media = 1;
+}

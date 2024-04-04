@@ -1,0 +1,6 @@
+version: v1
+plugins:
+  - plugin: dart
+    out: anistats_app/lib/src/generated/client
+    # opt:
+    #   - paths=source_relative

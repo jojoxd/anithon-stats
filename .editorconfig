@@ -1,12 +1,17 @@
 root = true
 
 [*]
-charset = utf-8
-end_of_line = lf
-indent_style = tab
-indent_size = 4
+indent_style             = space
+indent_size              = 4
+end_of_line              = lf
+charset                  = utf-8
 trim_trailing_whitespace = true
-insert_final_newline = true
+insert_final_newline     = true
 
-[*.vue]
-insert_final_newline = false
+[*.gql]
+indent_style = space
+indent_size  = 2
+
+[*.dart]
+indent_style = space
+indent_size  = 2

@@ -1,0 +1,10 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+        "./anistats_common/Cargo.toml"
+    ],
+
+    "files.associations": {
+        "*.sql": "postgres"
+    }
+}

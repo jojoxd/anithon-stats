@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+import "uuid.proto";
+import "media.proto";
+
+package anistats.list;
+
+message List {
+    uuid.Uuid id = 1;
+    string name             = 2;
+    repeated ListItem items = 3;
+}
+
+message ListItem {
+    uuid.Uuid id    = 1;
+    anistats.media.Media media = 2;
+}
+
+service ListService {
+    rpc GetList (GetListRequest) returns (List);
+    rpc SyncList (SyncListRequest) returns (stream SyncListResponse);
+}
+
+service ListItemService {
+    rpc GetListItem (GetListItemRequest) returns (ListItem);
+}
+
+message GetListRequest {
+    uuid.Uuid id = 1;
+}
+
+message GetListItemRequest {
+    uuid.Uuid id = 1;
+}
+
+message SyncListRequest {
+    uuid.Uuid id = 1;
+}
+
+message SyncListResponse {
+    fixed64 progress  = 1;
+
+    oneof data {
+        fixed64 count = 2;
+        List    list  = 3;
+    }
+}

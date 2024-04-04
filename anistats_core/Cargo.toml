@@ -1,0 +1,25 @@
+[package]
+name = "anistats_core"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Joey Vos <contact@jojoxd.nl> (https://jojoxd.nl)"
+]
+
+[lib]
+
+[dependencies]
+anyhow = { workspace = true }
+diesel = { version = "2.1.5", features = ["postgres", "r2d2", "uuid"] }
+diesel-tracing = { version = "0.2.3", features = ["postgres", "r2d2", "statement-fields"] }
+diesel_migrations = { version = "2.1.0", features = ["postgres"] }
+dotenvy = "0.15.7"
+prost = "0.12.3"
+tonic = { workspace = true }
+serde = { workspace = true }
+proto = { path = "../proto" }
+tonic-reflection = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+tower-http = { version = "0.5.2", features = ["tracing"] }
+anistats_common = { path = "../anistats_common" }

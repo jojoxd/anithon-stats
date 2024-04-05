@@ -1,27 +1,19 @@
-import 'package:anistats_app/module/media/data_access/entity/media_entity.dart';
+import 'package:data_access/data_access.dart';
 
 class MediaService {
-  Future<List<MediaEntity>> search(String query) async {
-    // @DEBUG: Simulate network activity
-    await Future.delayed(const Duration(milliseconds: 800));
+  MediaService({
+    required mediaRepository,
+  }) : _mediaRepository = mediaRepository;
 
-    return List<MediaEntity>.generate(
-      10,
-      (index) {
-        return MediaEntity(
-          id: index.toString(),
-          name: "Media ${index.toString()}",
-        );
-      },
-    );
+  final MediaRepository _mediaRepository;
+
+  Future<MediaEntity?> get(String mediaId) {
+    return _mediaRepository.get(mediaId);
   }
 
-  Future<MediaEntity?> fetch(String mediaId) async {
-    await Future.delayed(const Duration(milliseconds: 650));
-
-    return MediaEntity(
-      id: mediaId,
-      name: "Media $mediaId",
-    );
+  Future<MediaEntityList> search(String query) {
+    return _mediaRepository.search(query);
   }
+
+  // @TODO: Add more business logic here
 }

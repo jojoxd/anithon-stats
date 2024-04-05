@@ -14,6 +14,7 @@ dependencies:
     path: ../shared
 
   go_router: ^13.2.0
+  get_it: ^7.6.8
 
   flutter:
     sdk: flutter

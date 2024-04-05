@@ -1,4 +1,4 @@
-import 'package:anistats_app/module/list/data_access/entity/list_entity.dart';
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 
 class ListCard extends StatelessWidget {

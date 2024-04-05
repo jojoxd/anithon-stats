@@ -5,4 +5,4 @@ library;
 
 export 'src/data_access_base.dart';
 
-// TODO: Export any libraries intended for clients of this package.
+export 'package:uuid/uuid_value.dart';

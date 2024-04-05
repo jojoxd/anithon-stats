@@ -1,9 +1,9 @@
 import 'dart:math';
 
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../data_access/entity/list_entity.dart';
 import 'list_card.dart';
 
 class ListCardGrid extends StatelessWidget {

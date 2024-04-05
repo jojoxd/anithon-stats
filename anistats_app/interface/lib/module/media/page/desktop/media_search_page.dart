@@ -1,15 +1,18 @@
 import 'package:anistats_app/shared/layout/page_layout.dart';
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../data_access/entity/media_entity.dart';
 import '../../service/media_service.dart';
 import '../../widget/media_entity_grid_view.dart';
 
 class DesktopMediaSearchPage extends StatefulWidget {
-  DesktopMediaSearchPage({super.key});
+  const DesktopMediaSearchPage({
+    super.key,
+    required this.mediaService,
+  });
 
-  final MediaService mediaService = MediaService();
+  final MediaService mediaService;
 
   @override
   State<StatefulWidget> createState() => _DesktopMediaSearchPageState();
@@ -18,8 +21,8 @@ class DesktopMediaSearchPage extends StatefulWidget {
 class _DesktopMediaSearchPageState extends State<DesktopMediaSearchPage> {
   MediaEntity? _selectedMediaEntity;
 
-  Future<List<MediaEntity>>? _searchResponse = Future.value(
-    List<MediaEntity>.empty(),
+  Future<MediaEntityList>? _searchResponse = Future.value(
+    MediaEntityList.empty(),
   );
 
   @override

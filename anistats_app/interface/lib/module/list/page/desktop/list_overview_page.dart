@@ -1,14 +1,17 @@
+import 'package:anistats_app/module/list/service/list_service.dart';
 import 'package:anistats_app/shared/widget/empty_state_widget.dart';
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 
-import '../../data_access/entity/list_entity.dart';
-import '../../data_access/repository/list_repository.dart';
 import '../../widget/list/list_card_grid.dart';
 
 class DesktopListOverviewPage extends StatefulWidget {
-  DesktopListOverviewPage({super.key});
+  const DesktopListOverviewPage({
+    super.key,
+    required this.listService,
+  });
 
-  final ListRepository listRepository = ListRepository();
+  final ListService listService;
 
   @override
   State<DesktopListOverviewPage> createState() =>
@@ -16,13 +19,16 @@ class DesktopListOverviewPage extends StatefulWidget {
 }
 
 class _DesktopListOverviewPageState extends State<DesktopListOverviewPage> {
-  late Future<List<ListEntity>> _lists;
+  late Future<ListEntityList> _lists;
 
   @override
   void initState() {
     super.initState();
 
-    _lists = widget.listRepository.getLists();
+    // @TODO: Allow user selection
+    _lists = widget.listService.getListsForUser(
+      "018eae9b-1717-7125-aff4-f15def68fab7",
+    );
   }
 
   @override

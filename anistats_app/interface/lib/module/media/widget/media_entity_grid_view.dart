@@ -1,6 +1,6 @@
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 
-import '../data_access/entity/media_entity.dart';
 import 'media_entity_card.dart';
 
 bool _defaultIsSelected(MediaEntity _) => false;

@@ -1,28 +1,33 @@
+import 'package:anistats_app/module/list/service/list_service.dart';
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/layout/page_layout.dart';
 import '../../../shared/widget/empty_state_widget.dart';
-import '../data_access/entity/list_entity.dart';
-import '../data_access/repository/list_repository.dart';
 
 class ListOverviewPage extends StatefulWidget {
-  ListOverviewPage({super.key});
+  const ListOverviewPage({
+    super.key,
+    required this.listService,
+  });
 
-  final ListRepository listRepository = ListRepository();
+  final ListService listService;
 
   @override
   State<StatefulWidget> createState() => _ListOverviewPageState();
 }
 
 class _ListOverviewPageState extends State<ListOverviewPage> {
-  late Future<List<ListEntity>> _lists;
+  late Future<ListEntityList> _lists;
 
   @override
   void initState() {
     super.initState();
 
-    _lists = widget.listRepository.getLists();
+    _lists = widget.listService.getListsForUser(
+      "018eae9b-1717-7125-aff4-f15def68fab7",
+    );
   }
 
   @override

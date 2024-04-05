@@ -1,15 +1,18 @@
 import 'package:anistats_app/module/media/service/media_service.dart';
 import 'package:anistats_app/shared/layout/page_layout.dart';
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 
-import '../../data_access/entity/media_entity.dart';
-
 class DesktopMediaDetailsPage extends StatefulWidget {
-  DesktopMediaDetailsPage({super.key, required this.mediaId});
+  const DesktopMediaDetailsPage({
+    super.key,
+    required this.mediaId,
+    required this.mediaService,
+  });
 
   final String mediaId;
 
-  final MediaService mediaService = MediaService();
+  final MediaService mediaService;
 
   @override
   State<DesktopMediaDetailsPage> createState() =>
@@ -23,7 +26,7 @@ class _DesktopMediaDetailsPageState extends State<DesktopMediaDetailsPage> {
   void initState() {
     super.initState();
 
-    mediaEntity = widget.mediaService.fetch(widget.mediaId);
+    mediaEntity = widget.mediaService.get(widget.mediaId);
   }
 
   @override

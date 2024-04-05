@@ -1,7 +1,7 @@
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/widget/card/selectable_card.dart';
-import '../data_access/entity/media_entity.dart';
 
 class MediaEntityCard extends StatelessWidget {
   const MediaEntityCard({

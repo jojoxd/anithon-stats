@@ -1,5 +1,6 @@
 import 'package:anistats_app/shared/page/error_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_module.dart';
@@ -8,6 +9,8 @@ import 'shared/keys.dart';
 final AppModule appModule = AppModule();
 
 void main() {
+  appModule.register(GetIt.instance);
+
   final router = GoRouter(
     initialLocation: '/lists',
     navigatorKey: kRootNavigatorKey,

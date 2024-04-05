@@ -1,5 +1,5 @@
+import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/layout/page_layout.dart';
@@ -32,7 +32,7 @@ class ListEditPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         heroTag: "action_add_media",
         onPressed: () async {
-          var data = await context.push("/media/search");
+          MediaEntity? data = await context.push<MediaEntity>("/media/search");
 
           print(data);
         },

@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/module.dart';
@@ -25,4 +26,9 @@ class SettingsModule extends Module {
           ],
         ),
       ];
+
+  @override
+  void register(GetIt locator) {
+    print("register settings module");
+  }
 }

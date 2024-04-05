@@ -20,4 +20,9 @@ pub enum Command {
         #[clap(flatten)]
         database: <DatabaseConfig as ClapSerde>::Opt,
     },
+
+    Ui {
+        #[clap(flatten)]
+        database: <DatabaseConfig as ClapSerde>::Opt,
+    },
 }

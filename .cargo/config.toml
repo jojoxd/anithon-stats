@@ -1,0 +1,5 @@
+[build]
+target-dir = ".cargo/out"
+
+[install]
+install.root = '.cargo/tools'

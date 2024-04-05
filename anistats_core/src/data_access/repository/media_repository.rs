@@ -1,3 +1,4 @@
+use std::ffi::{c_char, CStr};
 use std::sync::Arc;
 
 use diesel::prelude::*;
@@ -41,4 +42,10 @@ impl MediaRepository {
 
             Ok(media_instance)
     }
+}
+
+pub extern "C" fn get_media_by_id(mediaIdPtr: *const c_char) {
+    let mediaId = unsafe { CStr::from_ptr(mediaIdPtr) };
+
+    tracing::info!("Fetching media by using C ABI's");
 }

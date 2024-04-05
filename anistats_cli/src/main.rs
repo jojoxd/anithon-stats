@@ -5,7 +5,7 @@ mod commands;
 use std::path::PathBuf;
 
 use anistats_common::config::{server::ServerConfig, database::DatabaseConfig};
-use anyhow::anyhow;
+use anyhow::{anyhow, Ok};
 use dotenvy::dotenv;
 use clap::Parser;
 
@@ -41,6 +41,12 @@ async fn main() -> anyhow::Result<()> {
             let database_config = parse_database_config(cli.config.clone(), &mut database);
 
             commands::migrate::migrate(database_config).await?;
+
+            Ok(())
+        },
+
+        Some(Command::Ui { mut database }) => {
+            tracing::error!("UI Not implemented yet");
 
             Ok(())
         },

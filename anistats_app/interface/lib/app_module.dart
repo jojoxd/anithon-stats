@@ -1,7 +1,10 @@
+import 'package:anistats_app/logger.dart';
 import 'package:anistats_app/module/media/media_module.dart';
 import 'package:data_access/data_access.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 import 'module/auth/auth_module.dart';
 import 'module/list/list_module.dart';
@@ -15,6 +18,12 @@ class AppModule extends Module {
   final ListModule _listModule = ListModule();
   final MediaModule _mediaModule = MediaModule();
   final SettingsModule _settingsModule = SettingsModule();
+
+  static final Logger logger = Logger(
+    filter: kDebugMode ? null : ProductionFilter(),
+    level: Level.trace,
+    printer: LogfmtWithSourcePrinter(),
+  );
 
   @override
   List<RouteBase> get routes => [
@@ -45,7 +54,9 @@ class AppModule extends Module {
 
   @override
   void register(GetIt locator) {
-    print("register app module");
+    logger.t("register app module");
+
+    locator.registerSingletonAsync<Logger>(() async => logger);
 
     // @TODO: Allow selection of type, currently locked to mocked data
     DataAccessServiceLocator.mock(locator);

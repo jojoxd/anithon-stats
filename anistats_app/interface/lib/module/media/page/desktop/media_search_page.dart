@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anistats_app/shared/layout/page_layout.dart';
 import 'package:data_access/data_access.dart';
 import 'package:flutter/material.dart';
@@ -105,6 +107,8 @@ class _DesktopMediaSearchPageState extends State<DesktopMediaSearchPage> {
 
   void _onSubmitSearch(String value) {
     setState(() {
+      _searchResponse?.ignore();
+
       // Use a little debounce
       _searchResponse = Future.delayed(
         const Duration(milliseconds: 500),

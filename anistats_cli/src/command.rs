@@ -21,6 +21,7 @@ pub enum Command {
         database: <DatabaseConfig as ClapSerde>::Opt,
     },
 
+    #[cfg(feature = "ui")]
     Ui {
         #[clap(flatten)]
         database: <DatabaseConfig as ClapSerde>::Opt,

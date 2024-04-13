@@ -15,8 +15,8 @@ class NetworkListRepository extends ListRepository {
   }
 
   @override
-  Future<ListEntityList> getListsForUser(String userId) async {
-    // @TODO: Add network interface to ListRepository.getListsForUser
+  Future<ListEntityList> getForUser(String userId) async {
+    // @TODO: Add network interface to ListRepository.getForUser
     throw UnimplementedError();
   }
 }

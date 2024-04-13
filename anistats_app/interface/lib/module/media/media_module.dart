@@ -5,6 +5,7 @@ import 'package:anistats_app/shared/widget/layout_helper_widget.dart';
 import 'package:data_access/data_access.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 import 'page/desktop/media_search_page.dart';
 
@@ -48,10 +49,12 @@ class MediaModule extends Module {
     locator.registerSingletonWithDependencies<MediaService>(
       () {
         return MediaService(
+          logger: locator.get<Logger>(),
           mediaRepository: locator.get<MediaRepository>(),
         );
       },
       dependsOn: [
+        Logger,
         MediaRepository,
       ],
     );

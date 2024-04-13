@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 
 typedef MediaEntityList = List<MediaEntity>;
 
-class MediaEntity {
+class MediaEntity with EquatableMixin {
   MediaEntity({
     required this.id,
     required this.anilistId,
@@ -10,6 +11,7 @@ class MediaEntity {
   });
 
   final UuidValue id;
+
   final int anilistId;
 
   // @TODO: Change to translatable
@@ -19,4 +21,7 @@ class MediaEntity {
   String toString() {
     return "MediaEntity '$name' { id = '${id.uuid}', anilistId = '$anilistId' }";
   }
+
+  @override
+  List<Object?> get props => [id];
 }

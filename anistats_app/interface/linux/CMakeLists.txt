@@ -62,19 +62,32 @@ add_definitions(-DAPPLICATION_ID="${APPLICATION_ID}")
 # Any new source files that you add to the application should be added here.
 add_executable(${BINARY_NAME}
   "main.cc"
+)
+
+add_library(anistats_ui SHARED
+  "lib.cc"
   "my_application.cc"
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
+
+target_link_libraries(${BINARY_NAME} PRIVATE anistats_ui)
 
 # Apply the standard set of build settings. This can be removed for applications
 # that need different build settings.
 apply_standard_settings(${BINARY_NAME})
 
 # Add dependency libraries. Add any application-specific dependencies here.
+target_link_libraries(anistats_ui PRIVATE flutter)
+target_link_libraries(anistats_ui PRIVATE PkgConfig::GTK)
+
+set_target_properties(anistats_ui PROPERTIES LINK_FLAGS "-Wl,-rpath,\\$\\ORIGIN/../lib,-zorigin")
+
 target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
 
 # Run the Flutter tool portions of the build. This must not be removed.
+add_dependencies(anistats_ui flutter_assemble)
+
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
 # Only the install-generated bundle's copy of the executable will launch
@@ -109,6 +122,9 @@ set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+install(TARGETS anistats_ui RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"

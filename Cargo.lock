@@ -46,6 +46,7 @@ dependencies = [
  "clap",
  "clap-serde-derive",
  "dotenvy",
+ "libc",
  "tokio",
  "tracing",
  "tracing-subscriber",

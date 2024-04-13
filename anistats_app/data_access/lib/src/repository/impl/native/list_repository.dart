@@ -9,8 +9,8 @@ class NativeListRepository extends ListRepository {
   }
 
   @override
-  Future<ListEntityList> getListsForUser(String userId) async {
-    // @TODO: Add native interface to ListRepository.getListsForUser
+  Future<ListEntityList> getForUser(String userId) async {
+    // @TODO: Add native interface to ListRepository.getForUser
     throw UnimplementedError();
   }
 }

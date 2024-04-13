@@ -45,8 +45,9 @@ async fn main() -> anyhow::Result<()> {
             Ok(())
         },
 
+        #[cfg(feature = "ui")]
         Some(Command::Ui { mut database }) => {
-            tracing::error!("UI Not implemented yet");
+            commands::ui::ui_command()?;
 
             Ok(())
         },

@@ -25,7 +25,7 @@ class _ListOverviewPageState extends State<ListOverviewPage> {
   void initState() {
     super.initState();
 
-    _lists = widget.listService.getListsForUser(
+    _lists = widget.listService.getForUser(
       "018eae9b-1717-7125-aff4-f15def68fab7",
     );
   }

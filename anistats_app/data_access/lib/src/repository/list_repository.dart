@@ -8,18 +8,19 @@ import 'impl/network/list_repository.dart';
 abstract class ListRepository {
   const ListRepository();
 
-  factory ListRepository.network(HttpClient client) {
-    return NetworkListRepository(client);
+  factory ListRepository.mock() {
+    return MockListRepository();
   }
 
   factory ListRepository.native() {
     return NativeListRepository();
   }
 
-  factory ListRepository.mock() {
-    return MockListRepository();
+  factory ListRepository.network(HttpClient client) {
+    return NetworkListRepository(client);
   }
 
   Future<ListEntity?> get(String id);
-  Future<ListEntityList> getListsForUser(String userId);
+
+  Future<ListEntityList> getForUser(String userId);
 }

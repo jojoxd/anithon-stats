@@ -26,7 +26,7 @@ class _DesktopListOverviewPageState extends State<DesktopListOverviewPage> {
     super.initState();
 
     // @TODO: Allow user selection
-    _lists = widget.listService.getListsForUser(
+    _lists = widget.listService.getForUser(
       "018eae9b-1717-7125-aff4-f15def68fab7",
     );
   }

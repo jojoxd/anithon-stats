@@ -3,7 +3,14 @@ name = "anistats_cli"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+build = "build.rs"
+
+[lib]
+name = "anistats_cli"
+crate-type = ["cdylib"]
+
+[features]
+ui = []
 
 [dependencies]
 anyhow = { workspace = true }
@@ -15,3 +22,4 @@ tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
 clap-serde-derive = { workspace = true }
 clap = { workspace = true }
+libc = "0.2.153"

@@ -1,5 +1,7 @@
 import 'package:data_access/data_access.dart';
 
+import '../bloc/list_entity/list_entity_bloc.dart';
+
 class ListService {
   ListService({
     required ListRepository listRepository,
@@ -7,11 +9,22 @@ class ListService {
 
   final ListRepository _listRepository;
 
-  Future<ListEntity?> get(String id) {
-    return _listRepository.get(id);
+  Future<ListEntityBloc?> get(String id) async {
+    // @TODO: Caching + invalidation, LRU? Max timeout?
+
+    ListEntity? listEntity = await _listRepository.get(id);
+
+    if (listEntity == null) {
+      return null;
+    }
+
+    return ListEntityBloc(
+      listEntity: listEntity,
+      listService: this,
+    );
   }
 
-  Future<ListEntityList> getListsForUser(String userId) {
-    return _listRepository.getListsForUser(userId);
+  Future<ListEntityList> getForUser(String userId) {
+    return _listRepository.getForUser(userId);
   }
 }

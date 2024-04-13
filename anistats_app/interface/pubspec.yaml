@@ -18,6 +18,11 @@ dependencies:
 
   flutter:
     sdk: flutter
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.5
+  hydrated_bloc: ^9.1.5
+  replay_bloc: ^0.2.7
+  logger: ^2.2.0
 
 
 dev_dependencies:

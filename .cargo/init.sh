@@ -7,7 +7,7 @@
 SCRIPT_PATH=$(dirname "${BASH_SOURCE[0]}")
 
 # Locally install these tools
-export CARGO_INSTALL_ROOT=".cargo/tools"
+export CARGO_INSTALL_ROOT="${SCRIPT_PATH}/tools"
 
 CRATES=$(
     yq -otsv '.install.dependencies | to_entries | map(.key + "@" + .value.version)' \

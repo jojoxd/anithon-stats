@@ -1,4 +1,7 @@
 import 'package:data_access/src/entity/list_item_entity.dart';
+import 'package:data_access/src/entity/list_item_settings_entity.dart';
+import 'package:data_access/src/entity/list_settings_entity.dart';
+import 'package:data_access/src/enum/list_item_state.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../entity/list_entity.dart';
@@ -18,11 +21,17 @@ class MockListRepository extends ListRepository with MockRepositoryMixin {
       id: UuidValue.fromString(id),
       name: 'List ($id)',
       items: _generateRandomItems(),
+      settings: ListSettingsEntity(
+        allowChunkMerge: true,
+        maxChunkLength: Duration(hours: 2),
+        maxChunkJoinLength: Duration(hours: 2, minutes: 30),
+        stackSize: 3,
+      ),
     );
   }
 
   @override
-  Future<ListEntityList> getListsForUser(String userId) async {
+  Future<ListEntityList> getForUser(String userId) async {
     await simulateNetworkDelay();
 
     return ListEntityList.generate(
@@ -34,6 +43,12 @@ class MockListRepository extends ListRepository with MockRepositoryMixin {
           id: id,
           name: "List (${id.uuid})",
           items: _generateRandomItems(),
+          settings: ListSettingsEntity(
+            allowChunkMerge: true,
+            maxChunkLength: Duration(hours: 2),
+            maxChunkJoinLength: Duration(hours: 2, minutes: 30),
+            stackSize: 3,
+          ),
         );
       },
     );
@@ -44,6 +59,14 @@ class MockListRepository extends ListRepository with MockRepositoryMixin {
       return ListItemEntity(
         id: Uuid().v7obj(),
         mediaId: Uuid().v7obj(),
+        state: ListItemState.planning,
+        settings: ListItemSettingsEntity(
+          durationMultiplier: 1.2,
+          listOrder: index,
+          splitSequelEntry: false,
+          customChunkCount: null,
+          startAtEpisode: null,
+        ),
       );
     });
   }

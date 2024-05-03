@@ -5,10 +5,6 @@ edition = "2021"
 
 build = "build.rs"
 
-[lib]
-name = "anistats_cli"
-crate-type = ["cdylib"]
-
 [features]
 ui = []
 

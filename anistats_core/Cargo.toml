@@ -8,7 +8,7 @@ authors = [
 
 [lib]
 name = "anistats_core"
-crate-type = ["lib", "cdylib"]
+crate-type = ["staticlib"]
 
 [dependencies]
 anyhow = { workspace = true }

@@ -1,3 +1,4 @@
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import '../entity/media_entity.dart';
@@ -12,8 +13,8 @@ abstract class MediaRepository {
     return MockMediaRepository();
   }
 
-  factory MediaRepository.native() {
-    return NativeMediaRepository();
+  factory MediaRepository.native(ffi.DynamicLibrary library) {
+    return NativeMediaRepository(library);
   }
 
   factory MediaRepository.network(HttpClient client) {

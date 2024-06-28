@@ -12,6 +12,7 @@ ui = []
 anyhow = { workspace = true }
 anistats_core = { path = "../anistats_core" }
 anistats_common = { path = "../anistats_common" }
+anistats_server = { path = "../anistats_server" }
 tokio = { workspace = true }
 dotenvy = "0.15.7"
 tracing-subscriber = { workspace = true }

@@ -1,3 +1,4 @@
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
@@ -20,8 +21,13 @@ class DataAccessServiceLocator {
   static void native(GetIt locator) {
     print("register data_access/native");
 
-    locator.registerSingleton<ListRepository>(ListRepository.native());
-    locator.registerSingleton<MediaRepository>(MediaRepository.native());
+    // @TODO: Load from correct (relative) location
+    ffi.DynamicLibrary library = ffi.DynamicLibrary.open(
+      "/home/jojoxd/Development/anistats/.out/lib/libanistats_core_ffi.so",
+    );
+
+    locator.registerSingleton<ListRepository>(ListRepository.native(library));
+    locator.registerSingleton<MediaRepository>(MediaRepository.native(library));
   }
 
   static void network(GetIt locator, HttpClient client) {

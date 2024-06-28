@@ -1,3 +1,3 @@
-# anistats_app
+# anistats_app/interface
 
-A new Flutter project.
+The main entrypoint for the flutter application

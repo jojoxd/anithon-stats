@@ -1,3 +1,4 @@
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import '../entity/list_entity.dart';
@@ -12,8 +13,8 @@ abstract class ListRepository {
     return MockListRepository();
   }
 
-  factory ListRepository.native() {
-    return NativeListRepository();
+  factory ListRepository.native(ffi.DynamicLibrary library) {
+    return NativeListRepository(library);
   }
 
   factory ListRepository.network(HttpClient client) {

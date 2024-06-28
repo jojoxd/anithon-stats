@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package uuid;
-
-message Uuid {
-   string uuid_str = 1;
-}

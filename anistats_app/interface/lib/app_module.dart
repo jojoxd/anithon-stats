@@ -59,7 +59,7 @@ class AppModule extends Module {
     locator.registerSingletonAsync<Logger>(() async => logger);
 
     // @TODO: Allow selection of type, currently locked to mocked data
-    DataAccessServiceLocator.mock(locator);
+    DataAccessServiceLocator.native(locator);
 
     _authModule.register(locator);
     _listModule.register(locator);

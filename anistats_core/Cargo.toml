@@ -8,7 +8,7 @@ authors = [
 
 [lib]
 name = "anistats_core"
-crate-type = ["staticlib"]
+crate-type = ["dylib"]
 
 [dependencies]
 anyhow = { workspace = true }
@@ -16,11 +16,7 @@ diesel = { version = "2.1.5", features = ["postgres", "r2d2", "uuid"] }
 diesel-tracing = { version = "0.2.3", features = ["postgres", "r2d2", "statement-fields"] }
 diesel_migrations = { version = "2.1.0", features = ["postgres"] }
 dotenvy = "0.15.7"
-prost = "0.12.3"
-tonic = { workspace = true }
 serde = { workspace = true }
-proto = { path = "../anistats_proto" }
-tonic-reflection = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
 tower-http = { version = "0.5.2", features = ["tracing"] }

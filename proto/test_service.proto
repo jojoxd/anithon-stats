@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "test.proto";
+
+package test_service;
+
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/grpc/base";
+
+service Test {
+    rpc Hello(test.HelloRequest) returns (test.HelloReply);
+}

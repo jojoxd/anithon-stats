@@ -1,0 +1,52 @@
+{
+    "@@locale": "nl",
+    "@@x-template": "app_en.arb",
+
+    "appTitle": "Anistats",
+    "@appTitle": {
+        "description": "Title of the app"
+    },
+
+    "homeTitle": "Home",
+    "@homeTitle": {},
+
+    "listsTitle": "Lijsten",
+    "@listsTitle": {},
+
+    "activitiesTitle": "Activiteiten",
+    "@activitiesTitle": {},
+
+    "mediaTitle": "Media",
+    "@mediaTitle": {},
+
+    "usersTitle": "Gebruikers",
+    "@usersTitle": {},
+    
+    "login": "Login",
+    "@login": {},
+
+    "settingsTitle": "Instellingen",
+    "@settingsTitle": {},
+
+    "authenticationFailure": "Authenticatie mislukt",
+    "@authenticationFailure": {
+        "context": "snackbar",
+        "description": "Error that is shown when an authentication failure happens"
+    },
+
+    "username": "Gebruikersnaam",
+    "@username": {},
+
+    "password": "Wachtwoord",
+    "@password": {},
+
+    "errorUsernameEmpty": "Gebruikersnaam mag niet leeg zijn",
+    "@errorUsernameEmpty": {
+        "context": "validation"
+    },
+
+    "errorPasswordEmpty": "Wachtwoord mag niet leeg zijn",
+    "@errorPasswordEmpty": {
+        "context": "validation"
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "@@locale": "en",
+
+    "appTitle": "Anistats",
+    "@appTitle": {
+        "description": "Title of the app"
+    },
+
+    "homeTitle": "Home",
+    "@homeTitle": {},
+    
+    "listsTitle": "Lists",
+    "@listsTitle": {},
+
+    "activitiesTitle": "Activities",
+    "@activitiesTitle": {},
+
+    "login": "Login",
+    "@login": {},
+
+    "settingsTitle": "Settings",
+    "@settingsTitle": {},
+
+    "mediaTitle": "Media",
+    "@mediaTitle": {},
+
+    "usersTitle": "Users",
+    "@usersTitle": {},
+
+    "authenticationFailure": "Authentication Failure",
+    "@authenticationFailure": {
+        "context": "snackbar",
+        "description": "Error that is shown when an authentication failure happens"
+    },
+
+    "username": "Username",
+    "@username": {},
+
+    "password": "Password",
+    "@password": {},
+
+    "errorUsernameEmpty": "Username should not be empty",
+    "@errorUsernameEmpty": {
+        "context": "validation"
+    },
+
+    "errorPasswordEmpty": "Password should not be empty",
+    "@errorPasswordEmpty": {
+        "context": "validation"
+    }
+}

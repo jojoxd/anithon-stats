@@ -1,3 +1,4 @@
 .out/
 tools/bin/
 tools/.pub-cache/
+.idea

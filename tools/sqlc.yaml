@@ -1,10 +1,17 @@
 version: "2"
 
+overrides:
+  go:
+    rename:
+      id: Id
+
 sql:
   - engine: postgresql
-    queries: ../db/internal/postgres/sql/*.sql
-    schema:  ../db/internal/postgres/sql/migrations/*.sql
+    queries: ../internal/dbal/postgres/sql/queries/*.sql
+    schema:  ../internal/dbal/postgres/sql/migrations/*.sql
+    database:
+      uri: postgres://anistats-dev:anistats-dev@172.16.4.15:5432/anistats-dev
     gen:
       go:
-        package: gen
-        out:     ../db/internal/postgres/gen
+        package: postgres
+        out:     ../internal/dbal/postgres

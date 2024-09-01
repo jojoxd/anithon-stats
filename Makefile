@@ -1,5 +1,8 @@
 POSTGRES_DSN = "user=anistats-dev password=anistats-dev host=172.16.4.15 database=anistats-dev"
 
+GOOSE = github.com/pressly/goose/v3/cmd/goose@master
+SQLC = github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+
 all: gen-proto app-linux
 
 cli:
@@ -10,25 +13,30 @@ app-%:
 
 gen-proto:
 	$(PROTOC) \
-		--proto_path=./proto \
-		--go_out=. \
+		--proto_path=./api/proto \
+		--go_out=./api/v1 \
 		--go_opt=module=gitlab.jojoxd.nl/jojoxd/anistats \
 		--go-grpc_out=. \
 		--go-grpc_opt=module=gitlab.jojoxd.nl/jojoxd/anistats \
 		--dart_out="generate_kythe_info:./dart/anistats_api/lib/gen" \
 		./proto/*.proto
 
-migration: goose sqlc
+migration:
 	@test -n "$(NAME)" || (echo "Set a NAME for the migration"; exit 1)
-	GOOSE_MIGRATION_DIR=internal/db/postgres/sql/migrations \
-		$(GOOSE) postgres $(POSTGRES_DSN) create $(NAME) sql
+	GOOSE_MIGRATION_DIR=internal/dbal/postgres/sql/migrations \
+		go run $(GOOSE) \
+			postgres $(POSTGRES_DSN) \
+			create $(NAME) sql
 
-migrate: goose
-	GOOSE_MIGRATION_DIR=internal/db/postgres/sql/migrations \
-		$(GOOSE) postgres $(POSTGRES_DSN) up
+migrate:
+	GOOSE_MIGRATION_DIR=internal/dbal/postgres/sql/migrations \
+		go run $(GOOSE) \
+			postgres $(POSTGRES_DSN) \
+			up
 
-codegen-database: sqlc
-	$(SQLC) generate -f tools/sqlc.yaml
+codegen-database:
+	go run $(SQLC) \
+		generate -f tools/sqlc.yaml
 
 # go-get-tool will 'go get' any package $2 and install it to $1.
 PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -63,13 +71,3 @@ protoc:
 	$(call go-get-tool,$(PROTOC_GEN_GO),$(PROTOC_GEN_GO_DEP))
 	$(call go-get-tool,$(PROTOC_GEN_GO_GRPC),$(PROTOC_GEN_GO_GRPC_DEP))
 	PUB_CACHE=tools/.pub-cache dart pub global activate protoc_plugin
-
-SQLC = $(shell pwd)/tools/bin/sqlc
-SQLC_DEP = github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-sqlc:
-	$(call go-get-tool,$(SQLC),$(SQLC_DEP))
-
-GOOSE = $(shell pwd)/tools/bin/goose
-GOOSE_DEP = github.com/pressly/goose/v3/cmd/goose@latest
-goose:
-	$(call go-get-tool,$(GOOSE),$(GOOSE_DEP))

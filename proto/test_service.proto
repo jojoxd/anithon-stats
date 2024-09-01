@@ -4,7 +4,7 @@ import "test.proto";
 
 package test_service;
 
-option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/grpc/base";
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/grpc/repository";
 
 service Test {
     rpc Hello(test.HelloRequest) returns (test.HelloReply);

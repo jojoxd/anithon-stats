@@ -42,9 +42,12 @@ class AppBottomNavigationBar extends StatelessWidget {
 
 extension _AppNavigationDestinationX on AppNavigationDestination {
   BottomNavigationBarItem toItem(BuildContext context) {
+    var theme = Theme.of(context);
+
     return BottomNavigationBarItem(
       icon: icon(context),
       label: label(context),
+      backgroundColor: theme.secondaryHeaderColor,
     );
   }
 }

@@ -104,11 +104,11 @@ SELECT
 FROM
     users u
 WHERE
-    u.name LIKE $1
+    u.name LIKE CONCAT('%', $1::text, '%')
 `
 
-func (q *Queries) SearchUsers(ctx context.Context, name string) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, searchUsers, name)
+func (q *Queries) SearchUsers(ctx context.Context, dollar_1 string) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, searchUsers, dollar_1)
 	if err != nil {
 		return nil, err
 	}

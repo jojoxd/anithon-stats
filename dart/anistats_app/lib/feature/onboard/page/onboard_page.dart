@@ -1,5 +1,10 @@
+import 'package:anistats_app/core/app.dart';
+import 'package:anistats_app/feature/onboard/bloc/onboard_cubit.dart';
 import 'package:anistats_app/feature/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../model/onboard_stage.dart';
 
 // TODO Refactor using bloc/cubit
 class OnboardPage extends StatelessWidget {
@@ -23,7 +28,16 @@ class OnboardPage extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  AuthLoginRoute().go(context);
+                  context.read<OnboardCubit>().advanceState();
+
+                  OnboardRoute().go(context);
+                },
+                child: const Text('Connect to a different server'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // context.read<OnboardCubit>()
+                  //   .advanceState(OnboardStage.login);
                 },
                 child: const Text('Log in'),
               ),

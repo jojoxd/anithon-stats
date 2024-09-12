@@ -47,5 +47,84 @@
     "errorPasswordEmpty": "Password should not be empty",
     "@errorPasswordEmpty": {
         "context": "validation"
-    }
+    },
+
+    "errorQueryEmpty": "Query should not be empty",
+    "@errorQueryEmpty": {
+        "context": "validation"
+    },
+
+    "searchFailure": "Searching failed",
+    "@searchFailure": {
+        "context": "snackbar",
+        "description": "Error that is shown when a search failure happens"
+    },
+
+    "search": "Search",
+    "@search": {},
+
+    "noData": "No results found",
+    "@noData": {
+        "context": "search"
+    },
+
+    "searchInitial": "Try filling something in to search",
+    "@searchInitial": {},
+
+    "port": "Port",
+    "@port": {},
+
+    "errorPortEmpty": "Port should not be empty",
+    "@errorPortEmpty": {
+        "context": "validation"
+    },
+
+    "errorPortInvalid": "Port should be between 0 and 65536",
+    "@errorQueryInvalid": {
+        "context": "validation"
+    },
+
+    "errorPortNotANumber": "Port is not a number",
+    "@errorPortNotANumber": {
+        "context": "validation"
+    },
+
+    "host": "Host",
+    "@host": {},
+
+    "errorHostEmpty": "Host should not be empty",
+    "@errorHostEmpty": {
+        "context": "validation"
+    },
+
+    "errorCannotConnect": "Could not connect",
+    "@errorCannotConnect": {
+        "context": "validation"
+    },
+
+    "transportSettingsSaved": "Transport settings saved",
+    "@transportSettingsSaved": {
+        "context": "snackbar"
+    },
+
+    "insecureConnection": "Insecure connection",
+    "@insecureConnection": {},
+
+    "insecureConnectionDescription": "When enabled, allows connection over HTTP",
+    "@insecureConnectionDescription": {},
+
+    "theme": "Theme",
+    "selectTheme": "Select Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+
+    "transport": "Transport",
+
+    "cancel": "Cancel",
+
+    "locale": "Language",
+    "selectLocale": "Select Language",
+    "localeEN": "English",
+    "localeNL": "Dutch (Nederlands)",
+    "unsupportedLocale": "Unknown Locale"
 }

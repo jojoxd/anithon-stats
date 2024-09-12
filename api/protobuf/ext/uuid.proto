@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package anistats.ext;
+
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/grpc/ext";
+
+message Uuid {
+  string id = 1;
+}

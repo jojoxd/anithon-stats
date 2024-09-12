@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package anistats.ping;
+
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/services/ping/transport/grpc";
+
+message Ping {
+  string clientVersion = 1;
+}
+
+message Pong {
+  string serverVersion = 1;
+}
+
+service PingService {
+  rpc Ping(anistats.ping.Ping) returns (anistats.ping.Pong);
+}

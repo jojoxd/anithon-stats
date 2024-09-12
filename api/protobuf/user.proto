@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package anistats.user;
+
+import "ext/uuid.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/services/user/transport/grpc";
+
+message User {
+  anistats.ext.Uuid         id   = 1;
+  string                    name = 2;
+  google.protobuf.Timestamp joined_at = 3;
+}
+
+service UserService {
+  rpc Profile(anistats.user.UserIdentifier) returns (anistats.user.Profile);
+  rpc Search(anistats.user.SearchRequest) returns (anistats.user.SearchResponse);
+}
+
+message UserIdentifier {
+  anistats.ext.Uuid id = 1;
+}
+
+message Profile {
+  anistats.user.User user = 1;
+}
+
+message Users {
+  repeated anistats.user.User users = 1;
+}
+
+message SearchRequest {
+  string query = 1;
+}
+
+message SearchResponse {
+  Users users = 1;
+}

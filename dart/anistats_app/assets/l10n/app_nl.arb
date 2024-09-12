@@ -48,5 +48,84 @@
     "errorPasswordEmpty": "Wachtwoord mag niet leeg zijn",
     "@errorPasswordEmpty": {
         "context": "validation"
-    }
+    },
+
+    "errorQueryEmpty": "Query mag niet leeg zijn",
+    "@errorQueryEmpty": {
+        "context": "validation"
+    },
+
+    "searchFailure": "Zoeken mislukt",
+    "@searchFailure": {
+        "context": "snackbar",
+        "description": "Error that is shown when a search failure happens"
+    },
+
+    "search": "Zoeken",
+    "@search": {},
+
+    "noData": "Geen resultaten gevonden",
+    "@noData": {
+        "context": "search"
+    },
+
+    "searchInitial": "Vul iets in om te zoeken",
+    "@searchInitial": {},
+
+    "port": "Poort",
+    "@port": {},
+
+    "errorPortEmpty": "Poort mag niet leeg zijn",
+    "@errorPortEmpty": {
+        "context": "validation"
+    },
+
+    "errorPortInvalid": "Poort moet tussen 0 en 65536 liggen",
+    "@errorQueryInvalid": {
+        "context": "validation"
+    },
+
+    "errorPortNotANumber": "Poort moet een getal zijn",
+    "@errorPortNotANumber": {
+        "context": "validation"
+    },
+
+    "host": "Host",
+    "@host": {},
+
+    "errorHostEmpty": "Host mag niet leeg zijn",
+    "@errorHostEmpty": {
+        "context": "validation"
+    },
+
+    "errorCannotConnect": "Kon geen verbinding maken",
+    "@errorCannotConnect": {
+        "context": "validation"
+    },
+
+    "transportSettingsSaved": "Transport instellingen opgeslagen",
+    "@transportSettingsSaved": {
+        "context": "snackbar"
+    },
+
+    "insecureConnection": "Onbeveiligde verbinding",
+    "@insecureConnection": {},
+
+    "insecureConnectionDescription": "De verbinding mag over HTTP verlopen",
+    "@insecureConnectionDescription": {},
+
+    "theme": "Thema",
+    "selectTheme": "Selecteer Thema",
+    "themeLight": "Licht",
+    "themeDark": "Donker",
+
+    "transport": "Verbinding",
+
+    "cancel": "Annuleren",
+
+    "locale": "Taal (Language)",
+    "selectLocale": "Selecteer Taal",
+    "localeEN": "English (Engels)",
+    "localeNL": "Nederlands (Dutch)",
+    "unsupportedLocale": "Unknown Locale"
 }

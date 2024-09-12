@@ -29,6 +29,10 @@ RouteBase get $coreModule => GoRouteData.$route(
           factory: $OnboardRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
+              path: 'step/settings',
+              factory: $OnboardSettingsRouteExtension._fromState,
+            ),
+            GoRouteData.$route(
               path: 'step/create-account',
               factory: $OnboardCreateAccountRouteExtension._fromState,
             ),
@@ -139,6 +143,20 @@ RouteBase get $coreModule => GoRouteData.$route(
                 ),
               ],
             ),
+            StatefulShellBranchData.$branch(
+              routes: [
+                GoRouteData.$route(
+                  path: 'settings',
+                  factory: $SettingsRouteExtension._fromState,
+                  routes: [
+                    GoRouteData.$route(
+                      path: 'transport',
+                      factory: $TransportSettingsRouteExtension._fromState,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
       ],
@@ -200,6 +218,24 @@ extension $OnboardRouteExtension on OnboardRoute {
 
   String get location => GoRouteData.$location(
         '/onboard',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OnboardSettingsRouteExtension on OnboardSettingsRoute {
+  static OnboardSettingsRoute _fromState(GoRouterState state) =>
+      OnboardSettingsRoute();
+
+  String get location => GoRouteData.$location(
+        '/onboard/step/settings',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -527,6 +563,41 @@ extension $UserProfileRouteExtension on UserProfileRoute {
 
   String get location => GoRouteData.$location(
         '/users/${Uri.encodeComponent(userId)}/profile',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $SettingsRouteExtension on SettingsRoute {
+  static SettingsRoute _fromState(GoRouterState state) => SettingsRoute();
+
+  String get location => GoRouteData.$location(
+        '/settings',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $TransportSettingsRouteExtension on TransportSettingsRoute {
+  static TransportSettingsRoute _fromState(GoRouterState state) =>
+      TransportSettingsRoute();
+
+  String get location => GoRouteData.$location(
+        '/settings/transport',
       );
 
   void go(BuildContext context) => context.go(location);

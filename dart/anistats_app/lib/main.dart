@@ -6,14 +6,10 @@ import 'package:path_provider/path_provider.dart';
 
 import 'core/app.dart';
 
+var _logger = Logger("main");
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getApplicationCacheDirectory(),
-  );
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
@@ -23,5 +19,19 @@ Future<void> main() async {
     );
   });
 
+  await initializeHydratedBloc();
+
   runApp(const App());
+}
+
+Future<void> initializeHydratedBloc() async {
+  var storageDirectory = kIsWeb
+      ? HydratedStorage.webStorageDirectory
+      : await getApplicationSupportDirectory();
+
+  _logger.info('Storage path: $storageDirectory');
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: storageDirectory,
+  );
 }

@@ -21,21 +21,24 @@ class ShellScaffold extends StatelessWidget {
             state.status == AuthenticationStatus.authenticated;
 
         return Scaffold(
-          body: Row(
-            children: [
-              if (screenWidth >= 600)
-                AppNavigationRail(
-                  destinations: appNavigationDestinations,
-                  isAuthenticated: isAuthenticated,
-                  extended: screenWidth >= 800,
-                ),
-              if (screenWidth >= 600)
-                const VerticalDivider(
-                  width: 1,
-                  thickness: 1,
-                ),
-              Expanded(child: body),
-            ],
+
+          body: SafeArea(
+            child: Row(
+              children: [
+                if (screenWidth >= 600)
+                  AppNavigationRail(
+                    destinations: appNavigationDestinations,
+                    isAuthenticated: isAuthenticated,
+                    extended: screenWidth >= 800,
+                  ),
+                if (screenWidth >= 600)
+                  const VerticalDivider(
+                    width: 1,
+                    thickness: 1,
+                  ),
+                Expanded(child: body),
+              ],
+            ),
           ),
           bottomNavigationBar: screenWidth < 600
               ? AppBottomNavigationBar(

@@ -1,7 +1,10 @@
-import 'package:anistats_app/core/cubit/theme_cubit.dart';
+import 'package:anistats_app/core/bloc/app_settings_cubit.dart';
 import 'package:anistats_app/core/l10n.dart';
-import 'package:anistats_app/core/theme/app_theme.dart';
+import 'package:anistats_app/core/settings/app_settings.dart';
+import 'package:anistats_app/core/settings/app_theme.dart';
+import 'package:anistats_app/core/transport/widgets/client_channel_provider.dart';
 import 'package:anistats_app/feature/auth/bloc/authentication_bloc.dart';
+import 'package:anistats_app/feature/onboard/bloc/onboard_cubit.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,8 +39,12 @@ class AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authenticationRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(
+            value: _authenticationRepository,
+        ),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -49,10 +56,16 @@ class AppState extends State<App> {
           ),
           BlocProvider(
             lazy: false,
-            create: (_) => ThemeCubit(),
+            create: (_) => AppSettingsCubit()
           ),
+          BlocProvider(
+            lazy: false,
+            create: (_) => OnboardCubit(),
+          )
         ],
-        child: const _AppView(),
+        child: ClientChannelProvider(
+          child: const _AppView(),
+        ),
       ),
     );
   }
@@ -63,17 +76,16 @@ class _AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCubit, AppTheme>(
-      builder: (context, appTheme) {
-        return MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-          onGenerateTitle: (context) => context.l10n.appTitle,
-          theme: appTheme.theme,
-          darkTheme: null,
-        );
-      },
-    );
+    return BlocBuilder<AppSettingsCubit, AppSettings>(builder: (context, appSettings) {
+      return MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: L10n.localizationsDelegates,
+        supportedLocales: L10n.supportedLocales,
+        onGenerateTitle: (context) => context.l10n.appTitle,
+        theme: appSettings.theme.themeData,
+        locale: appSettings.locale,
+        darkTheme: null,
+      );
+    });
   }
 }

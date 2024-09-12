@@ -7,21 +7,22 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"gitlab.jojoxd.nl/jojoxd/anistats/internal/version"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "anistats",
-	Short: "ASDF",
+	Use:     "anistats",
+	Short:   "ASDF",
+	Version: version.BuildVersion(),
 }
 
 func Execute() {
 	initViper()
 
 	err := rootCmd.Execute()
-
 	if err != nil {
 		log.Fatalln(err)
-		os.Exit(1)
 	}
 }
 

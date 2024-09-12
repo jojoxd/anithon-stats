@@ -14,6 +14,7 @@ import 'home/routes.dart';
 import 'list/routes.dart';
 import 'media/routes.dart';
 import 'onboard/routes.dart';
+import 'settings/routes.dart';
 import 'user/routes.dart';
 
 export 'account/routes.dart';
@@ -24,6 +25,7 @@ export 'home/routes.dart';
 export 'list/routes.dart';
 export 'media/routes.dart';
 export 'onboard/routes.dart';
+export 'settings/routes.dart';
 export 'user/routes.dart';
 
 part 'routes.g.dart';
@@ -82,6 +84,11 @@ const shellModule = TypedStatefulShellRoute<ShellModule>(
         usersModule,
       ],
     ),
+    TypedStatefulShellBranch<SettingsModuleBranch>(
+      routes: [
+        settingsModule,
+      ],
+    ),
   ],
 );
 
@@ -89,6 +96,11 @@ class ShellModule extends StatefulShellRouteData {
   const ShellModule();
 
   static final GlobalKey<NavigatorState> $navigatorKey = shellNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    return IsOnboardedGuard()(context, state);
+  }
 
   @override
   Page<void> pageBuilder(
@@ -116,3 +128,5 @@ class ListModuleBranch extends StatefulShellBranchData {}
 class MediaModuleBranch extends StatefulShellBranchData {}
 
 class UserModuleBranch extends StatefulShellBranchData {}
+
+class SettingsModuleBranch extends StatefulShellBranchData {}

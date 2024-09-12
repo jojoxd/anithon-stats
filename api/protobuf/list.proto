@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package anistats.list;
+
+import "ext/uuid.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gitlab.jojoxd.nl/jojoxd/anistats/internal/services/list/transport/grpc";
+
+message MediaCollection {
+  option (google.api.resource) = {
+    type: "anistats.jojoxd.nl/MediaCollection"
+    pattern: "media_collections/{media_collection}"
+    singular: "media_collection"
+    plural: "media_collections"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  string owner = 2 [(google.api.resource_reference) = {
+    type: "anistats.jojoxd.nl/User"
+  }];
+}
+
+message ListMediaCollectionRequest {
+  string parent = 1 [(google.api.resource_reference) = {
+    type: "anistats.jojoxd.nl/User"
+  }];
+
+  // page_size, page_token, filter, etc.
+}

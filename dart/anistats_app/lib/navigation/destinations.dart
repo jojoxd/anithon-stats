@@ -1,10 +1,7 @@
-import 'package:anistats_app/core/cubit/theme_cubit.dart';
 import 'package:anistats_app/core/l10n.dart';
-import 'package:anistats_app/core/theme/app_theme.dart';
 import 'package:anistats_app/feature/auth/bloc/authentication_bloc.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import '../feature/routes.dart';
@@ -110,10 +107,6 @@ final _settingsDestination = AppNavigationDestination(
     return bloc.state.status == AuthenticationStatus.authenticated;
   },
   go: (context) {
-    // TODO Add Settings
-    Logger('TODO').info('TODO: Add Settings');
-
-    var cubit = Provider.of<ThemeCubit>(context, listen: false);
-    cubit.setTheme(AppTheme.dark);
+    SettingsRoute().go(context);
   },
 );

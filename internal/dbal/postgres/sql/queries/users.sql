@@ -18,7 +18,7 @@ SELECT
 FROM
     users u
 WHERE
-    u.name LIKE $1
+    u.name LIKE CONCAT('%', $1::text, '%')
 ;
 
 -- name: CreateUser :execresult

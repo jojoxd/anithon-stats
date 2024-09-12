@@ -1,4 +1,5 @@
 .out/
 tools/bin/
 tools/.pub-cache/
+tools/protoc/
 .idea

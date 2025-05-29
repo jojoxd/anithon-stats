@@ -4,12 +4,10 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/oligo/gioview/theme"
-
 	"gioui.org/layout"
 )
 
-type Widget func(gtx layout.Context, th *theme.Theme) layout.Dimensions
+type Widget func(gtx layout.Context) layout.Dimensions
 
 type BaseView struct {
 	location *url.URL
@@ -51,7 +49,7 @@ func (base *BaseView) Location() url.URL {
 	return *base.location
 }
 
-func (base *BaseView) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+func (base *BaseView) Layout(ctx context.Context) layout.Dimensions {
 	return layout.Dimensions{}
 }
 
@@ -76,10 +74,10 @@ func (sv *SimpleView) Location() url.URL {
 	return *sv.BaseView.location
 }
 
-func (sv *SimpleView) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+func (sv *SimpleView) Layout(ctx context.Context) layout.Dimensions {
 	gtx := GtxFromContext(ctx)
 
-	return sv.w(gtx, th)
+	return sv.w(gtx)
 }
 
 func Simple(id Route, title string, w Widget, intentHandler func(intent Intent) error) RouteView {
@@ -91,7 +89,9 @@ func Simple(id Route, title string, w Widget, intentHandler func(intent Intent) 
 	}
 }
 
-func (v EmptyView) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (v EmptyView) Layout(ctx context.Context) layout.Dimensions {
+	gtx := GtxFromContext(ctx)
+
 	return layout.Dimensions{Size: gtx.Constraints.Max}
 }
 

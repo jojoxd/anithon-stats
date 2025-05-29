@@ -1,27 +1,41 @@
 package core_impl
 
 import (
+	"context"
+
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/op"
-	"github.com/oligo/gioview/theme"
+	"gioui.org/widget/material"
 
+	"anistats/internal/app/core"
 	"anistats/internal/app/core_impl/views"
+	"anistats/internal/app/res"
 	"anistats/internal/config"
 )
 
 type Application struct {
-	window   *app.Window
-	theme    *theme.Theme
-	rootView *views.Root
+	window           *app.Window
+	theme            *material.Theme
+	rootView         *views.Root
+	localizerManager *localizerManager
 }
 
 func NewApplication(cfg *config.App, window *app.Window) *Application {
-	th := theme.NewTheme("fonts", nil, false)
+	bundles, err := res.GetLangBundles()
+	if err != nil {
+		panic(err)
+	}
+
+	localizerManager, err := newLocalizerManager(bundles, res.LangEnglish)
+	if err != nil {
+		panic(err)
+	}
 
 	return &Application{
-		window: window,
-		theme:  th,
+		window:           window,
+		theme:            material.NewTheme(),
+		localizerManager: localizerManager,
 	}
 }
 
@@ -43,9 +57,23 @@ func (a *Application) Loop() error {
 }
 
 func (a *Application) layout(gtx layout.Context) layout.Dimensions {
+	ctx := newAppContext(context.TODO(), a)
+
 	if a.rootView == nil {
 		a.rootView = views.NewRoot(a.window)
 	}
 
-	return a.rootView.Layout(gtx, a.theme)
+	return a.rootView.Layout(ctx, gtx)
+}
+
+func (a *Application) Localizer() core.Localizer {
+	return a.localizerManager.Localizer()
+}
+
+func (a *Application) Theme() *material.Theme {
+	return a.theme
+}
+
+func newAppContext(ctx context.Context, app *Application) context.Context {
+	return context.WithValue(ctx, core.AppContextKey, app)
 }

@@ -9,10 +9,10 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/widget/material"
-	"github.com/oligo/gioview/theme"
 	"golang.org/x/text/language"
 
 	v1 "anistats/api/v1"
+	"anistats/internal/app/core"
 	"anistats/internal/app/core/widget"
 	"anistats/pkg/gio_router"
 )
@@ -39,18 +39,22 @@ func NewMedia() gio_router.RouteView {
 	return m
 }
 
-func (m *Media) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+func (m *Media) Layout(ctx context.Context) layout.Dimensions {
+	return m.loader.Layout(ctx)
+}
+
+func (m *Media) layoutLoading(ctx context.Context) layout.Dimensions {
 	gtx := gio_router.GtxFromContext(ctx)
+	theme := core.ThemeFromContext(ctx)
 
-	return m.loader.Layout(gtx, th)
+	return material.H1(theme, "Loading").Layout(gtx)
 }
 
-func (m *Media) layoutLoading(gtx layout.Context, th *theme.Theme) layout.Dimensions {
-	return material.H1(th.Theme, "Loading").Layout(gtx)
-}
+func (m *Media) layoutLoaded(ctx context.Context, media v1.Media) layout.Dimensions {
+	gtx := gio_router.GtxFromContext(ctx)
+	theme := core.ThemeFromContext(ctx)
 
-func (m *Media) layoutLoaded(gtx layout.Context, th *theme.Theme, media v1.Media) layout.Dimensions {
-	return material.H1(th.Theme, fmt.Sprintf("Media %+v", media)).Layout(gtx)
+	return material.H1(theme, fmt.Sprintf("Media %+v", media)).Layout(gtx)
 }
 
 func (m *Media) OnIntent(intent gio_router.Intent) error {
@@ -92,7 +96,7 @@ func (t Test) GetDisplayName() v1.Translatable {
 type TestT struct{}
 
 func (t TestT) ForLanguage(lang language.Tag) string {
-	return "Media"
+	return "Media Hello"
 }
 
 func loadMedia(mediaId v1.MediaId) (v1.Media, error) {

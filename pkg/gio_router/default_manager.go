@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"slices"
 	"sync"
 
 	"gioui.org/app"
 	"gioui.org/layout"
+
+	"anistats/pkg/gio_router/external"
 )
 
 var _ Manager = (*defaultManager)(nil)
@@ -23,6 +24,20 @@ type defaultManager struct {
 	// title of the window
 	currentTitle  string
 	dispatchMutex sync.Mutex
+	logger        external.Logger
+}
+
+func NewManager(window *app.Window, logger external.Logger) Manager {
+	if logger == nil {
+		logger = external.NewNilLogger()
+	}
+
+	logger = external.NewPrefixLogger("gio_router", logger)
+
+	return &defaultManager{
+		window: window,
+		logger: logger,
+	}
 }
 
 func (vm *defaultManager) CurrentView() RouteView {
@@ -62,7 +77,8 @@ func (vm *defaultManager) Register(Id Route, provider RouteProvider) error {
 	}
 
 	vm.routeProviders[Id] = provider
-	log.Println("registered view: ", Id)
+	vm.logger.Info(fmt.Sprintf("registered view %s", Id))
+
 	return nil
 }
 
@@ -99,9 +115,10 @@ func (vm *defaultManager) RequestSwitch(intent Intent) error {
 	// Even if using an empty intent, vm refreshes the window.
 	defer vm.window.Invalidate()
 
-	if intent.Target == (Route{}) {
+	if intent.Target == NilRoute {
 		return nil
 	}
+
 	provider, ok := vm.routeProviders[intent.Target]
 	if !ok {
 		return fmt.Errorf("no target view found: %v", intent.Target)
@@ -128,7 +145,7 @@ func (vm *defaultManager) RequestSwitch(intent Intent) error {
 	}
 
 	location := intent.Location()
-	log.Printf("switching to %s", location.String())
+	vm.logger.Info(fmt.Sprintf("switching to %s", location.String()))
 	return nil
 }
 
@@ -232,8 +249,4 @@ func (vm *defaultManager) Reset() {
 
 func (vm *defaultManager) Context(ctx context.Context, gtx layout.Context) context.Context {
 	return newContext(vm, &gtx, ctx)
-}
-
-func NewManager(window *app.Window) Manager {
-	return &defaultManager{window: window}
 }

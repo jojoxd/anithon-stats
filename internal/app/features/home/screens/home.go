@@ -7,8 +7,8 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/widget/material"
-	"github.com/oligo/gioview/theme"
 
+	"anistats/internal/app/core"
 	"anistats/pkg/gio_router"
 )
 
@@ -20,10 +20,11 @@ func NewHome() gio_router.RouteView {
 	return Home{}
 }
 
-func (h Home) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+func (h Home) Layout(ctx context.Context) layout.Dimensions {
 	gtx := gio_router.GtxFromContext(ctx)
+	theme := core.ThemeFromContext(ctx)
 
-	return material.H1(th.Theme, "Home").Layout(gtx)
+	return material.H1(theme, "Home").Layout(gtx)
 }
 
 func (h Home) OnIntent(intent gio_router.Intent) error {

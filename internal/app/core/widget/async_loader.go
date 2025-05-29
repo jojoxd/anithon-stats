@@ -1,16 +1,18 @@
 package widget
 
 import (
+	"context"
 	"fmt"
 
 	"gioui.org/layout"
 	"gioui.org/op"
-	"github.com/oligo/gioview/theme"
+
+	"anistats/pkg/gio_router"
 )
 
 type AsyncLoaderConfig[T, D any] struct {
-	Loading func(gtx layout.Context, th *theme.Theme) layout.Dimensions
-	Loaded  func(gtx layout.Context, th *theme.Theme, data T) layout.Dimensions
+	Loading func(ctx context.Context) layout.Dimensions
+	Loaded  func(ctx context.Context, data T) layout.Dimensions
 	Load    func(ctx D) (T, error)
 }
 
@@ -26,15 +28,16 @@ func NewAsyncLoader[T, D any](cfg AsyncLoaderConfig[T, D]) AsyncLoader[T, D] {
 	return AsyncLoader[T, D]{cfg: cfg}
 }
 
-func (ldr *AsyncLoader[T, D]) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (ldr *AsyncLoader[T, D]) Layout(ctx context.Context) layout.Dimensions {
+	gtx := gio_router.GtxFromContext(ctx)
+
 	if ldr.loading {
-		fmt.Printf("invalidated\n")
 		gtx.Execute(op.InvalidateCmd{})
 
-		return ldr.cfg.Loading(gtx, th)
+		return ldr.cfg.Loading(ctx)
 	}
 
-	return ldr.cfg.Loaded(gtx, th, ldr.data)
+	return ldr.cfg.Loaded(ctx, ldr.data)
 }
 
 func (ldr *AsyncLoader[T, D]) Load(d D) {

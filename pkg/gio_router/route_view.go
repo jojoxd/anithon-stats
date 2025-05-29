@@ -5,12 +5,11 @@ import (
 	"net/url"
 
 	"gioui.org/layout"
-	"github.com/oligo/gioview/theme"
 )
 
 type RouteView interface {
 	Id() Route
-	Layout(ctx context.Context, th *theme.Theme) layout.Dimensions
+	Layout(ctx context.Context) layout.Dimensions
 	OnIntent(intent Intent) error
 	Location() url.URL
 }

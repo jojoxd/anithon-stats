@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"gioui.org/layout"
-	"github.com/oligo/gioview/theme"
 
 	"anistats/pkg/gio_router"
 )
@@ -18,7 +17,7 @@ func NewOverview() gio_router.RouteView {
 	return Overview{}
 }
 
-func (o Overview) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+func (o Overview) Layout(ctx context.Context) layout.Dimensions {
 	// TODO implement me
 	panic("implement me")
 }

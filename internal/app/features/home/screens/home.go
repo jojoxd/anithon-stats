@@ -1,6 +1,7 @@
 package screens
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 
@@ -19,7 +20,9 @@ func NewHome() gio_router.RouteView {
 	return Home{}
 }
 
-func (h Home) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (h Home) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+	gtx := gio_router.GtxFromContext(ctx)
+
 	return material.H1(th.Theme, "Home").Layout(gtx)
 }
 

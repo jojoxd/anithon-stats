@@ -1,6 +1,7 @@
 package screens
 
 import (
+	"context"
 	"net/url"
 
 	"gioui.org/layout"
@@ -17,7 +18,7 @@ func NewOverview() gio_router.RouteView {
 	return Overview{}
 }
 
-func (o Overview) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (o Overview) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
 	// TODO implement me
 	panic("implement me")
 }

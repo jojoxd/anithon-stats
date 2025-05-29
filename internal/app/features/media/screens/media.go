@@ -1,6 +1,7 @@
 package screens
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -38,7 +39,9 @@ func NewMedia() gio_router.RouteView {
 	return m
 }
 
-func (m *Media) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (m *Media) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+	gtx := gio_router.GtxFromContext(ctx)
+
 	return m.loader.Layout(gtx, th)
 }
 

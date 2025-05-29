@@ -1,6 +1,7 @@
 package gio_router
 
 import (
+	"context"
 	"net/url"
 
 	"github.com/oligo/gioview/theme"
@@ -50,7 +51,7 @@ func (base *BaseView) Location() url.URL {
 	return *base.location
 }
 
-func (base *BaseView) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (base *BaseView) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
 	return layout.Dimensions{}
 }
 
@@ -75,7 +76,9 @@ func (sv *SimpleView) Location() url.URL {
 	return *sv.BaseView.location
 }
 
-func (sv *SimpleView) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+func (sv *SimpleView) Layout(ctx context.Context, th *theme.Theme) layout.Dimensions {
+	gtx := GtxFromContext(ctx)
+
 	return sv.w(gtx, th)
 }
 

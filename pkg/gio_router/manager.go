@@ -1,8 +1,11 @@
 package gio_router
 
 import (
+	"context"
 	"fmt"
 	"net/url"
+
+	"gioui.org/layout"
 )
 
 // Manager is the core of gio_router. It can be used to:
@@ -54,6 +57,9 @@ type Manager interface {
 
 	// Reset resets internal states of the Manager
 	Reset()
+
+	// Context generates a managerContext
+	Context(ctx context.Context, gtx layout.Context) context.Context
 }
 
 func buildURL(target Route, params RouteParams) url.URL {

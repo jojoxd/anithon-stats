@@ -1,6 +1,7 @@
 package views
 
 import (
+	"context"
 	"time"
 
 	"gioui.org/app"
@@ -35,6 +36,8 @@ func NewRoot(window *app.Window) *Root {
 }
 
 func (r Root) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
+	ctx := context.TODO()
+
 	return layout.Flex{}.Layout(gtx,
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 			currentView := r.vm.CurrentView()
@@ -42,7 +45,7 @@ func (r Root) Layout(gtx layout.Context, th *theme.Theme) layout.Dimensions {
 				return material.H1(th.Theme, "No RouteView").Layout(gtx)
 			}
 
-			return currentView.Layout(gtx, th)
+			return currentView.Layout(r.vm.Context(ctx, gtx), th)
 		}),
 	)
 }

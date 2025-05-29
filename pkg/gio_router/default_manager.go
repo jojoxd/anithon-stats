@@ -1,6 +1,7 @@
 package gio_router
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"sync"
 
 	"gioui.org/app"
+	"gioui.org/layout"
 )
 
 var _ Manager = (*defaultManager)(nil)
@@ -31,9 +33,8 @@ func (vm *defaultManager) CurrentView() RouteView {
 	stack := vm.stacks[vm.currentTabIdx]
 	vw := stack.Peek()
 
-	t, ok := vw.(RouteViewTitler)
-	if ok && vm.currentTitle != t.Title() {
-		vm.currentTitle = t.Title()
+	if newTitle, ok := titleRouteView(vw); ok {
+		vm.currentTitle = newTitle
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
 
@@ -227,6 +228,10 @@ func (vm *defaultManager) Reset() {
 	vm.currentTabIdx = 0
 	vm.stacks = vm.stacks[:0]
 	vm.Invalidate()
+}
+
+func (vm *defaultManager) Context(ctx context.Context, gtx layout.Context) context.Context {
+	return newContext(vm, &gtx, ctx)
 }
 
 func NewManager(window *app.Window) Manager {

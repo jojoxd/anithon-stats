@@ -3,7 +3,6 @@ package gio_router
 import (
 	"errors"
 	"fmt"
-	"iter"
 	"log"
 	"net/url"
 	"slices"
@@ -12,22 +11,19 @@ import (
 	"gioui.org/app"
 )
 
-var _ ViewManager = (*defaultViewManager)(nil)
+var _ Manager = (*defaultManager)(nil)
 
-type defaultViewManager struct {
-	window *app.Window
-	stacks []*ViewStack
-	// views which are to be shown as modal.
-	modalStack    *ViewStack
-	currentTabIdx int
-	views         map[ViewID]ViewProvider
-
+type defaultManager struct {
+	window         *app.Window
+	stacks         []*ViewStack
+	currentTabIdx  int
+	routeProviders map[Route]RouteProvider
 	// title of the window
-	currentTitle string
-	mu           sync.Mutex
+	currentTitle  string
+	dispatchMutex sync.Mutex
 }
 
-func (vm *defaultViewManager) CurrentView() View {
+func (vm *defaultManager) CurrentView() RouteView {
 	if len(vm.stacks) <= 0 {
 		return nil
 	}
@@ -35,78 +31,41 @@ func (vm *defaultViewManager) CurrentView() View {
 	stack := vm.stacks[vm.currentTabIdx]
 	vw := stack.Peek()
 
-	if vm.currentTitle != vw.Title() {
-		vm.currentTitle = vw.Title()
+	t, ok := vw.(RouteViewTitler)
+	if ok && vm.currentTitle != t.Title() {
+		vm.currentTitle = t.Title()
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
+
 	return vw
 }
 
-// Deprecated: use ModalViews method instead as ViewManager now
-// handles multiple stacked modals.
-func (vm *defaultViewManager) NextModalView() *ModalView {
-	if vm.modalStack == nil {
-		return nil
-	}
-	vw := vm.modalStack.Peek()
-	if vw == nil {
-		return nil
-	}
-
-	return &ModalView{View: vw}
-
-}
-
-func (vm *defaultViewManager) ModalViews() iter.Seq[*ModalView] {
-	return func(yield func(*ModalView) bool) {
-		if vm.modalStack == nil {
-			return
-		}
-
-		viewIter := vm.modalStack.All(true)
-
-		for vw := range viewIter {
-			if !yield(vw.(*ModalView)) {
-				return
-			}
-		}
-	}
-
-}
-
-func (vm *defaultViewManager) FinishModalView() {
-	vm.modalStack.Pop()
-}
-
-func (vm *defaultViewManager) CurrentViewIndex() int {
+func (vm *defaultManager) CurrentViewIndex() int {
 	return vm.currentTabIdx
 }
 
-// func (vm *defaultViewManager) Register(vw View) error {
-// 	return vm.RegisterWithProvider(Provide(vw))
-// }
+func (vm *defaultManager) Register(Id Route, provider RouteProvider) error {
+	vm.dispatchMutex.Lock()
+	defer vm.dispatchMutex.Unlock()
 
-func (vm *defaultViewManager) Register(ID ViewID, provider ViewProvider) error {
-	vm.mu.Lock()
-	defer vm.mu.Unlock()
-
-	if ID == (ViewID{}) {
-		return errors.New("cannot register empty view ID")
+	if Id == NilRoute {
+		return errors.New("cannot register empty view Id")
 	}
 
 	if provider == nil {
 		return errors.New("view provider is nil")
 	}
 
-	if vm.views == nil {
-		vm.views = make(map[ViewID]ViewProvider)
+	if vm.routeProviders == nil {
+		vm.routeProviders = make(map[Route]RouteProvider)
 	}
-	vm.views[ID] = provider
-	log.Println("registered view: ", ID)
+
+	vm.routeProviders[Id] = provider
+	log.Println("registered view: ", Id)
 	return nil
 }
 
-func (vm *defaultViewManager) NavBack() View {
+func (vm *defaultManager) NavBack() RouteView {
 	if len(vm.stacks) <= 0 {
 		return nil
 	}
@@ -118,11 +77,12 @@ func (vm *defaultViewManager) NavBack() View {
 	}
 
 	vw := stack.Pop()
-	vw.OnFinish()
+	finishRouteView(vw)
+
 	return stack.Peek()
 }
 
-func (vm *defaultViewManager) HasPrev() bool {
+func (vm *defaultManager) HasPrev() bool {
 	if len(vm.stacks) <= 0 {
 		return false
 	}
@@ -130,23 +90,23 @@ func (vm *defaultViewManager) HasPrev() bool {
 	return stack.Depth() > 1
 }
 
-func (vm *defaultViewManager) RequestSwitch(intent Intent) error {
+func (vm *defaultManager) RequestSwitch(intent Intent) error {
 	// use mutex to guard the dispatching
-	vm.mu.Lock()
-	defer vm.mu.Unlock()
+	vm.dispatchMutex.Lock()
+	defer vm.dispatchMutex.Unlock()
 
-	// Even if using a empty intent, vm refreshes the window.
+	// Even if using an empty intent, vm refreshes the window.
 	defer vm.window.Invalidate()
 
-	if intent.Target == (ViewID{}) {
+	if intent.Target == (Route{}) {
 		return nil
 	}
-	provider, ok := vm.views[intent.Target]
+	provider, ok := vm.routeProviders[intent.Target]
 	if !ok {
 		return fmt.Errorf("no target view found: %v", intent.Target)
 	}
 
-	var targetView View
+	var targetView RouteView
 	stack := vm.route(&intent)
 
 	// get target view
@@ -154,16 +114,13 @@ func (vm *defaultViewManager) RequestSwitch(intent Intent) error {
 		targetView = topVw
 	} else {
 		targetView = provider()
-		if intent.ShowAsModal {
-			targetView = &ModalView{View: targetView}
-		}
 		err := stack.Push(targetView)
 		if err != nil {
 			return fmt.Errorf("push to viewstack error: %w", err)
 		}
 	}
 
-	err := targetView.OnNavTo(intent)
+	err := targetView.OnIntent(intent)
 	if err != nil {
 		stack.Pop()
 		return fmt.Errorf("error handling intent: %w", err)
@@ -174,9 +131,8 @@ func (vm *defaultViewManager) RequestSwitch(intent Intent) error {
 	return nil
 }
 
-// route the intent to the proper viewstack/tab by intent.URL(). Note that this
-// method does not handle modal intent routing.
-func (vm *defaultViewManager) routeView(intent *Intent) *ViewStack {
+// routeView routes the intent to the proper viewstack/tab by intent.URL()
+func (vm *defaultManager) routeView(intent *Intent) *ViewStack {
 	if len(vm.stacks) <= vm.currentTabIdx {
 		// try to fix the illegal state
 		stack := NewViewStack()
@@ -210,7 +166,7 @@ func (vm *defaultViewManager) routeView(intent *Intent) *ViewStack {
 
 	// then try to match the viewID:
 	for idx, s := range vm.stacks {
-		if intent.Target == s.Peek().ID() {
+		if intent.Target == s.Peek().Id() {
 			vm.currentTabIdx = idx
 			return s
 		}
@@ -224,20 +180,13 @@ func (vm *defaultViewManager) routeView(intent *Intent) *ViewStack {
 	return stack
 }
 
-// route the intent to the proper viewstack/tab or to the modal stack.
-func (vm *defaultViewManager) route(intent *Intent) *ViewStack {
-	if intent.ShowAsModal {
-		if vm.modalStack == nil {
-			vm.modalStack = NewViewStack()
-		}
-		return vm.modalStack
-	}
-
+// route the intent to the proper viewstack/tab
+func (vm *defaultManager) route(intent *Intent) *ViewStack {
 	return vm.routeView(intent)
 }
 
-func (vm *defaultViewManager) OpenedViews() []View {
-	views := make([]View, len(vm.stacks))
+func (vm *defaultManager) OpenedViews() []RouteView {
+	views := make([]RouteView, len(vm.stacks))
 	for idx, stack := range vm.stacks {
 		views[idx] = stack.Peek()
 	}
@@ -245,7 +194,7 @@ func (vm *defaultViewManager) OpenedViews() []View {
 	return views
 }
 
-func (vm *defaultViewManager) CloseTab(idx int) {
+func (vm *defaultManager) CloseTab(idx int) {
 	if idx < 0 || idx >= len(vm.stacks) {
 		return
 	}
@@ -258,7 +207,7 @@ func (vm *defaultViewManager) CloseTab(idx int) {
 	}
 }
 
-func (vm *defaultViewManager) SwitchTab(idx int) {
+func (vm *defaultManager) SwitchTab(idx int) {
 	if idx >= len(vm.stacks) || idx < 0 {
 		return
 	}
@@ -266,14 +215,11 @@ func (vm *defaultViewManager) SwitchTab(idx int) {
 	vm.currentTabIdx = idx
 }
 
-func (vm *defaultViewManager) Invalidate() {
+func (vm *defaultManager) Invalidate() {
 	vm.window.Invalidate()
 }
 
-func (vm *defaultViewManager) Reset() {
-	if vm.modalStack != nil {
-		vm.modalStack.Clear()
-	}
+func (vm *defaultManager) Reset() {
 	for _, stack := range vm.stacks {
 		stack.Clear()
 	}
@@ -283,8 +229,6 @@ func (vm *defaultViewManager) Reset() {
 	vm.Invalidate()
 }
 
-func DefaultViewManager(window *app.Window) ViewManager {
-	return &defaultViewManager{
-		window: window,
-	}
+func NewManager(window *app.Window) Manager {
+	return &defaultManager{window: window}
 }

@@ -10,16 +10,16 @@ type ViewStack struct {
 	viewList *list.List
 }
 
-func (vs *ViewStack) Pop() View {
+func (vs *ViewStack) Pop() RouteView {
 	head := vs.viewList.Front()
 	if head == nil {
 		return nil
 	}
 
-	return vs.viewList.Remove(head).(View)
+	return vs.viewList.Remove(head).(RouteView)
 }
 
-func (vs *ViewStack) Peek() View {
+func (vs *ViewStack) Peek() RouteView {
 	if vs.viewList == nil || vs.viewList.Len() <= 0 {
 		return nil
 	}
@@ -28,11 +28,11 @@ func (vs *ViewStack) Peek() View {
 		return nil
 	}
 
-	return vs.viewList.Front().Value.(View)
+	return vs.viewList.Front().Value.(RouteView)
 }
 
 // push a new view to the stack and removes duplicates instance of the same view.
-func (vs *ViewStack) Push(vw View) error {
+func (vs *ViewStack) Push(vw RouteView) error {
 	if vs.viewList == nil {
 		vs.viewList = list.New()
 		vs.viewList.Init()
@@ -40,7 +40,7 @@ func (vs *ViewStack) Push(vw View) error {
 
 	// v := vs.viewList.Front()
 	// for v != nil {
-	// 	if existing := v.Value.(View); existing.ID() == vw.ID() {
+	// 	if existing := v.Value.(RouteView); existing.Id() == vw.Id() {
 	// 		vs.viewList.Remove(v)
 	// 	}
 	// 	v = v.Next()
@@ -61,10 +61,10 @@ func (vs *ViewStack) Depth() int {
 	return vs.viewList.Len()
 }
 
-// All returns a iterator that iterates through the stack of views from back to front,
+// All returns a iterator that iterates through the stack of routeProviders from back to front,
 // or from front to back.
-func (vs *ViewStack) All(backward bool) iter.Seq[View] {
-	return func(yield func(View) bool) {
+func (vs *ViewStack) All(backward bool) iter.Seq[RouteView] {
+	return func(yield func(RouteView) bool) {
 		if vs.viewList == nil || vs.viewList.Len() <= 0 {
 			return
 		}
@@ -76,7 +76,7 @@ func (vs *ViewStack) All(backward bool) iter.Seq[View] {
 			v = vs.viewList.Front()
 		}
 		for v != nil {
-			if !yield(v.Value.(View)) {
+			if !yield(v.Value.(RouteView)) {
 				return
 			}
 
@@ -96,8 +96,9 @@ func (vs *ViewStack) Clear() {
 
 	v := vs.viewList.Front()
 	for v != nil {
-		val := v.Value.(View)
-		val.OnFinish()
+		val := v.Value.(RouteView)
+
+		finishRouteView(val)
 		v = v.Next()
 	}
 
@@ -105,5 +106,7 @@ func (vs *ViewStack) Clear() {
 }
 
 func NewViewStack() *ViewStack {
-	return &ViewStack{}
+	return &ViewStack{
+		viewList: &list.List{},
+	}
 }

@@ -15,6 +15,7 @@ type AppContext interface {
 	Config() *config.App
 	Window() *gioApp.Window
 
+	BreakPoints() Breakpoints
 	I18n() Localizer
 	MediaLocalizer() MediaLocalizer
 	SetLocale(lang language.Tag) error

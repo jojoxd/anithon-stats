@@ -1,0 +1,60 @@
+start
+splash
+
+start -> splash
+
+bootstrap {
+    local
+    remote
+
+    connection
+    login
+    new-user
+
+    remote -> connection
+    connection -> login
+    connection -> new-user
+}
+
+splash -> bootstrap
+
+link-anilist
+bootstrap.login -> link-anilist
+bootstrap.new-user -> link-anilist
+bootstrap.local -> link-anilist
+
+link-anilist -> onboard
+onboard -> home
+
+home
+
+home -> user-lists: \"My Lists\"
+home -> user-search
+user-search -> user-lists
+
+user-lists -> user-list.overview
+
+user-list {
+    overview
+    edit
+    copy
+
+    overview -> edit: Own list only
+    overview -> copy
+    overview -> player: Own list only
+
+    edit <-> search-media
+}
+
+user-list.overview -> media.overview: Select Media
+user-list.search-media -- media.search
+
+media {
+    overview
+    search
+}
+
+user {
+    overview
+    lists
+}

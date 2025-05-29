@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	gioApp "gioui.org/app"
 	"gioui.org/layout"
@@ -12,6 +13,7 @@ import (
 
 	"anistats/internal/app/core"
 	"anistats/internal/app/core_impl"
+	"anistats/internal/app/core_impl/screen"
 	"anistats/internal/app/feature/bootstrap"
 	"anistats/internal/config"
 	"anistats/pkg/gio_router"
@@ -20,7 +22,14 @@ import (
 func Main(cfg *config.App) {
 	theme := material.NewTheme()
 
+	gs := globalState{Initialized: false}
+	splash := screen.NewSplash(theme)
+
 	root := func(gtx layout.Context, app core.AppContext) layout.Dimensions {
+		if !gs.Initialized {
+			return splash.Layout(gtx)
+		}
+
 		rv := gio_router.NewView(app.Router())
 
 		return rv.Layout(gtx)
@@ -30,6 +39,14 @@ func Main(cfg *config.App) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go func() {
+		time.Sleep(5 * time.Second)
+
+		gs.Initialized = true
+		app.Router().Replace(bootstrap.Bootstrap())
+		app.Window().Invalidate()
+	}()
 
 	app.Router().Push(bootstrap.Bootstrap())
 
@@ -48,4 +65,8 @@ func Main(cfg *config.App) {
 	}()
 
 	gioApp.Main()
+}
+
+type globalState struct {
+	Initialized bool
 }

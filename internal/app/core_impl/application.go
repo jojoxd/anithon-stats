@@ -24,6 +24,7 @@ type Application struct {
 	widget         core.Widget
 	i18n           *localizerManager
 	mediaLocalizer *mediaLocalizer
+	breakpoints    *breakpoints
 }
 
 func NewApplication(config *config.App, materialTheme *gioMaterial.Theme, widget core.Widget) (*Application, error) {
@@ -39,6 +40,7 @@ func NewApplication(config *config.App, materialTheme *gioMaterial.Theme, widget
 		widget:         widget,
 		i18n:           i18n,
 		mediaLocalizer: newMediaLocalizer(language.English, slog.Default()),
+		breakpoints:    newBreakpoints(),
 	}
 
 	self.router = gio_router.NewRouter[core.AppContext](self, slog.Default())
@@ -102,6 +104,10 @@ func (a Application) MediaLocalizer() core.MediaLocalizer {
 	return a.mediaLocalizer
 }
 
+func (a Application) BreakPoints() core.Breakpoints {
+	return a.breakpoints
+}
+
 func (a Application) Loop() error {
 	var ops gioOp.Ops
 
@@ -112,6 +118,7 @@ func (a Application) Loop() error {
 
 		case gioApp.FrameEvent:
 			gtx := gioApp.NewContext(&ops, ev)
+			a.breakpoints.update(gtx.Constraints.Max)
 
 			a.widget(gtx, a)
 

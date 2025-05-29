@@ -8,6 +8,7 @@ require (
 	gioui.org v0.8.0
 	github.com/adrg/xdg v0.5.3
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
+	github.com/oligo/gioview v0.8.2
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.3.2
 	golang.org/x/text v0.23.0
@@ -16,6 +17,7 @@ require (
 
 require (
 	gioui.org/shader v1.0.8 // indirect
+	gioui.org/x v0.8.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-text/typesetting v0.2.1 // indirect
@@ -24,7 +26,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
-	github.com/oligo/gioview v0.8.2 // indirect
 	github.com/pelletier/go-toml v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect

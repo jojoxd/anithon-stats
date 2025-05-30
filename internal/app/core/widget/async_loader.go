@@ -56,3 +56,7 @@ func (ldr *AsyncLoader[T, D]) Load(d D) {
 		ldr.loading = false
 	}()
 }
+
+func (ldr *AsyncLoader[T, D]) Data() T {
+	return ldr.data
+}

@@ -2,16 +2,18 @@ package gio_router
 
 import (
 	"context"
-	"net/url"
+	"fmt"
 
 	"gioui.org/layout"
+
+	"anistats/pkg/gio_router/external"
 )
 
 type RouteView interface {
 	Id() Route
 	Layout(ctx context.Context) layout.Dimensions
 	OnIntent(intent Intent) error
-	Location() url.URL
+	Location() RouteLocation
 }
 
 type RouteViewTitler interface {
@@ -31,8 +33,10 @@ type RouteViewFinisher interface {
 	Finished() bool
 }
 
-func finishRouteView(rv RouteView) {
+func finishRouteView(rv RouteView, logger external.Logger) {
 	if finishable, ok := rv.(RouteViewFinisher); ok {
+		logger.Debug(fmt.Sprintf("finishing view %T", rv))
 		finishable.OnFinish()
+		logger.Debug(fmt.Sprintf("finished view %T", rv))
 	}
 }

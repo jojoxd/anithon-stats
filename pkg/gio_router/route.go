@@ -12,7 +12,7 @@ type Route struct {
 	path string
 }
 
-type RouteParams map[string]interface{}
+type RouteParams interface{}
 
 var NilRoute = Route{}
 

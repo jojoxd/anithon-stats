@@ -12,6 +12,7 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/features"
+	"anistats/internal/app/features/home"
 	"anistats/internal/app/features/media"
 	"anistats/pkg/gio_router"
 )
@@ -24,6 +25,8 @@ func NewRoot(window *app.Window) *Root {
 	vm := gio_router.NewManager(window, slog.Default())
 
 	features.Register(vm)
+
+	vm.RequestSwitch(home.HomeIntent())
 
 	go func() {
 		time.Sleep(1 * time.Second)

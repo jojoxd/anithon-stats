@@ -2,6 +2,7 @@ package core_impl
 
 import (
 	"context"
+	"log/slog"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -19,6 +20,7 @@ type Application struct {
 	theme            *material.Theme
 	rootView         *views.Root
 	localizerManager *localizerManager
+	logger           *slog.Logger
 }
 
 func NewApplication(cfg *config.App, window *app.Window) *Application {
@@ -36,6 +38,7 @@ func NewApplication(cfg *config.App, window *app.Window) *Application {
 		window:           window,
 		theme:            material.NewTheme(),
 		localizerManager: localizerManager,
+		logger:           slog.Default(),
 	}
 }
 
@@ -54,6 +57,10 @@ func (a *Application) Loop() error {
 			ev.Frame(gtx.Ops)
 		}
 	}
+}
+
+func (a *Application) Logger() *slog.Logger {
+	return a.logger
 }
 
 func (a *Application) layout(gtx layout.Context) layout.Dimensions {

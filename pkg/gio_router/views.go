@@ -2,7 +2,6 @@ package gio_router
 
 import (
 	"context"
-	"net/url"
 
 	"gioui.org/layout"
 )
@@ -10,7 +9,7 @@ import (
 type Widget func(gtx layout.Context) layout.Dimensions
 
 type BaseView struct {
-	location *url.URL
+	location RouteLocation
 	finished bool
 }
 
@@ -30,13 +29,12 @@ func (base *BaseView) Id() Route { return Route{} }
 func (base *BaseView) Title() string { return "Base" }
 
 func (base *BaseView) OnIntent(intent Intent) error {
-	loc := intent.Location()
-	base.location = &loc
+	base.location = intent.Location()
 	return nil
 }
 
 func (base *BaseView) OnFinish() {
-	base.location = nil
+	base.location = "nil" // todo should be an actual nil
 	base.finished = true
 	return
 }
@@ -45,8 +43,8 @@ func (base *BaseView) Finished() bool {
 	return base.finished
 }
 
-func (base *BaseView) Location() url.URL {
-	return *base.location
+func (base *BaseView) Location() RouteLocation {
+	return base.location
 }
 
 func (base *BaseView) Layout(ctx context.Context) layout.Dimensions {
@@ -70,8 +68,8 @@ func (sv *SimpleView) OnIntent(intent Intent) error {
 	return sv.intentHandler(intent)
 }
 
-func (sv *SimpleView) Location() url.URL {
-	return *sv.BaseView.location
+func (sv *SimpleView) Location() RouteLocation {
+	return sv.BaseView.location
 }
 
 func (sv *SimpleView) Layout(ctx context.Context) layout.Dimensions {
@@ -107,6 +105,6 @@ func (v EmptyView) Title() string {
 	return "Blank"
 }
 
-func (v EmptyView) Location() url.URL {
-	return buildURL(v.Id(), nil)
+func (v EmptyView) Location() RouteLocation {
+	return RouteLocation(buildURL(v.Id(), nil))
 }

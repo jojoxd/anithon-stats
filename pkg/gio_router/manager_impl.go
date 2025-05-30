@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 	"slices"
 	"sync"
 
@@ -12,11 +11,12 @@ import (
 	"gioui.org/layout"
 
 	"anistats/pkg/gio_router/external"
+	"anistats/pkg/gio_router/internal"
 )
 
-var _ Manager = (*defaultManager)(nil)
+var _ Manager = (*managerImpl)(nil)
 
-type defaultManager struct {
+type managerImpl struct {
 	window         *app.Window
 	stacks         []*ViewStack
 	currentTabIdx  int
@@ -29,18 +29,18 @@ type defaultManager struct {
 
 func NewManager(window *app.Window, logger external.Logger) Manager {
 	if logger == nil {
-		logger = external.NewNilLogger()
+		logger = internal.NewNilLogger()
 	}
 
-	logger = external.NewPrefixLogger("gio_router", logger)
+	logger = internal.NewPrefixLogger("gio_router", logger)
 
-	return &defaultManager{
+	return &managerImpl{
 		window: window,
 		logger: logger,
 	}
 }
 
-func (vm *defaultManager) CurrentView() RouteView {
+func (vm *managerImpl) CurrentView() RouteView {
 	if len(vm.stacks) <= 0 {
 		return nil
 	}
@@ -48,7 +48,7 @@ func (vm *defaultManager) CurrentView() RouteView {
 	stack := vm.stacks[vm.currentTabIdx]
 	vw := stack.Peek()
 
-	if newTitle, ok := titleRouteView(vw); ok {
+	if newTitle, ok := titleRouteView(vw); ok && vm.currentTitle != newTitle {
 		vm.currentTitle = newTitle
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
@@ -56,11 +56,11 @@ func (vm *defaultManager) CurrentView() RouteView {
 	return vw
 }
 
-func (vm *defaultManager) CurrentViewIndex() int {
+func (vm *managerImpl) CurrentViewIndex() int {
 	return vm.currentTabIdx
 }
 
-func (vm *defaultManager) Register(Id Route, provider RouteProvider) error {
+func (vm *managerImpl) Register(Id Route, provider RouteProvider) error {
 	vm.dispatchMutex.Lock()
 	defer vm.dispatchMutex.Unlock()
 
@@ -82,7 +82,7 @@ func (vm *defaultManager) Register(Id Route, provider RouteProvider) error {
 	return nil
 }
 
-func (vm *defaultManager) NavBack() RouteView {
+func (vm *managerImpl) NavBack() RouteView {
 	if len(vm.stacks) <= 0 {
 		return nil
 	}
@@ -94,20 +94,21 @@ func (vm *defaultManager) NavBack() RouteView {
 	}
 
 	vw := stack.Pop()
-	finishRouteView(vw)
+	finishRouteView(vw, vm.logger)
 
 	return stack.Peek()
 }
 
-func (vm *defaultManager) HasPrev() bool {
+func (vm *managerImpl) HasPrev() bool {
 	if len(vm.stacks) <= 0 {
 		return false
 	}
+
 	stack := vm.stacks[vm.currentTabIdx]
 	return stack.Depth() > 1
 }
 
-func (vm *defaultManager) RequestSwitch(intent Intent) error {
+func (vm *managerImpl) RequestSwitch(intent Intent) error {
 	// use mutex to guard the dispatching
 	vm.dispatchMutex.Lock()
 	defer vm.dispatchMutex.Unlock()
@@ -145,15 +146,15 @@ func (vm *defaultManager) RequestSwitch(intent Intent) error {
 	}
 
 	location := intent.Location()
-	vm.logger.Info(fmt.Sprintf("switching to %s", location.String()))
+	vm.logger.Info(fmt.Sprintf("switching to %s", location))
 	return nil
 }
 
 // routeView routes the intent to the proper viewstack/tab by intent.URL()
-func (vm *defaultManager) routeView(intent *Intent) *ViewStack {
+func (vm *managerImpl) routeView(intent *Intent) *ViewStack {
 	if len(vm.stacks) <= vm.currentTabIdx {
 		// try to fix the illegal state
-		stack := NewViewStack()
+		stack := NewViewStack(vm.logger)
 		vm.stacks = append(vm.stacks, stack)
 		vm.currentTabIdx = len(vm.stacks) - 1
 		return stack
@@ -162,22 +163,23 @@ func (vm *defaultManager) routeView(intent *Intent) *ViewStack {
 	// Iterate through all the viewstacks to find the top view with the same location.
 	// switch to and replace the existing view.
 	for idx, s := range vm.stacks {
-		if s.Peek().Location() == intent.Location() {
+		if vm.compareLocations(s.Peek().Location(), intent.Location()) {
 			// switch to the tab
 			vm.currentTabIdx = idx
 			return s
 		}
 	}
 
-	if intent.RequireNew {
-		stack := NewViewStack()
+	if intent.RequireNewStack {
+		stack := NewViewStack(vm.logger)
 		vm.stacks = append(vm.stacks, stack)
 		vm.currentTabIdx = len(vm.stacks) - 1
 		return stack
 	}
 
+	// @todo should be actual nil check
 	// Respect referer by checking its parent view.
-	if intent.Referer != (url.URL{}) && intent.Referer == vm.CurrentView().Location() {
+	if intent.Referer != "" && vm.compareLocations(intent.Referer, vm.CurrentView().Location()) {
 		// push to current view stack
 		return vm.stacks[vm.currentTabIdx]
 	}
@@ -191,7 +193,7 @@ func (vm *defaultManager) routeView(intent *Intent) *ViewStack {
 	}
 
 	// create new stack
-	stack := NewViewStack()
+	stack := NewViewStack(vm.logger)
 	vm.stacks = append(vm.stacks, stack)
 	vm.currentTabIdx = len(vm.stacks) - 1
 
@@ -199,11 +201,11 @@ func (vm *defaultManager) routeView(intent *Intent) *ViewStack {
 }
 
 // route the intent to the proper viewstack/tab
-func (vm *defaultManager) route(intent *Intent) *ViewStack {
+func (vm *managerImpl) route(intent *Intent) *ViewStack {
 	return vm.routeView(intent)
 }
 
-func (vm *defaultManager) OpenedViews() []RouteView {
+func (vm *managerImpl) OpenedViews() []RouteView {
 	views := make([]RouteView, len(vm.stacks))
 	for idx, stack := range vm.stacks {
 		views[idx] = stack.Peek()
@@ -212,7 +214,7 @@ func (vm *defaultManager) OpenedViews() []RouteView {
 	return views
 }
 
-func (vm *defaultManager) CloseTab(idx int) {
+func (vm *managerImpl) CloseTab(idx int) {
 	if idx < 0 || idx >= len(vm.stacks) {
 		return
 	}
@@ -225,7 +227,7 @@ func (vm *defaultManager) CloseTab(idx int) {
 	}
 }
 
-func (vm *defaultManager) SwitchTab(idx int) {
+func (vm *managerImpl) SwitchTab(idx int) {
 	if idx >= len(vm.stacks) || idx < 0 {
 		return
 	}
@@ -233,11 +235,11 @@ func (vm *defaultManager) SwitchTab(idx int) {
 	vm.currentTabIdx = idx
 }
 
-func (vm *defaultManager) Invalidate() {
+func (vm *managerImpl) Invalidate() {
 	vm.window.Invalidate()
 }
 
-func (vm *defaultManager) Reset() {
+func (vm *managerImpl) Reset() {
 	for _, stack := range vm.stacks {
 		stack.Clear()
 	}
@@ -247,6 +249,12 @@ func (vm *defaultManager) Reset() {
 	vm.Invalidate()
 }
 
-func (vm *defaultManager) Context(ctx context.Context, gtx layout.Context) context.Context {
+func (vm *managerImpl) Context(ctx context.Context, gtx layout.Context) context.Context {
 	return newContext(vm, &gtx, ctx)
+}
+
+func (vm *managerImpl) compareLocations(a, b RouteLocation) bool {
+	vm.logger.Debug(fmt.Sprintf("compareLocations %T %+v, %T %+v", a, b))
+
+	return a == b
 }

@@ -3,11 +3,15 @@ package gio_router
 import (
 	"container/list"
 	"iter"
+
+	"anistats/pkg/gio_router/external"
+	"anistats/pkg/gio_router/internal"
 )
 
 // ViewStack is for view navigation history
 type ViewStack struct {
 	viewList *list.List
+	logger   external.Logger
 }
 
 func (vs *ViewStack) Pop() RouteView {
@@ -98,15 +102,20 @@ func (vs *ViewStack) Clear() {
 	for v != nil {
 		val := v.Value.(RouteView)
 
-		finishRouteView(val)
+		finishRouteView(val, vs.logger)
 		v = v.Next()
 	}
 
 	vs.viewList.Init()
 }
 
-func NewViewStack() *ViewStack {
+func NewViewStack(logger external.Logger) *ViewStack {
+	if logger == nil {
+		logger = internal.NewNilLogger()
+	}
+
 	return &ViewStack{
 		viewList: &list.List{},
+		logger:   logger,
 	}
 }

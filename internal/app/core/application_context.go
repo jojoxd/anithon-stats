@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"gioui.org/widget/material"
 )
@@ -30,4 +31,10 @@ func ThemeFromContext(ctx context.Context) *material.Theme {
 	app := AppFromContext(ctx)
 
 	return app.Theme()
+}
+
+func LoggerFromContext(ctx context.Context) *slog.Logger {
+	app := AppFromContext(ctx)
+	
+	return app.Logger()
 }

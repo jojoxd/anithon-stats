@@ -20,8 +20,8 @@ func OverviewIntent() gio_router.Intent {
 func MediaIntent(mediaId v1.MediaId) gio_router.Intent {
 	return gio_router.Intent{
 		Target: screens.MediaId,
-		Params: map[string]interface{}{
-			"mediaId": mediaId,
+		Params: screens.MediaParams{
+			MediaId: mediaId,
 		},
 	}
 }

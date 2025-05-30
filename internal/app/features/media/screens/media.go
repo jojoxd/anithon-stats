@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 	"time"
 
 	"gioui.org/layout"
@@ -20,7 +19,8 @@ import (
 var MediaId = gio_router.NewRoute("media.media")
 
 type Media struct {
-	loader widget.AsyncLoader[v1.Media, v1.MediaId]
+	location gio_router.RouteLocation
+	loader   widget.AsyncLoader[v1.Media, v1.MediaId]
 }
 
 type MediaParams struct {
@@ -40,6 +40,9 @@ func NewMedia() gio_router.RouteView {
 }
 
 func (m *Media) Layout(ctx context.Context) layout.Dimensions {
+	l := core.LoggerFromContext(ctx)
+	l.Debug("render media screen")
+
 	return m.loader.Layout(ctx)
 }
 
@@ -58,27 +61,38 @@ func (m *Media) layoutLoaded(ctx context.Context, media v1.Media) layout.Dimensi
 }
 
 func (m *Media) OnIntent(intent gio_router.Intent) error {
-	mediaId, ok := intent.Params["mediaId"].(v1.MediaId)
-	if !ok {
-		return errors.New("mediaId is required")
+	fmt.Printf("Media.OnIntent: %+v\n", intent)
+	if params, ok := intent.Params.(MediaParams); ok {
+		m.location = intent.Location()
+		m.loader.Load(params.MediaId)
+
+		return nil
 	}
 
-	m.loader.Load(mediaId)
-
-	return nil
+	return errors.New(fmt.Sprintf("invalid intent: expected MediaParams, got %T %+v", intent.Params, intent.Params))
 }
 
 func (m *Media) Id() gio_router.Route {
 	return MediaId
 }
 
-func (m *Media) Location() url.URL {
+func (m *Media) Location() gio_router.RouteLocation {
 	// TODO implement me
 	panic("implement me")
 }
 
 func (m *Media) Title() string {
-	return fmt.Sprintf("Media")
+	// localizer := core.LocalizerFromContext(ctx)
+	//
+	// media := m.loader.Data()
+	// if media != nil {
+	// 	return localizer.Tf("media.page.title", map[string]string{
+	// 		"name": localizer.TTv1(media.GetDisplayName()),
+	// 	})
+	// }
+	//
+	// return localizer.T("media.page.title")
+	return "Media"
 }
 
 type Test struct {

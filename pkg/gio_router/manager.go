@@ -2,8 +2,6 @@ package gio_router
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 
 	"gioui.org/layout"
 )
@@ -60,15 +58,4 @@ type Manager interface {
 
 	// Context generates a managerContext
 	Context(ctx context.Context, gtx layout.Context) context.Context
-}
-
-func buildURL(target Route, params RouteParams) url.URL {
-	var urlParams = make(url.Values)
-	for k, v := range params {
-		urlParams.Add(k, fmt.Sprintf("%v", v))
-	}
-
-	u := target.Path()
-	u.RawQuery = urlParams.Encode()
-	return u
 }

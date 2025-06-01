@@ -15,6 +15,8 @@ import (
 	"anistats/internal/config"
 )
 
+var _ core.Application = (*Application)(nil)
+
 type Application struct {
 	window           *app.Window
 	theme            *material.Theme
@@ -75,6 +77,10 @@ func (a *Application) layout(gtx layout.Context) layout.Dimensions {
 
 func (a *Application) Localizer() core.Localizer {
 	return a.localizerManager.Localizer()
+}
+
+func (a *Application) LocalizerManager() core.LocalizerManager {
+	return a.localizerManager
 }
 
 func (a *Application) Theme() *material.Theme {

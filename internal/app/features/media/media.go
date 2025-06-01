@@ -6,9 +6,9 @@ import (
 	"anistats/pkg/gio_router"
 )
 
-func Register(vm gio_router.Manager) {
-	vm.Register(screens.OverviewId, screens.NewOverview)
-	vm.Register(screens.MediaId, screens.NewMedia)
+func Register(mgr gio_router.Manager) {
+	mgr.Register(screens.OverviewId, screens.NewOverview)
+	mgr.Register(screens.MediaId, screens.NewMedia)
 }
 
 func OverviewIntent() gio_router.Intent {

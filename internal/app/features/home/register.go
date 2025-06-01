@@ -5,8 +5,8 @@ import (
 	"anistats/pkg/gio_router"
 )
 
-func Register(vm gio_router.Manager) {
-	vm.Register(screens.HomeId, screens.NewHome)
+func Register(mgr gio_router.Manager) {
+	mgr.Register(screens.HomeId, screens.NewHome)
 }
 
 func HomeIntent() gio_router.Intent {

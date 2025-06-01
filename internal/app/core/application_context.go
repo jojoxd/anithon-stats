@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 
 	"gioui.org/widget/material"
@@ -22,8 +21,6 @@ func AppFromContext(ctx context.Context) Application {
 func LocalizerFromContext(ctx context.Context) Localizer {
 	app := AppFromContext(ctx)
 
-	fmt.Printf("app: %+v l10n: %+v\n", app, app.Localizer())
-
 	return app.Localizer()
 }
 
@@ -35,6 +32,6 @@ func ThemeFromContext(ctx context.Context) *material.Theme {
 
 func LoggerFromContext(ctx context.Context) *slog.Logger {
 	app := AppFromContext(ctx)
-	
+
 	return app.Logger()
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -30,6 +31,19 @@ var AppLanguages = []language.Tag{
 }
 
 type LangBundles map[language.Tag]*i18n.Bundle
+
+func (lb LangBundles) Languages() []language.Tag {
+	tags := make([]language.Tag, 0, len(lb))
+	for tag := range lb {
+		tags = append(tags, tag)
+	}
+
+	slices.SortFunc(tags, func(a, b language.Tag) int {
+		return strings.Compare(a.String(), b.String())
+	})
+
+	return tags
+}
 
 func GetLangBundles() (LangBundles, error) {
 	var bundles = make(LangBundles)

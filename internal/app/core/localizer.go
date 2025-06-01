@@ -22,6 +22,9 @@ type Localizer interface {
 	// TTv1 translates a v1.Translatable
 	TTv1(translatable v1.Translatable) string
 
+	// PageTitle translates an application page title
+	PageTitle(key string, templateData interface{}) string
+
 	// Inner returns the inner i18n.Localizer instance
 	Inner() *i18n.Localizer
 }

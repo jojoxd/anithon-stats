@@ -18,7 +18,7 @@ type localizer struct {
 	fallbackLocalizer *i18n.Localizer
 }
 
-func newLocalizer(language language.Tag, inner *i18n.Localizer, fallbackLocalizer *i18n.Localizer) *localizer {
+func newLocalizer(language language.Tag, inner *i18n.Localizer, fallbackLocalizer *i18n.Localizer) core.Localizer {
 	return &localizer{
 		language:          language,
 		inner:             inner,
@@ -75,4 +75,11 @@ func (l localizer) localizeWithFallback(key string, lc *i18n.LocalizeConfig) str
 	}
 
 	return key
+}
+
+func (l localizer) PageTitle(key string, templateData interface{}) string {
+	return l.Tf("core.title", map[string]string{
+		"AppName": l.T("core.appName"),
+		"Title":   l.Tf(key, templateData),
+	})
 }

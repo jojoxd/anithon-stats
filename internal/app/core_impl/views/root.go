@@ -3,7 +3,6 @@ package views
 import (
 	"context"
 	"log/slog"
-	"time"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -12,45 +11,50 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/features"
-	"anistats/internal/app/features/home"
 	"anistats/internal/app/features/media"
 	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_router_view"
 )
 
 type Root struct {
-	vm gio_router.Manager
+	mgr gio_router.Manager
 }
 
 func NewRoot(window *app.Window) *Root {
-	vm := gio_router.NewManager(window, slog.Default())
+	mgr := gio_router.NewManager(window, slog.Default())
 
-	features.Register(vm)
+	features.Register(mgr)
 
-	vm.RequestSwitch(home.HomeIntent())
+	// mgr.RequestSwitch(home.HomeIntent())
+	mgr.RequestSwitch(media.MediaIntent(v1.MediaId("1")))
 
-	go func() {
-		time.Sleep(1 * time.Second)
-
-		vm.RequestSwitch(media.MediaIntent(v1.MediaId("1")))
-	}()
+	// go func() {
+	// 	time.Sleep(2 * time.Second)
+	//
+	// 	mgr.RequestSwitch(media.MediaIntent(v1.MediaId("1")))
+	// }()
 
 	return &Root{
-		vm: vm,
+		mgr: mgr,
 	}
 }
 
 func (r Root) Layout(ctx context.Context, gtx layout.Context) layout.Dimensions {
+	ctx = r.mgr.Context(ctx, gtx)
 	theme := core.ThemeFromContext(ctx)
+
+	r.mgr.Update(ctx)
 
 	return layout.Flex{}.Layout(gtx,
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-			currentView := r.vm.CurrentView()
-			if currentView == nil {
-				return material.H1(theme, "No RouteView").Layout(gtx)
-			}
-
-			ctx = r.vm.Context(ctx, gtx)
-			return currentView.Layout(ctx)
+			return gio_router_view.NewRouterView(r.mgr, &gio_router_view.Slots{
+				Empty: func(ctx context.Context) layout.Dimensions {
+					return material.H1(theme, "No RouteView").Layout(gtx)
+				},
+				View: func(ctx context.Context, view gio_router.RouteView) layout.Dimensions {
+					return view.Layout(ctx)
+				},
+			}).Layout(ctx)
 		}),
 	)
 }

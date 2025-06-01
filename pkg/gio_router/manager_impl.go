@@ -46,14 +46,16 @@ func (vm *managerImpl) CurrentView() RouteView {
 	}
 
 	stack := vm.stacks[vm.currentTabIdx]
-	vw := stack.Peek()
+	return stack.Peek()
+}
 
-	if newTitle, ok := titleRouteView(vw); ok && vm.currentTitle != newTitle {
+func (vm *managerImpl) Update(ctx context.Context) {
+	vw := vm.CurrentView()
+
+	if newTitle, ok := titleRouteView(vw, ctx); ok && vm.currentTitle != newTitle {
 		vm.currentTitle = newTitle
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
-
-	return vw
 }
 
 func (vm *managerImpl) CurrentViewIndex() int {

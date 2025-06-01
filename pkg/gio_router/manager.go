@@ -42,6 +42,8 @@ type Manager interface {
 	// CurrentViewIndex gives the current tab index
 	CurrentViewIndex() int
 
+	Update(ctx context.Context)
+
 	// NavBack navigates back to the last view if there's any and pop out the current view.
 	// It returns the view that is to be rendered (which might not be the current view)
 	NavBack() RouteView

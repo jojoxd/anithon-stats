@@ -26,7 +26,7 @@ type SimpleView struct {
 
 func (base *BaseView) Id() Route { return Route{} }
 
-func (base *BaseView) Title() string { return "Base" }
+func (base *BaseView) Title(_ context.Context) string { return "Base" }
 
 func (base *BaseView) OnIntent(intent Intent) error {
 	base.location = intent.Location()

@@ -1,3 +1,8 @@
-media:
-  page:
-    title: Media %s
+page:
+  media:
+    media:
+      title: 'Media | {{.Name}}'
+      loading: Media | Loading...
+
+    overview:
+      title: Media Overview

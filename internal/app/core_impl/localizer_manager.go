@@ -10,8 +10,10 @@ import (
 	"anistats/internal/app/res"
 )
 
+var _ core.LocalizerManager = (*localizerManager)(nil)
+
 type localizerManager struct {
-	localizer         *localizer
+	localizer         core.Localizer
 	bundles           res.LangBundles
 	fallbackLocalizer *i18n.Localizer
 }
@@ -21,13 +23,13 @@ func newLocalizerManager(bundles res.LangBundles, defaultLanguage language.Tag) 
 		bundles: bundles,
 	}
 
-	fallbackLocalizer, err := mgr.localizerForLanguage(res.LangEnglish, nil)
+	fallbackLocalizer, err := mgr.LocalizerForLanguage(res.LangEnglish)
 	if err != nil {
 		return nil, err
 	}
 	mgr.fallbackLocalizer = fallbackLocalizer.Inner()
 
-	err = mgr.setLocale(defaultLanguage)
+	err = mgr.SetLocale(defaultLanguage)
 	if err != nil {
 		// todo wrap error, should be clear that "default" language is not available
 		return nil, err
@@ -36,8 +38,8 @@ func newLocalizerManager(bundles res.LangBundles, defaultLanguage language.Tag) 
 	return mgr, nil
 }
 
-func (m *localizerManager) setLocale(lang language.Tag) error {
-	l, err := m.localizerForLanguage(lang, m.fallbackLocalizer)
+func (m *localizerManager) SetLocale(lang language.Tag) error {
+	l, err := m.LocalizerForLanguage(lang)
 	if err != nil {
 		return err
 	}
@@ -46,15 +48,19 @@ func (m *localizerManager) setLocale(lang language.Tag) error {
 	return nil
 }
 
-func (m *localizerManager) localizerForLanguage(lang language.Tag, fallbackLocalizer *i18n.Localizer) (*localizer, error) {
+func (m *localizerManager) LocalizerForLanguage(lang language.Tag) (core.Localizer, error) {
 	bundle, ok := m.bundles[lang]
 	if !ok {
 		return nil, errors.New(lang.String() + " has no available bundle")
 	}
 
-	return newLocalizer(lang, i18n.NewLocalizer(bundle), fallbackLocalizer), nil
+	return newLocalizer(lang, i18n.NewLocalizer(bundle), m.fallbackLocalizer), nil
 }
 
 func (m *localizerManager) Localizer() core.Localizer {
 	return m.localizer
+}
+
+func (m *localizerManager) Languages() []language.Tag {
+	return m.bundles.Languages()
 }

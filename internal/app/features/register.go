@@ -6,7 +6,7 @@ import (
 	"anistats/pkg/gio_router"
 )
 
-func Register(vm gio_router.Manager) {
-	home.Register(vm)
-	media.Register(vm)
+func Register(mgr gio_router.Manager) {
+	home.Register(mgr)
+	media.Register(mgr)
 }

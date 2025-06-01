@@ -5,6 +5,7 @@ import (
 
 	"gioui.org/layout"
 
+	"anistats/internal/app/core"
 	"anistats/pkg/gio_router"
 )
 
@@ -37,9 +38,8 @@ func (o *Overview) Location() gio_router.RouteLocation {
 	return o.location
 }
 
-func (o *Overview) Title() string {
-	// localizer := core.LocalizerFromContext(ctx)
-	//
-	// return localizer.T("media.overview.title")
-	return "Media Overview"
+func (o *Overview) Title(ctx context.Context) string {
+	localizer := core.LocalizerFromContext(ctx)
+
+	return localizer.T("media.overview.title")
 }

@@ -17,12 +17,12 @@ type RouteView interface {
 }
 
 type RouteViewTitler interface {
-	Title() string
+	Title(ctx context.Context) string
 }
 
-func titleRouteView(rv RouteView) (string, bool) {
+func titleRouteView(rv RouteView, ctx context.Context) (string, bool) {
 	if titler, ok := rv.(RouteViewTitler); ok {
-		return titler.Title(), true
+		return titler.Title(ctx), true
 	}
 
 	return "", false

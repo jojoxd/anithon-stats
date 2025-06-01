@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"image"
+	"net/http"
 	"time"
 
 	"gioui.org/layout"
@@ -13,6 +15,8 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/widget"
+	widget2 "anistats/internal/app/features/media/widget"
+	"anistats/internal/app/res"
 	"anistats/pkg/gio_router"
 )
 
@@ -54,10 +58,13 @@ func (m *Media) layoutLoading(ctx context.Context) layout.Dimensions {
 }
 
 func (m *Media) layoutLoaded(ctx context.Context, media v1.Media) layout.Dimensions {
-	gtx := gio_router.GtxFromContext(ctx)
-	theme := core.ThemeFromContext(ctx)
+	// gtx := gio_router.GtxFromContext(ctx)
+	// theme := core.ThemeFromContext(ctx)
+	// localizer := core.LocalizerFromContext(ctx)
+	//
+	// return material.H1(theme, localizer.TTv1(media.GetDisplayName())).Layout(gtx)
 
-	return material.H1(theme, fmt.Sprintf("Media %+v", media)).Layout(gtx)
+	return widget2.MediaCard(m.loader.Data()).Layout(ctx)
 }
 
 func (m *Media) OnIntent(intent gio_router.Intent) error {
@@ -77,26 +84,26 @@ func (m *Media) Id() gio_router.Route {
 }
 
 func (m *Media) Location() gio_router.RouteLocation {
-	// TODO implement me
-	panic("implement me")
+	return m.location
 }
 
-func (m *Media) Title() string {
-	// localizer := core.LocalizerFromContext(ctx)
-	//
-	// media := m.loader.Data()
-	// if media != nil {
-	// 	return localizer.Tf("media.page.title", map[string]string{
-	// 		"name": localizer.TTv1(media.GetDisplayName()),
-	// 	})
-	// }
-	//
-	// return localizer.T("media.page.title")
-	return "Media"
+func (m *Media) Title(ctx context.Context) string {
+	localizer := core.LocalizerFromContext(ctx)
+
+	media := m.loader.Data()
+	if media != nil {
+		return localizer.PageTitle("page.media.media.title", map[string]string{
+			"Name": localizer.TTv1(media.GetDisplayName()),
+		})
+
+	}
+
+	return localizer.PageTitle("page.media.media.loading", nil)
 }
 
 type Test struct {
-	Id v1.MediaId
+	Id             v1.MediaId
+	cachedCoverArt image.Image
 }
 
 func (t Test) GetId() v1.MediaId {
@@ -107,10 +114,38 @@ func (t Test) GetDisplayName() v1.Translatable {
 	return TestT{}
 }
 
+func (t Test) CoverArt() image.Image {
+	if t.cachedCoverArt != nil {
+		return t.cachedCoverArt
+	}
+
+	resp, err := http.Get("https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx185939-hqt1He153el8.jpg")
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	img, _, err := image.Decode(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	t.cachedCoverArt = img
+	return t.cachedCoverArt
+}
+
 type TestT struct{}
 
 func (t TestT) ForLanguage(lang language.Tag) string {
-	return "Media Hello"
+	switch lang {
+	case res.LangJapaneseHepburn:
+		return "Hibi wa Sugiredo Meshi Umashi"
+	case res.LangJapanese:
+		return "日々は過ぎれど飯うまし"
+	}
+
+	return "Food for the Soul"
 }
 
 func loadMedia(mediaId v1.MediaId) (v1.Media, error) {

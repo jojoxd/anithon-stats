@@ -1,13 +1,10 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"anistats/internal/app"
-	"anistats/internal/config"
 )
 
 var appCmd = &cobra.Command{
@@ -25,10 +22,7 @@ func init() {
 }
 
 func runApp(cmd *cobra.Command, args []string) {
-	cfg, err := config.NewViper(viper.GetViper())
-	if err != nil {
-		log.Fatal(err)
-	}
+	ctx := cmd.Context()
 
-	app.Main(&cfg.App)
+	app.Main(ctx)
 }

@@ -1,13 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"anistats/internal/config"
 	"anistats/internal/server"
 )
 
@@ -29,15 +27,10 @@ func init() {
 }
 
 func runServe(cmd *cobra.Command, args []string) {
-	cfg, err := config.NewViper(viper.GetViper())
-	if err != nil {
-		log.Fatal(err)
-	}
+	ctx := cmd.Context()
 
-	fmt.Printf("%+v\n", cfg)
-
-	srv := server.New(cfg.Server)
-	if err := srv.Serve(); err != nil {
+	srv := server.New()
+	if err := srv.Serve(ctx); err != nil {
 		log.Fatal(err)
 	}
 }

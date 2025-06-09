@@ -1,0 +1,20 @@
+version: 3
+
+tasks:
+  server:sqlc:generate:
+    cmd: sqlc generate
+    dir: internal/server/dbal
+
+  server:sqlc:vet:
+    cmd: sqlc vet
+    dir: internal/server/dbal
+
+  vet:
+    ignore_error: true
+
+    cmds:
+      - cmd: go vet ./...
+      - task: server:sqlc:vet
+
+  build:
+    cmd: go build -o out/anistats cmd/anistats/main.go

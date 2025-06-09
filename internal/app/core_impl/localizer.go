@@ -55,7 +55,11 @@ func (l localizer) Tfc(key string, pluralCount interface{}, templateData interfa
 }
 
 func (l localizer) TTv1(translatable v1.Translatable) string {
-	return translatable.ForLanguage(l.language)
+	if message, ok := translatable.Translations[l.language]; ok {
+		return message
+	}
+
+	return "todo: fallback locale in TTv1"
 }
 
 func (l localizer) Inner() *i18n.Localizer {

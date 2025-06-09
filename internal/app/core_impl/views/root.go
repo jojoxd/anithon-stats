@@ -7,11 +7,11 @@ import (
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/widget/material"
+	"github.com/spf13/viper"
 
-	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/features"
-	"anistats/internal/app/features/media"
+	"anistats/internal/app/features/home"
 	"anistats/pkg/gio_router"
 	"anistats/pkg/gio_router_view"
 )
@@ -25,8 +25,8 @@ func NewRoot(window *app.Window) *Root {
 
 	features.Register(mgr)
 
-	// mgr.RequestSwitch(home.HomeIntent())
-	mgr.RequestSwitch(media.MediaIntent(v1.MediaId("1")))
+	mgr.RequestSwitch(home.HomeIntent())
+	// mgr.RequestSwitch(media.MediaIntent(v1.MediaId("1")))
 
 	// go func() {
 	// 	time.Sleep(2 * time.Second)
@@ -44,6 +44,10 @@ func (r Root) Layout(ctx context.Context, gtx layout.Context) layout.Dimensions 
 	theme := core.ThemeFromContext(ctx)
 
 	r.mgr.Update(ctx)
+
+	// cfg := config.ManagerFromContext(ctx)
+	viper.GetViper().Sub("app.client").Debug()
+	// slog.Debug("test cfg", "client.type", )
 
 	return layout.Flex{}.Layout(gtx,
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {

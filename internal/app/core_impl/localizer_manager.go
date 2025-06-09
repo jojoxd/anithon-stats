@@ -7,7 +7,7 @@ import (
 	"golang.org/x/text/language"
 
 	"anistats/internal/app/core"
-	"anistats/internal/app/res"
+	"anistats/internal/app/resources"
 )
 
 var _ core.LocalizerManager = (*localizerManager)(nil)

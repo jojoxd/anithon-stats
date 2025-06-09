@@ -4,19 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"image"
-	"net/http"
-	"time"
 
 	"gioui.org/layout"
 	"gioui.org/widget/material"
-	"golang.org/x/text/language"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/internal/app/core/widget"
 	widget2 "anistats/internal/app/features/media/widget"
-	"anistats/internal/app/res"
+	"anistats/internal/app/widget"
 	"anistats/pkg/gio_router"
 )
 
@@ -25,6 +20,7 @@ var MediaId = gio_router.NewRoute("media.media")
 type Media struct {
 	location gio_router.RouteLocation
 	loader   widget.AsyncLoader[v1.Media, v1.MediaId]
+	v1.MediaId
 }
 
 type MediaParams struct {
@@ -47,7 +43,12 @@ func (m *Media) Layout(ctx context.Context) layout.Dimensions {
 	l := core.LoggerFromContext(ctx)
 	l.Debug("render media screen")
 
-	return m.loader.Layout(ctx)
+	msvc := core.ApiClientFromContext(ctx).MediaService()
+
+	media, _ := msvc.Media(m.MediaId)
+	return m.layoutLoaded(ctx, &media)
+
+	// return m.loader.Layout(ctx)
 }
 
 func (m *Media) layoutLoading(ctx context.Context) layout.Dimensions {
@@ -57,21 +58,23 @@ func (m *Media) layoutLoading(ctx context.Context) layout.Dimensions {
 	return material.H1(theme, "Loading").Layout(gtx)
 }
 
-func (m *Media) layoutLoaded(ctx context.Context, media v1.Media) layout.Dimensions {
+func (m *Media) layoutLoaded(ctx context.Context, media *v1.Media) layout.Dimensions {
 	// gtx := gio_router.GtxFromContext(ctx)
 	// theme := core.ThemeFromContext(ctx)
 	// localizer := core.LocalizerFromContext(ctx)
 	//
-	// return material.H1(theme, localizer.TTv1(media.GetDisplayName())).Layout(gtx)
+	// return material.H1(theme, localizer.TTv1(media.DisplayName())).Layout(gtx)
 
-	return widget2.MediaCard(m.loader.Data()).Layout(ctx)
+	return widget2.MediaCard(media).Layout(ctx)
 }
 
 func (m *Media) OnIntent(intent gio_router.Intent) error {
 	fmt.Printf("Media.OnIntent: %+v\n", intent)
 	if params, ok := intent.Params.(MediaParams); ok {
 		m.location = intent.Location()
-		m.loader.Load(params.MediaId)
+		// m.loader.Load(params.MediaId)
+
+		m.MediaId = params.MediaId
 
 		return nil
 	}
@@ -93,63 +96,23 @@ func (m *Media) Title(ctx context.Context) string {
 	media := m.loader.Data()
 	if media != nil {
 		return localizer.PageTitle("page.media.media.title", map[string]string{
-			"Name": localizer.TTv1(media.GetDisplayName()),
+			"Name": localizer.TTv1(media.DisplayName),
 		})
-
 	}
 
 	return localizer.PageTitle("page.media.media.loading", nil)
 }
 
-type Test struct {
-	Id             v1.MediaId
-	cachedCoverArt image.Image
-}
+func loadMedia(mediaId v1.MediaId) (*v1.Media, error) {
+	// ms, err := api.NewMediaService(viper.GetViper().Sub("app.client"))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// time.Sleep(2 * time.Second)
+	//
+	// m, err := ms.Media(mediaId)
+	// return &m, err
 
-func (t Test) GetId() v1.MediaId {
-	return t.Id
-}
-
-func (t Test) GetDisplayName() v1.Translatable {
-	return TestT{}
-}
-
-func (t Test) CoverArt() image.Image {
-	if t.cachedCoverArt != nil {
-		return t.cachedCoverArt
-	}
-
-	resp, err := http.Get("https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx185939-hqt1He153el8.jpg")
-	if err != nil {
-		panic(err)
-	}
-
-	defer resp.Body.Close()
-
-	img, _, err := image.Decode(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	t.cachedCoverArt = img
-	return t.cachedCoverArt
-}
-
-type TestT struct{}
-
-func (t TestT) ForLanguage(lang language.Tag) string {
-	switch lang {
-	case res.LangJapaneseHepburn:
-		return "Hibi wa Sugiredo Meshi Umashi"
-	case res.LangJapanese:
-		return "日々は過ぎれど飯うまし"
-	}
-
-	return "Food for the Soul"
-}
-
-func loadMedia(mediaId v1.MediaId) (v1.Media, error) {
-	time.Sleep(2 * time.Second)
-
-	return Test{Id: mediaId}, nil
+	return nil, errors.New("AAAAA")
 }

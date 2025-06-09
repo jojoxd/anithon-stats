@@ -1,0 +1,47 @@
+version: "2"
+
+overrides:
+  go:
+    rename:
+      uuid: Id
+
+sql:
+  - schema: mysql/internal/migrations/*.sql
+    queries: mysql/internal/queries/*.sql
+    engine: mysql
+    gen:
+      go:
+        package: generated
+        out: mysql/internal/generated
+        emit_interface: true
+        sql_package: database/sql
+        emit_prepared_queries: true
+        inflection_exclude_table_names:
+          - media
+
+        overrides:
+          - column: "*.uuid"
+            go_type: github.com/google/uuid.UUID
+          - column: media.display_name
+            go_type: github.com/google/uuid.UUID
+
+  - schema: sqlite/internal/migrations/*.sql
+    queries: sqlite/internal/queries/*.sql
+    engine: sqlite
+    gen:
+      go:
+        package: generated
+        out: sqlite/internal/generated
+        emit_interface: true
+        sql_package: database/sql
+        emit_prepared_queries: true
+        inflection_exclude_table_names:
+          - media
+
+        overrides:
+          - column: "*.uuid"
+            go_type: github.com/google/uuid.UUID
+          - column: media.display_name
+            go_type: github.com/google/uuid.UUID
+          - column: "*.*_uuid"
+            go_type: github.com/google/uuid.UUID

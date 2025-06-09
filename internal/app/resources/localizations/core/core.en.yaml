@@ -1,0 +1,12 @@
+core:
+  appName: Anistats
+  title: '{{.AppName}} | {{.Title}}'
+
+  language:
+    ja:      Japanese
+    ja-Latn: Japanese (Hepburn)
+    en:      English
+    nl:      Dutch
+
+  media-type:
+    anime: Anime

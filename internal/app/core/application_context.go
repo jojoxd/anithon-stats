@@ -6,9 +6,17 @@ import (
 	"log/slog"
 
 	"gioui.org/widget/material"
+
+	"anistats/internal/app/api"
 )
 
 var errNoContext = errors.New("no application context found")
+
+const AppContextKey = "app"
+
+func NewAppContext(ctx context.Context, app Application) context.Context {
+	return context.WithValue(ctx, AppContextKey, app)
+}
 
 func AppFromContext(ctx context.Context) Application {
 	if app, ok := ctx.Value(AppContextKey).(Application); ok {
@@ -34,4 +42,10 @@ func LoggerFromContext(ctx context.Context) *slog.Logger {
 	app := AppFromContext(ctx)
 
 	return app.Logger()
+}
+
+func ApiClientFromContext(ctx context.Context) api.ClientBundle {
+	app := AppFromContext(ctx)
+
+	return app.ApiClient()
 }

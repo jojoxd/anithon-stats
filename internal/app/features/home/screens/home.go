@@ -5,7 +5,7 @@ import (
 
 	"gioui.org/layout"
 
-	"anistats/internal/app/core/widget"
+	"anistats/internal/app/widget"
 	"anistats/pkg/gio_router"
 )
 

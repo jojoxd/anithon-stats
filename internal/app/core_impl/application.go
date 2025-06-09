@@ -9,10 +9,10 @@ import (
 	"gioui.org/op"
 	"gioui.org/widget/material"
 
+	"anistats/internal/app/api"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core_impl/views"
-	"anistats/internal/app/res"
-	"anistats/internal/config"
+	"anistats/internal/app/resources"
 )
 
 var _ core.Application = (*Application)(nil)
@@ -23,9 +23,11 @@ type Application struct {
 	rootView         *views.Root
 	localizerManager *localizerManager
 	logger           *slog.Logger
+	clientBundle     api.ClientBundle
+	runtimeConfig    core.RuntimeConfig
 }
 
-func NewApplication(cfg *config.App, window *app.Window) *Application {
+func NewApplication(window *app.Window) *Application {
 	bundles, err := res.GetLangBundles()
 	if err != nil {
 		panic(err)
@@ -41,21 +43,25 @@ func NewApplication(cfg *config.App, window *app.Window) *Application {
 		theme:            material.NewTheme(),
 		localizerManager: localizerManager,
 		logger:           slog.Default(),
+		runtimeConfig:    NewRuntimeConfig(),
 	}
 }
 
-func (a *Application) Loop() error {
+func (a *Application) Loop(ctx context.Context) error {
 	var ops op.Ops
 
 	for {
+		a.logger.Info("loop")
+
 		switch ev := a.window.Event().(type) {
 		case app.DestroyEvent:
+			a.logger.Info("eventLoop: destroy")
 			return ev.Err
 
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, ev)
 
-			a.layout(gtx)
+			a.layout(ctx, gtx)
 			ev.Frame(gtx.Ops)
 		}
 	}
@@ -65,8 +71,8 @@ func (a *Application) Logger() *slog.Logger {
 	return a.logger
 }
 
-func (a *Application) layout(gtx layout.Context) layout.Dimensions {
-	ctx := newAppContext(context.TODO(), a)
+func (a *Application) layout(ctx context.Context, gtx layout.Context) layout.Dimensions {
+	ctx = core.NewAppContext(ctx, a)
 
 	if a.rootView == nil {
 		a.rootView = views.NewRoot(a.window)
@@ -87,6 +93,10 @@ func (a *Application) Theme() *material.Theme {
 	return a.theme
 }
 
-func newAppContext(ctx context.Context, app *Application) context.Context {
-	return context.WithValue(ctx, core.AppContextKey, app)
+func (a *Application) ApiClient() api.ClientBundle {
+	return a.clientBundle
+}
+
+func (a *Application) RuntimeConfig() core.RuntimeConfig {
+	return a.runtimeConfig
 }

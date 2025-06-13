@@ -1,8 +1,6 @@
 package widget
 
 import (
-	"context"
-
 	"gioui.org/layout"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
@@ -13,53 +11,52 @@ import (
 	"anistats/internal/app/core"
 	"anistats/internal/server/server_api"
 	"anistats/pkg/gio_kit/widget/inset"
-	"anistats/pkg/gio_router"
 )
 
 type MediaCardStyle struct {
-	media *v1.Media
+	app core.Application
 }
 
-func MediaCard(media *v1.Media) *MediaCardStyle {
-	style := &MediaCardStyle{media: media}
+func MediaCard(app core.Application) *MediaCardStyle {
+	style := &MediaCardStyle{
+		app: app,
+	}
 
 	return style
 }
 
-func (s *MediaCardStyle) Layout(ctx context.Context) layout.Dimensions {
-	gtx := gio_router.GtxFromContext(ctx)
-
+func (s *MediaCardStyle) Layout(gtx layout.Context, media *v1.Media) layout.Dimensions {
 	return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
 		layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
-			return s.layoutImage(gtx, ctx)
+			return s.layoutImage(gtx, media)
 		}),
 		layout.Flexed(4,
 			inset.Uniform(unit.Dp(16), func(gtx layout.Context) layout.Dimensions {
-				return s.layoutBody(gtx, ctx)
+				return s.layoutBody(gtx, media)
 			}),
 		),
 	)
 }
 
-func (s *MediaCardStyle) layoutImage(gtx layout.Context, ctx context.Context) layout.Dimensions {
+func (s *MediaCardStyle) layoutImage(gtx layout.Context, media *v1.Media) layout.Dimensions {
 	ms := server_api.NewMediaService()
-	i, _ := ms.CoverImage(s.media.Id)
+	i, _ := ms.CoverImage(media.Id)
 	img := paint.NewImageOp(i)
 
 	return widget.Image{Src: img, Fit: widget.Contain}.Layout(gtx)
 }
 
-func (s *MediaCardStyle) layoutBody(gtx layout.Context, ctx context.Context) layout.Dimensions {
-	th := core.ThemeFromContext(ctx)
-	localizer := core.LocalizerFromContext(ctx)
+func (s *MediaCardStyle) layoutBody(gtx layout.Context, media *v1.Media) layout.Dimensions {
+	theme := s.app.Theme()
+	localizer := s.app.Localizer()
 
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-		layout.Rigid(material.H3(th, localizer.TTv1(s.media.DisplayName)).Layout),
+		layout.Rigid(material.H3(theme, localizer.TTv1(media.DisplayName)).Layout),
 		layout.Rigid(
 			inset.Vertical(unit.Dp(4),
-				material.Body1(th, localizer.T("core.media-type.anime")).Layout,
+				material.Body1(theme, localizer.T("core.media-type.anime")).Layout,
 			),
 		),
-		layout.Rigid(material.Body2(th, s.media.Description).Layout),
+		layout.Rigid(material.Body2(theme, media.Description).Layout),
 	)
 }

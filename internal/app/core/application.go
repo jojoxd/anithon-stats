@@ -1,17 +1,18 @@
 package core
 
 import (
-	"context"
 	"log/slog"
 
 	"gioui.org/widget/material"
 
 	"anistats/internal/app/api"
+	"anistats/pkg/gio_kit/gkasync"
+	"anistats/pkg/gio_router"
 )
 
 type Application interface {
 	// Loop renders the application
-	Loop(ctx context.Context) error
+	Loop() error
 
 	// Localizer returns the current locale's Localizer instance
 	Localizer() Localizer
@@ -26,5 +27,10 @@ type Application interface {
 	Logger() *slog.Logger
 
 	RuntimeConfig() RuntimeConfig
+
 	ApiClient() api.ClientBundle
+
+	Router() gio_router.Manager
+
+	GkAsyncScheduler() gkasync.Scheduler
 }

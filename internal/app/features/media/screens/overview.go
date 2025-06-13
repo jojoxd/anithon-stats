@@ -9,33 +9,34 @@ import (
 	"anistats/pkg/gio_router"
 )
 
-var OverviewId = gio_router.NewRoute("media.overview")
-
 type Overview struct {
-	location gio_router.RouteLocation
+	gio_router.BaseScreen
+	app core.Application
 }
 
-func NewOverview() gio_router.RouteView {
-	return &Overview{}
+func NewOverview(app core.Application) gio_router.RouteView {
+	return &Overview{
+		app: app,
+	}
 }
 
-func (o *Overview) Layout(ctx context.Context) layout.Dimensions {
+func (o *Overview) Layout(gtx layout.Context) layout.Dimensions {
 	// TODO implement me
 	panic("implement me")
 }
 
 func (o *Overview) OnIntent(intent gio_router.Intent) error {
-	o.location = intent.Location()
+	err := o.BaseScreen.OnIntent(intent)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (o *Overview) Id() gio_router.Route {
 	// TODO implement me
 	panic("implement me")
-}
-
-func (o *Overview) Location() gio_router.RouteLocation {
-	return o.location
 }
 
 func (o *Overview) Title(ctx context.Context) string {

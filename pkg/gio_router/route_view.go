@@ -1,7 +1,6 @@
 package gio_router
 
 import (
-	"context"
 	"fmt"
 
 	"gioui.org/layout"
@@ -11,18 +10,18 @@ import (
 
 type RouteView interface {
 	Id() Route
-	Layout(ctx context.Context) layout.Dimensions
+	Layout(gtx layout.Context) layout.Dimensions
 	OnIntent(intent Intent) error
 	Location() RouteLocation
 }
 
 type RouteViewTitler interface {
-	Title(ctx context.Context) string
+	Title() string
 }
 
-func titleRouteView(rv RouteView, ctx context.Context) (string, bool) {
-	if titler, ok := rv.(RouteViewTitler); ok {
-		return titler.Title(ctx), true
+func titleRouteView(view RouteView) (string, bool) {
+	if titler, ok := view.(RouteViewTitler); ok {
+		return titler.Title(), true
 	}
 
 	return "", false

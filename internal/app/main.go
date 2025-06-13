@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"log"
 	"log/slog"
 	"os"
@@ -11,7 +10,7 @@ import (
 	"anistats/internal/app/core_impl"
 )
 
-func Main(ctx context.Context) {
+func Main() {
 	window := new(app.Window)
 
 	slog.SetLogLoggerLevel(slog.LevelDebug)
@@ -19,7 +18,7 @@ func Main(ctx context.Context) {
 	a := core_impl.NewApplication(window)
 
 	go func() {
-		err := a.Loop(ctx)
+		err := a.Loop()
 		a.Logger().Info("Application loop terminated", err)
 		if err != nil {
 			log.Fatal(err)

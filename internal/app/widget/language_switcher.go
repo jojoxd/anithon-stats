@@ -1,7 +1,6 @@
 package widget
 
 import (
-	"context"
 	"fmt"
 	"image"
 
@@ -14,45 +13,46 @@ import (
 	"golang.org/x/text/language"
 
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_router"
 )
 
-type LanguageSwitcher struct {
-	list  layout.List
-	items []*LanguageItem
+type LanguageSwitcherStyle struct {
+	list             layout.List
+	items            []*LanguageItem
+	localizerManager core.LocalizerManager
 }
 
-func NewLanguageSwitcher() LanguageSwitcher {
-	return LanguageSwitcher{
+func NewLanguageSwitcher(localizerManager core.LocalizerManager) LanguageSwitcherStyle {
+	return LanguageSwitcherStyle{
 		list: layout.List{
 			Axis: layout.Vertical,
 		},
+		localizerManager: localizerManager,
 	}
 }
 
-func (ls *LanguageSwitcher) Layout(ctx context.Context) layout.Dimensions {
-	gtx := gio_router.GtxFromContext(ctx)
-	app := core.AppFromContext(ctx)
-	th := core.ThemeFromContext(ctx)
-
-	lm := app.LocalizerManager()
-	languages := lm.Languages()
+func (ls *LanguageSwitcherStyle) Layout(gtx layout.Context, theme *material.Theme) layout.Dimensions {
+	languages := ls.localizerManager.Languages()
 	if ls.items == nil {
 		ls.items = make([]*LanguageItem, 0)
 		for _, lang := range languages {
 			ls.items = append(ls.items, &LanguageItem{
 				language:         lang,
-				localizerManager: lm,
+				localizerManager: ls.localizerManager,
 				pressed:          false,
 			})
 		}
 	}
 
-	return ls.list.Layout(gtx, len(ls.items), func(gtx layout.Context, index int) layout.Dimensions {
-		return layout.UniformInset(unit.Dp(16)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-			return ls.items[index].Layout(gtx, th)
-		})
-	})
+	return ls.list.Layout(gtx,
+		len(ls.items),
+		func(gtx layout.Context, index int) layout.Dimensions {
+			return layout.UniformInset(unit.Dp(16)).Layout(gtx,
+				func(gtx layout.Context) layout.Dimensions {
+					return ls.items[index].Layout(gtx, theme)
+				},
+			)
+		},
+	)
 }
 
 type LanguageItem struct {

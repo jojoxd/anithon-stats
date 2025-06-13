@@ -2,72 +2,59 @@ package screens
 
 import (
 	"context"
+	"time"
 
 	"gioui.org/layout"
 
+	v1 "anistats/api/v1"
+	"anistats/internal/app/core"
+	"anistats/internal/app/core/route"
 	"anistats/internal/app/widget"
 	"anistats/pkg/gio_router"
 )
 
-var HomeId = gio_router.NewRoute("home.home")
-
 type Home struct {
-	location     gio_router.RouteLocation
-	langSwitcher widget.LanguageSwitcher
+	gio_router.BaseScreen
+	app          core.Application
+	langSwitcher widget.LanguageSwitcherStyle
 }
 
-func NewHome() gio_router.RouteView {
+func NewHome(app core.Application) gio_router.RouteView {
+	langSwitcher := widget.NewLanguageSwitcher(app.LocalizerManager())
+
 	return &Home{
-		langSwitcher: widget.NewLanguageSwitcher(),
+		app:          app,
+		langSwitcher: langSwitcher,
 	}
 }
 
-func (h *Home) Layout(ctx context.Context) layout.Dimensions {
-	// gtx := gio_router.GtxFromContext(ctx)
-	// theme := core.ThemeFromContext(ctx)
-
-	// screen := gkscreen.NewScreen(gkscreen.ScreenSpec{
-	// 	Drawer: func(gtx layout.Context) layout.Dimensions {
-	// 		return material.H1(theme, "Drawer").Layout(gtx)
-	// 	},
-	// 	Main: func(gtx layout.Context) layout.Dimensions {
-	// 		return material.H1(theme, "Home").Layout(gtx)
-	// 	},
-	// 	TitleBar: func(gtx layout.Context) layout.Dimensions {
-	// 		ml := component.NewModal()
-	// 		ab := component.NewAppBar(ml)
-	//
-	// 		ab.Title = "AppBar Title"
-	//
-	// 		return ab.Layout(gtx, theme, "nav desc", "overflow desc")
-	// 	},
-	// })
-	//
-	// return screen.Layout(gtx)
-
-	// return material.H1(theme, "Home").Layout(gtx)
-
-	return h.langSwitcher.Layout(ctx)
+func (h *Home) Layout(gtx layout.Context) layout.Dimensions {
+	theme := h.app.Theme()
+	return h.langSwitcher.Layout(gtx, theme)
 }
 
 func (h *Home) OnIntent(intent gio_router.Intent) error {
-	h.location = intent.Location()
+	err := h.BaseScreen.OnIntent(intent)
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		time.Sleep(5 * time.Second)
+
+		router := h.app.Router()
+		router.RequestSwitch(route.Media(v1.MediaId{}))
+	}()
+
 	return nil
 }
 
 func (h *Home) Id() gio_router.Route {
-	return HomeId
-}
-
-func (h *Home) Location() gio_router.RouteLocation {
-	return h.location
+	return route.HomeRoute
 }
 
 func (h *Home) Title(_ context.Context) string {
-	return "Home Title"
-}
+	localizer := h.app.Localizer()
 
-func (h *Home) OnFinish() {}
-func (h *Home) Finished() bool {
-	return true
+	return localizer.T("page.home.title")
 }

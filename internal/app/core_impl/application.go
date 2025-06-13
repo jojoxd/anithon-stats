@@ -1,8 +1,8 @@
 package core_impl
 
 import (
-	"context"
 	"log/slog"
+	"runtime"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -13,6 +13,9 @@ import (
 	"anistats/internal/app/core"
 	"anistats/internal/app/core_impl/views"
 	"anistats/internal/app/resources"
+	"anistats/internal/config"
+	"anistats/pkg/gio_kit/gkasync"
+	"anistats/pkg/gio_router"
 )
 
 var _ core.Application = (*Application)(nil)
@@ -25,6 +28,8 @@ type Application struct {
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
 	runtimeConfig    core.RuntimeConfig
+	router           gio_router.Manager
+	gkAsyncScheduler gkasync.Scheduler
 }
 
 func NewApplication(window *app.Window) *Application {
@@ -38,16 +43,26 @@ func NewApplication(window *app.Window) *Application {
 		panic(err)
 	}
 
+	clientBundle, err := api.NewClientBundle(config.AppClient{
+		Type: config.ClientTypeEmbedded,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	return &Application{
 		window:           window,
+		router:           gio_router.NewManager(window, slog.Default()),
 		theme:            material.NewTheme(),
 		localizerManager: localizerManager,
+		clientBundle:     clientBundle,
 		logger:           slog.Default(),
 		runtimeConfig:    NewRuntimeConfig(),
+		gkAsyncScheduler: gkasync.NewPoolScheduler(window, runtime.NumCPU()),
 	}
 }
 
-func (a *Application) Loop(ctx context.Context) error {
+func (a *Application) Loop() error {
 	var ops op.Ops
 
 	for {
@@ -61,7 +76,7 @@ func (a *Application) Loop(ctx context.Context) error {
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, ev)
 
-			a.layout(ctx, gtx)
+			a.layout(gtx)
 			ev.Frame(gtx.Ops)
 		}
 	}
@@ -71,14 +86,12 @@ func (a *Application) Logger() *slog.Logger {
 	return a.logger
 }
 
-func (a *Application) layout(ctx context.Context, gtx layout.Context) layout.Dimensions {
-	ctx = core.NewAppContext(ctx, a)
-
+func (a *Application) layout(gtx layout.Context) layout.Dimensions {
 	if a.rootView == nil {
-		a.rootView = views.NewRoot(a.window)
+		a.rootView = views.NewRoot(a)
 	}
 
-	return a.rootView.Layout(ctx, gtx)
+	return a.rootView.Layout(gtx)
 }
 
 func (a *Application) Localizer() core.Localizer {
@@ -99,4 +112,12 @@ func (a *Application) ApiClient() api.ClientBundle {
 
 func (a *Application) RuntimeConfig() core.RuntimeConfig {
 	return a.runtimeConfig
+}
+
+func (a *Application) Router() gio_router.Manager {
+	return a.router
+}
+
+func (a *Application) GkAsyncScheduler() gkasync.Scheduler {
+	return a.gkAsyncScheduler
 }

@@ -1,14 +1,12 @@
 package gio_router
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"slices"
 	"sync"
 
 	"gioui.org/app"
-	"gioui.org/layout"
 
 	"anistats/pkg/gio_router/external"
 	"anistats/pkg/gio_router/internal"
@@ -49,10 +47,10 @@ func (vm *managerImpl) CurrentView() RouteView {
 	return stack.Peek()
 }
 
-func (vm *managerImpl) Update(ctx context.Context) {
-	vw := vm.CurrentView()
+func (vm *managerImpl) Update() {
+	currentView := vm.CurrentView()
 
-	if newTitle, ok := titleRouteView(vw, ctx); ok && vm.currentTitle != newTitle {
+	if newTitle, ok := titleRouteView(currentView); ok && vm.currentTitle != newTitle {
 		vm.currentTitle = newTitle
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
@@ -249,10 +247,6 @@ func (vm *managerImpl) Reset() {
 	vm.currentTabIdx = 0
 	vm.stacks = vm.stacks[:0]
 	vm.Invalidate()
-}
-
-func (vm *managerImpl) Context(ctx context.Context, gtx layout.Context) context.Context {
-	return newContext(vm, &gtx, ctx)
 }
 
 func (vm *managerImpl) compareLocations(a, b RouteLocation) bool {

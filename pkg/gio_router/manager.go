@@ -1,11 +1,5 @@
 package gio_router
 
-import (
-	"context"
-
-	"gioui.org/layout"
-)
-
 // Manager is the core of gio_router. It can be used to:
 //  1. manages routeProviders;
 //  2. dispatch view requests via the Intent object.
@@ -42,7 +36,7 @@ type Manager interface {
 	// CurrentViewIndex gives the current tab index
 	CurrentViewIndex() int
 
-	Update(ctx context.Context)
+	Update()
 
 	// NavBack navigates back to the last view if there's any and pop out the current view.
 	// It returns the view that is to be rendered (which might not be the current view)
@@ -57,7 +51,4 @@ type Manager interface {
 
 	// Reset resets internal states of the Manager
 	Reset()
-
-	// Context generates a managerContext
-	Context(ctx context.Context, gtx layout.Context) context.Context
 }

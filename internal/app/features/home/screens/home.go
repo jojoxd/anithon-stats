@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gioui.org/layout"
+	"github.com/google/uuid"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
@@ -42,8 +43,10 @@ func (h *Home) OnIntent(intent gio_router.Intent) error {
 	go func() {
 		time.Sleep(5 * time.Second)
 
-		router := h.app.Router()
-		router.RequestSwitch(route.Media(v1.MediaId{}))
+		err = h.app.Router().RequestSwitch(route.Media(v1.MediaId(uuid.MustParse("0197568d-6e5b-7d67-b9d5-d244fec5a766"))))
+		if err != nil {
+			panic(err)
+		}
 	}()
 
 	return nil

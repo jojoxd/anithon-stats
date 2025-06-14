@@ -1,6 +1,8 @@
 package widget
 
 import (
+	"context"
+
 	"gioui.org/layout"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
@@ -40,7 +42,7 @@ func (s *MediaCardStyle) Layout(gtx layout.Context, media *v1.Media) layout.Dime
 
 func (s *MediaCardStyle) layoutImage(gtx layout.Context, media *v1.Media) layout.Dimensions {
 	ms := server_api.NewMediaService()
-	i, _ := ms.CoverImage(media.Id)
+	i, _ := ms.CoverImage(context.TODO(), media.Id)
 	img := paint.NewImageOp(i)
 
 	return widget.Image{Src: img, Fit: widget.Contain}.Layout(gtx)

@@ -19,7 +19,7 @@ func Main() {
 
 	go func() {
 		err := a.Loop()
-		a.Logger().Info("Application loop terminated", err)
+		a.Logger().Info("Application loop terminated", "err", err)
 		if err != nil {
 			log.Fatal(err)
 		}

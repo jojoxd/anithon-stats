@@ -6,14 +6,11 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/widget/material"
-	"github.com/google/uuid"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/features/media/widget"
-	"anistats/pkg/anistats_client"
-	"anistats/pkg/gio_kit/gkasync"
 	"anistats/pkg/gio_kit/gkloader"
 	"anistats/pkg/gio_router"
 )
@@ -22,7 +19,7 @@ type Media struct {
 	gio_router.BaseScreen
 	app       core.Application
 	mediaCard *widget.MediaCardStyle
-	loader    gkloader.GkLoaderStyle
+	loader    *gkloader.GkLoaderStyle
 }
 
 type MediaParams struct {
@@ -30,22 +27,25 @@ type MediaParams struct {
 }
 
 func NewMedia(app core.Application) gio_router.RouteView {
-	return &Media{
+	m := &Media{
 		app:       app,
 		mediaCard: widget.MediaCard(app),
-		loader:    gkloader.New(gkloader.NewSchedulerController(app.GkScheduler(), loadMedia)),
 	}
+
+	m.loader = gkloader.NewScheduler(app.GkAsyncScheduler(), m.loadMedia)
+
+	return m
 }
 
 func (m *Media) Layout(gtx layout.Context) layout.Dimensions {
-	logger := m.app.Logger()
-
-	logger.Debug("render media screen")
-
-	msvc := m.app.ApiClient().MediaService()
-
-	media, _ := msvc.Media(v1.MediaId(uuid.MustParse("0197568d-6e5b-7d67-b9d5-d244fec5a766")))
-	return m.layoutLoaded(gtx, &media)
+	return m.loader.Layout(gtx, gkloader.Slots[v1.Media]{
+		Loading: func(gtx layout.Context) layout.Dimensions {
+			return material.Loader(m.app.Theme()).Layout(gtx)
+		},
+		Loaded: func(gtx layout.Context, data v1.Media) layout.Dimensions {
+			return m.mediaCard.Layout(gtx, &data)
+		},
+	}.Layout)
 }
 
 func (m *Media) layoutLoading(gtx layout.Context) layout.Dimensions {
@@ -64,6 +64,13 @@ func (m *Media) OnIntent(intent gio_router.Intent) error {
 		return err
 	}
 
+	params, ok := intent.Params.(route.MediaParams)
+	if !ok {
+		return errors.New("invalid params type")
+	}
+
+	m.loader.Load(params.MediaId)
+
 	return nil
 }
 
@@ -72,16 +79,23 @@ func (m *Media) Id() gio_router.Route {
 }
 
 func (m *Media) Title() string {
-	// localizer := core.LocalizerFromContext(ctx)
-	//
-	// media := m.loader.Data()
-	// if media != nil {
-	// 	return localizer.PageTitle("page.media.media.title", map[string]string{
-	// 		"Name": localizer.TTv1(media.DisplayName),
-	// 	})
-	// }
-
 	localizer := m.app.Localizer()
 
+	if media, ok := m.loader.Data().(v1.Media); ok {
+		return localizer.PageTitle("page.media.media.title", map[string]string{
+			"Name": localizer.TTv1(media.DisplayName),
+		})
+	}
+
 	return localizer.PageTitle("page.media.media.loading", nil)
+}
+
+func (m *Media) loadMedia(ctx context.Context, mediaId ...interface{}) (interface{}, error) {
+	mediaService := m.app.ApiClient().MediaService()
+
+	if mediaId, ok := mediaId[0].(v1.MediaId); ok {
+		return mediaService.Media(ctx, mediaId)
+	}
+
+	return nil, errors.New("invalid media id")
 }

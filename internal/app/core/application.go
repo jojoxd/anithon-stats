@@ -26,8 +26,6 @@ type Application interface {
 	// Logger returns the global logger instance
 	Logger() *slog.Logger
 
-	RuntimeConfig() RuntimeConfig
-
 	ApiClient() api.ClientBundle
 
 	Router() gio_router.Manager

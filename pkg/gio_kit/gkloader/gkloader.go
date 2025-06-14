@@ -31,3 +31,12 @@ func (l *GkLoaderStyle) Layout(gtx layout.Context, widget Widget) layout.Dimensi
 func (l *GkLoaderStyle) Load(args ...interface{}) {
 	l.controller.Load(args...)
 }
+
+func (l *GkLoaderStyle) Data() interface{} {
+	switch state := l.controller.State().(type) {
+	case *LoadedState:
+		return state.Data
+	}
+
+	return nil
+}

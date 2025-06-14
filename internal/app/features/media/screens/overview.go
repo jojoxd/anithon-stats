@@ -1,8 +1,6 @@
 package screens
 
 import (
-	"context"
-
 	"gioui.org/layout"
 
 	"anistats/internal/app/core"
@@ -39,8 +37,8 @@ func (o *Overview) Id() gio_router.Route {
 	panic("implement me")
 }
 
-func (o *Overview) Title(ctx context.Context) string {
-	localizer := core.LocalizerFromContext(ctx)
+func (o *Overview) Title() string {
+	localizer := o.app.Localizer()
 
 	return localizer.T("media.overview.title")
 }

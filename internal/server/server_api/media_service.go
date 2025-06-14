@@ -1,6 +1,7 @@
 package server_api
 
 import (
+	"context"
 	"image"
 	"net/http"
 	"time"
@@ -19,7 +20,9 @@ func NewMediaService() anistats_client.MediaService {
 	return &MediaService{}
 }
 
-func (m MediaService) Media(id v1.MediaId) (v1.Media, error) {
+func (m MediaService) Media(ctx context.Context, id v1.MediaId) (v1.Media, error) {
+	time.Sleep(5 * time.Second)
+
 	return v1.Media{
 		Id: id,
 		DisplayName: v1.Translatable{
@@ -39,7 +42,7 @@ func (m MediaService) Media(id v1.MediaId) (v1.Media, error) {
 	}, nil
 }
 
-func (m MediaService) CoverImage(id v1.MediaId) (image.Image, error) {
+func (m MediaService) CoverImage(ctx context.Context, id v1.MediaId) (image.Image, error) {
 	res, err := http.Get("https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5114-nSWCgQlmOMtj.jpg")
 	if err != nil {
 		return nil, err
@@ -51,7 +54,7 @@ func (m MediaService) CoverImage(id v1.MediaId) (image.Image, error) {
 	return img, err
 }
 
-func (m MediaService) BannerImage(id v1.MediaId) (image.Image, error) {
+func (m MediaService) BannerImage(ctx context.Context, id v1.MediaId) (image.Image, error) {
 	// TODO implement me
 	panic("implement me")
 }

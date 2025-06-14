@@ -10,7 +10,7 @@ var MediaRoute = gio_router.NewRoute("media.media")
 func Media(id v1.MediaId) gio_router.Intent {
 	return gio_router.Intent{
 		Target: MediaRoute,
-		Params: &MediaParams{
+		Params: MediaParams{
 			MediaId: id,
 		},
 	}

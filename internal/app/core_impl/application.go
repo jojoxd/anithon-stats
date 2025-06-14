@@ -27,7 +27,6 @@ type Application struct {
 	localizerManager *localizerManager
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
-	runtimeConfig    core.RuntimeConfig
 	router           gio_router.Manager
 	gkAsyncScheduler gkasync.Scheduler
 }
@@ -57,7 +56,6 @@ func NewApplication(window *app.Window) *Application {
 		localizerManager: localizerManager,
 		clientBundle:     clientBundle,
 		logger:           slog.Default(),
-		runtimeConfig:    NewRuntimeConfig(),
 		gkAsyncScheduler: gkasync.NewPoolScheduler(window, runtime.NumCPU()),
 	}
 }
@@ -108,10 +106,6 @@ func (a *Application) Theme() *material.Theme {
 
 func (a *Application) ApiClient() api.ClientBundle {
 	return a.clientBundle
-}
-
-func (a *Application) RuntimeConfig() core.RuntimeConfig {
-	return a.runtimeConfig
 }
 
 func (a *Application) Router() gio_router.Manager {

@@ -4,15 +4,15 @@ import (
 	"gioui.org/layout"
 
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
 type Overview struct {
-	gio_router.BaseScreen
+	gkrouter.BaseScreen
 	app core.Application
 }
 
-func NewOverview(app core.Application) gio_router.RouteView {
+func NewOverview(app core.Application) gkrouter.RouteView {
 	return &Overview{
 		app: app,
 	}
@@ -23,7 +23,7 @@ func (o *Overview) Layout(gtx layout.Context) layout.Dimensions {
 	panic("implement me")
 }
 
-func (o *Overview) OnIntent(intent gio_router.Intent) error {
+func (o *Overview) OnIntent(intent gkrouter.Intent) error {
 	err := o.BaseScreen.OnIntent(intent)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (o *Overview) OnIntent(intent gio_router.Intent) error {
 	return nil
 }
 
-func (o *Overview) Id() gio_router.Route {
+func (o *Overview) Id() gkrouter.Route {
 	// TODO implement me
 	panic("implement me")
 }

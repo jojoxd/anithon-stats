@@ -12,7 +12,7 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/server/server_api"
-	"anistats/pkg/gio_kit/widget/inset"
+	"anistats/pkg/gio_kit/utils/gkinset"
 )
 
 type MediaCardStyle struct {
@@ -33,7 +33,7 @@ func (s *MediaCardStyle) Layout(gtx layout.Context, media *v1.Media) layout.Dime
 			return s.layoutImage(gtx, media)
 		}),
 		layout.Flexed(4,
-			inset.Uniform(unit.Dp(16), func(gtx layout.Context) layout.Dimensions {
+			gkinset.Uniform(unit.Dp(16), func(gtx layout.Context) layout.Dimensions {
 				return s.layoutBody(gtx, media)
 			}),
 		),
@@ -55,7 +55,7 @@ func (s *MediaCardStyle) layoutBody(gtx layout.Context, media *v1.Media) layout.
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 		layout.Rigid(material.H3(theme, localizer.TTv1(media.DisplayName)).Layout),
 		layout.Rigid(
-			inset.Vertical(unit.Dp(4),
+			gkinset.Vertical(unit.Dp(4),
 				material.Body1(theme, localizer.T("core.media-type.anime")).Layout,
 			),
 		),

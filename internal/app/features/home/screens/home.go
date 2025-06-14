@@ -11,16 +11,16 @@ import (
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/widget"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
 type Home struct {
-	gio_router.BaseScreen
+	gkrouter.BaseScreen
 	app          core.Application
 	langSwitcher widget.LanguageSwitcherStyle
 }
 
-func NewHome(app core.Application) gio_router.RouteView {
+func NewHome(app core.Application) gkrouter.RouteView {
 	langSwitcher := widget.NewLanguageSwitcher(app.LocalizerManager())
 
 	return &Home{
@@ -34,7 +34,7 @@ func (h *Home) Layout(gtx layout.Context) layout.Dimensions {
 	return h.langSwitcher.Layout(gtx, theme)
 }
 
-func (h *Home) OnIntent(intent gio_router.Intent) error {
+func (h *Home) OnIntent(intent gkrouter.Intent) error {
 	err := h.BaseScreen.OnIntent(intent)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (h *Home) OnIntent(intent gio_router.Intent) error {
 	return nil
 }
 
-func (h *Home) Id() gio_router.Route {
+func (h *Home) Id() gkrouter.Route {
 	return route.HomeRoute
 }
 

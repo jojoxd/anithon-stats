@@ -12,11 +12,11 @@ import (
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/features/media/widget"
 	"anistats/pkg/gio_kit/gkloader"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
 type Media struct {
-	gio_router.BaseScreen
+	gkrouter.BaseScreen
 	app       core.Application
 	mediaCard *widget.MediaCardStyle
 	loader    *gkloader.GkLoaderStyle
@@ -26,7 +26,7 @@ type MediaParams struct {
 	MediaId v1.MediaId
 }
 
-func NewMedia(app core.Application) gio_router.RouteView {
+func NewMedia(app core.Application) gkrouter.RouteView {
 	m := &Media{
 		app:       app,
 		mediaCard: widget.MediaCard(app),
@@ -58,7 +58,7 @@ func (m *Media) layoutLoaded(gtx layout.Context, media *v1.Media) layout.Dimensi
 	return m.mediaCard.Layout(gtx, media)
 }
 
-func (m *Media) OnIntent(intent gio_router.Intent) error {
+func (m *Media) OnIntent(intent gkrouter.Intent) error {
 	err := m.BaseScreen.OnIntent(intent)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (m *Media) OnIntent(intent gio_router.Intent) error {
 	return nil
 }
 
-func (m *Media) Id() gio_router.Route {
+func (m *Media) Id() gkrouter.Route {
 	return route.MediaRoute
 }
 

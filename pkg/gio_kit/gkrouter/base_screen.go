@@ -1,4 +1,4 @@
-package gio_router
+package gkrouter
 
 type BaseScreen struct {
 	location RouteLocation

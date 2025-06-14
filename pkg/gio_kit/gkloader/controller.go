@@ -2,7 +2,6 @@ package gkloader
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"anistats/pkg/gio_kit/gkasync"
@@ -44,16 +43,12 @@ func (sc *SchedulerController) State() State {
 
 func (sc *SchedulerController) Load(args ...interface{}) {
 	sc.scheduler.Schedule(func(ctx context.Context) {
-		fmt.Printf("controller.go: start loading\n")
-
 		sc.stateMu.Lock()
 		sc.state = &LoadingState{}
 		sc.stateMu.Unlock()
 
 		data, err := sc.loader(ctx, args...)
 		if err != nil {
-			fmt.Printf("controller.go: loading errored: %#v\n", err)
-
 			sc.stateMu.Lock()
 			sc.state = &ErrorState{
 				Error: err,
@@ -63,7 +58,6 @@ func (sc *SchedulerController) Load(args ...interface{}) {
 			return
 		}
 
-		fmt.Printf("controller.go: loading complete, data: %#v\n", data)
 		sc.stateMu.Lock()
 		sc.state = &LoadedState{
 			Data: data,

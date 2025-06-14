@@ -1,11 +1,12 @@
-package gio_router
+package gkrouter
 
 import (
+	"context"
 	"fmt"
 
 	"gioui.org/layout"
 
-	"anistats/pkg/gio_router/external"
+	"anistats/pkg/gio_kit/contract"
 )
 
 type RouteView interface {
@@ -32,10 +33,20 @@ type RouteViewFinisher interface {
 	Finished() bool
 }
 
-func finishRouteView(rv RouteView, logger external.Logger) {
+func finishRouteView(rv RouteView, logger contract.Logger) {
 	if finishable, ok := rv.(RouteViewFinisher); ok {
 		logger.Debug(fmt.Sprintf("finishing view %T", rv))
 		finishable.OnFinish()
 		logger.Debug(fmt.Sprintf("finished view %T", rv))
+	}
+}
+
+type RouteViewUpdater interface {
+	Update(ctx context.Context)
+}
+
+func updateRouteView(rv RouteView, ctx context.Context) {
+	if updater, ok := rv.(RouteViewUpdater); ok {
+		updater.Update(ctx)
 	}
 }

@@ -19,7 +19,7 @@ import (
 func main() {
 	window := new(app.Window)
 
-	scheduler := gkasync.NewPoolScheduler(window, 3)
+	scheduler := gkasync.NewPoolScheduler(window, gkasync.Workers(3))
 	controller := gkloader.NewSchedulerController(scheduler, loadData)
 
 	a := App{

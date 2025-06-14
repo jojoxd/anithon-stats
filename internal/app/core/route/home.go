@@ -1,11 +1,13 @@
 package route
 
-import "anistats/pkg/gio_router"
+import (
+	"anistats/pkg/gio_kit/gkrouter"
+)
 
-var HomeRoute = gio_router.NewRoute("home.home")
+var HomeRoute = gkrouter.NewRoute("home.home")
 
-func Home() gio_router.Intent {
-	return gio_router.Intent{
+func Home() gkrouter.Intent {
+	return gkrouter.Intent{
 		Target: HomeRoute,
 	}
 }

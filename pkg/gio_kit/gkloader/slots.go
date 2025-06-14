@@ -2,7 +2,6 @@ package gkloader
 
 import (
 	"errors"
-	"fmt"
 
 	"gioui.org/layout"
 )
@@ -16,8 +15,6 @@ type Slots[TData any] struct {
 }
 
 func (slots Slots[TData]) Layout(gtx layout.Context, state State) layout.Dimensions {
-	fmt.Printf("slots.go: gkloader.Slots Layout called with state = %#v\n", state)
-
 	switch state := state.(type) {
 	case *ErrorState:
 		return slots.layoutError(gtx, state.Error)

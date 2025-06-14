@@ -7,7 +7,7 @@ import (
 
 	"anistats/internal/app/api"
 	"anistats/pkg/gio_kit/gkasync"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
 type Application interface {
@@ -28,7 +28,7 @@ type Application interface {
 
 	ApiClient() api.ClientBundle
 
-	Router() gio_router.Manager
+	Router() gkrouter.Manager
 
 	GkAsyncScheduler() gkasync.Scheduler
 }

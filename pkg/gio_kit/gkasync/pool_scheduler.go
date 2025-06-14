@@ -9,35 +9,39 @@ import (
 )
 
 type poolScheduler struct {
-	window     *app.Window
-	maxWorkers int
-	poolCh     chan struct{}
-	workCh     chan ScheduleFn
-	init       sync.Once
+	window *app.Window
+	config *config
+	poolCh chan struct{}
+	workCh chan ScheduleFn
+	init   sync.Once
 }
 
-func NewPoolScheduler(window *app.Window, maxWorkers int) Scheduler {
+func NewPoolScheduler(window *app.Window, opts ...Option) Scheduler {
+	conf := newDefaultConfig()
+	conf.Load(opts...)
+
 	return &poolScheduler{
-		window:     window,
-		maxWorkers: maxWorkers,
-		poolCh:     make(chan struct{}),
-		workCh:     make(chan ScheduleFn),
+		window: window,
+		config: conf,
+		poolCh: make(chan struct{}),
+		workCh: make(chan ScheduleFn),
 	}
 }
 
 func (s *poolScheduler) Schedule(f ScheduleFn) {
 	s.init.Do(func() {
-		for i := 0; i < s.maxWorkers; i++ {
+		for i := 0; i < s.config.workers; i++ {
 			go func() {
-				fmt.Printf("gkasync.go: starting worker %d\n", i)
+				s.config.logger.Debug(fmt.Sprintf("starting worker %d", i))
 
 				for work := range s.workCh {
 					if work != nil {
-						fmt.Printf("gkasync.go: found some work\n")
+						s.config.logger.Debug(fmt.Sprintf("worker %d: found some work", i))
 						s.window.Invalidate()
+
 						work(context.Background())
 
-						fmt.Printf("gkasync.go: work done\n")
+						s.config.logger.Debug(fmt.Sprintf("worker %d: work complete", i))
 						s.window.Invalidate()
 					}
 				}

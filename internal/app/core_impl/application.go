@@ -2,7 +2,6 @@ package core_impl
 
 import (
 	"log/slog"
-	"runtime"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -15,7 +14,7 @@ import (
 	"anistats/internal/app/resources"
 	"anistats/internal/config"
 	"anistats/pkg/gio_kit/gkasync"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
 var _ core.Application = (*Application)(nil)
@@ -27,37 +26,49 @@ type Application struct {
 	localizerManager *localizerManager
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
-	router           gio_router.Manager
+	router           gkrouter.Manager
 	gkAsyncScheduler gkasync.Scheduler
 }
 
-func NewApplication(window *app.Window) *Application {
+func NewApplication(window *app.Window) (*Application, error) {
 	bundles, err := res.GetLangBundles()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	localizerManager, err := newLocalizerManager(bundles, res.LangEnglish)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	clientBundle, err := api.NewClientBundle(config.AppClient{
 		Type: config.ClientTypeEmbedded,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return &Application{
+	router := gkrouter.NewManager(window,
+		gkrouter.Logger(slog.Default()),
+		gkrouter.ManageWindowTitle(config.AppName),
+	)
+
+	gkAsyncScheduler := gkasync.NewPoolScheduler(window,
+		gkasync.Logger(slog.Default()),
+		gkasync.Workers(4),
+	)
+
+	application := &Application{
 		window:           window,
-		router:           gio_router.NewManager(window, slog.Default()),
+		router:           router,
 		theme:            material.NewTheme(),
 		localizerManager: localizerManager,
 		clientBundle:     clientBundle,
 		logger:           slog.Default(),
-		gkAsyncScheduler: gkasync.NewPoolScheduler(window, runtime.NumCPU()),
+		gkAsyncScheduler: gkAsyncScheduler,
 	}
+
+	return application, nil
 }
 
 func (a *Application) Loop() error {
@@ -108,7 +119,7 @@ func (a *Application) ApiClient() api.ClientBundle {
 	return a.clientBundle
 }
 
-func (a *Application) Router() gio_router.Manager {
+func (a *Application) Router() gkrouter.Manager {
 	return a.router
 }
 

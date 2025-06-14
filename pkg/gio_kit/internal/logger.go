@@ -3,25 +3,27 @@ package internal
 import (
 	"fmt"
 
-	"anistats/pkg/gio_router/external"
+	"anistats/pkg/gio_kit/contract"
 )
 
+// nilLogger is a logger that will not log anything (like /dev/null)
 type nilLogger struct{}
 
 func (nilLogger) Warn(_ string, _ ...any)  {}
 func (nilLogger) Info(_ string, _ ...any)  {}
 func (nilLogger) Debug(_ string, _ ...any) {}
 
-func NewNilLogger() external.Logger {
+func NewNilLogger() contract.Logger {
 	return nilLogger{}
 }
 
+// prefixLogger is a logger that will prefix a string onto a log message
 type prefixLogger struct {
 	prefix string
-	inner  external.Logger
+	inner  contract.Logger
 }
 
-func NewPrefixLogger(prefix string, inner external.Logger) external.Logger {
+func NewPrefixLogger(prefix string, inner contract.Logger) contract.Logger {
 	return prefixLogger{
 		prefix: prefix,
 		inner:  inner,

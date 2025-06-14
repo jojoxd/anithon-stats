@@ -5,10 +5,10 @@ import (
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/core/screen"
 	"anistats/internal/app/features/media/screens"
-	"anistats/pkg/gio_router"
+	"anistats/pkg/gio_kit/gkrouter"
 )
 
-func Register(app core.Application, mgr gio_router.Manager) error {
+func Register(app core.Application, mgr gkrouter.Manager) error {
 	var err error
 
 	err = mgr.Register(route.MediaOverviewRoute, screen.WithApp(app, screens.NewOverview))

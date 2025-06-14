@@ -1,4 +1,6 @@
-package gio_router
+package gkrouter
+
+import "context"
 
 // Manager is the core of gio_router. It can be used to:
 //  1. manages routeProviders;
@@ -36,7 +38,7 @@ type Manager interface {
 	// CurrentViewIndex gives the current tab index
 	CurrentViewIndex() int
 
-	Update()
+	Update(ctx context.Context)
 
 	// NavBack navigates back to the last view if there's any and pop out the current view.
 	// It returns the view that is to be rendered (which might not be the current view)

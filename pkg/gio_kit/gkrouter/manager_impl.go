@@ -1,15 +1,13 @@
-package gio_router
+package gkrouter
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"slices"
 	"sync"
 
 	"gioui.org/app"
-
-	"anistats/pkg/gio_router/external"
-	"anistats/pkg/gio_router/internal"
 )
 
 var _ Manager = (*managerImpl)(nil)
@@ -22,19 +20,16 @@ type managerImpl struct {
 	// title of the window
 	currentTitle  string
 	dispatchMutex sync.Mutex
-	logger        external.Logger
+	config        *config
 }
 
-func NewManager(window *app.Window, logger external.Logger) Manager {
-	if logger == nil {
-		logger = internal.NewNilLogger()
-	}
-
-	logger = internal.NewPrefixLogger("gio_router", logger)
+func NewManager(window *app.Window, options ...Option) Manager {
+	conf := newDefaultConfig()
+	conf.Load(options...)
 
 	return &managerImpl{
 		window: window,
-		logger: logger,
+		config: conf,
 	}
 }
 
@@ -47,10 +42,21 @@ func (vm *managerImpl) CurrentView() RouteView {
 	return stack.Peek()
 }
 
-func (vm *managerImpl) Update() {
-	currentView := vm.CurrentView()
+func (vm *managerImpl) Update(ctx context.Context) {
+	if vm.config.manageWindowTitle {
+		vm.updateTitle()
+	}
 
-	if newTitle, ok := titleRouteView(currentView); ok && vm.currentTitle != newTitle {
+	updateRouteView(vm.CurrentView(), ctx)
+}
+
+func (vm *managerImpl) updateTitle() {
+	newTitle, ok := titleRouteView(vm.CurrentView())
+	if !ok {
+		newTitle = vm.config.defaultWindowTitle
+	}
+
+	if vm.currentTitle != newTitle {
 		vm.currentTitle = newTitle
 		vm.window.Option(app.Title(vm.currentTitle))
 	}
@@ -77,7 +83,7 @@ func (vm *managerImpl) Register(Id Route, provider RouteProvider) error {
 	}
 
 	vm.routeProviders[Id] = provider
-	vm.logger.Info(fmt.Sprintf("registered view %s", Id))
+	vm.config.logger.Info(fmt.Sprintf("registered view %s", Id))
 
 	return nil
 }
@@ -94,7 +100,7 @@ func (vm *managerImpl) NavBack() RouteView {
 	}
 
 	vw := stack.Pop()
-	finishRouteView(vw, vm.logger)
+	finishRouteView(vw, vm.config.logger)
 
 	return stack.Peek()
 }
@@ -146,7 +152,7 @@ func (vm *managerImpl) RequestSwitch(intent Intent) error {
 	}
 
 	location := intent.Location()
-	vm.logger.Info(fmt.Sprintf("switching to %s", location))
+	vm.config.logger.Info(fmt.Sprintf("switching to %s", location))
 	return nil
 }
 
@@ -154,7 +160,7 @@ func (vm *managerImpl) RequestSwitch(intent Intent) error {
 func (vm *managerImpl) routeView(intent *Intent) *ViewStack {
 	if len(vm.stacks) <= vm.currentTabIdx {
 		// try to fix the illegal state
-		stack := NewViewStack(vm.logger)
+		stack := NewViewStack(vm.config.logger)
 		vm.stacks = append(vm.stacks, stack)
 		vm.currentTabIdx = len(vm.stacks) - 1
 		return stack
@@ -171,7 +177,7 @@ func (vm *managerImpl) routeView(intent *Intent) *ViewStack {
 	}
 
 	if intent.RequireNewStack {
-		stack := NewViewStack(vm.logger)
+		stack := NewViewStack(vm.config.logger)
 		vm.stacks = append(vm.stacks, stack)
 		vm.currentTabIdx = len(vm.stacks) - 1
 		return stack
@@ -193,7 +199,7 @@ func (vm *managerImpl) routeView(intent *Intent) *ViewStack {
 	}
 
 	// create new stack
-	stack := NewViewStack(vm.logger)
+	stack := NewViewStack(vm.config.logger)
 	vm.stacks = append(vm.stacks, stack)
 	vm.currentTabIdx = len(vm.stacks) - 1
 
@@ -250,7 +256,7 @@ func (vm *managerImpl) Reset() {
 }
 
 func (vm *managerImpl) compareLocations(a, b RouteLocation) bool {
-	vm.logger.Debug(fmt.Sprintf("compareLocations %T %+v, %T %+v", a, b))
+	vm.config.logger.Debug(fmt.Sprintf("compareLocations %#v, %#v", a, b))
 
 	return a == b
 }

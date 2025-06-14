@@ -1,17 +1,17 @@
-package gio_router
+package gkrouter
 
 import (
 	"container/list"
 	"iter"
 
-	"anistats/pkg/gio_router/external"
-	"anistats/pkg/gio_router/internal"
+	"anistats/pkg/gio_kit/contract"
+	"anistats/pkg/gio_kit/internal"
 )
 
 // ViewStack is for view navigation history
 type ViewStack struct {
 	viewList *list.List
-	logger   external.Logger
+	logger   contract.Logger
 }
 
 func (vs *ViewStack) Pop() RouteView {
@@ -109,7 +109,7 @@ func (vs *ViewStack) Clear() {
 	vs.viewList.Init()
 }
 
-func NewViewStack(logger external.Logger) *ViewStack {
+func NewViewStack(logger contract.Logger) *ViewStack {
 	if logger == nil {
 		logger = internal.NewNilLogger()
 	}

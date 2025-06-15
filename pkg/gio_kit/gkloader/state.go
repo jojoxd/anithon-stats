@@ -1,49 +1,32 @@
 package gkloader
 
-type StateKind int
+// State signifies a Controller state
+type State[TData any] interface{}
 
-const (
-	StateKindInitial StateKind = iota
-	StateKindError
-	StateKindQueued
-	StateKindLoading
-	StateKindLoaded
-)
-
-type State interface {
-	Kind() StateKind
+// StateInitial is the initial State a Controller is in
+type StateInitial[TData any] struct {
+	State[TData]
 }
 
-type ErrorState struct {
+// StateError is the State that a Controller contains when an error has occurred
+type StateError[TData any] struct {
+	State[TData]
 	Error error
 }
 
-func (s ErrorState) Kind() StateKind {
-	return StateKindError
+// StateQueued is the State that a Controller contains when a Controller.Load has been issued,
+// but the gkasync.Scheduler has not yet taken up the job yet
+type StateQueued[TData any] struct {
+	State[TData]
 }
 
-type InitialState struct{}
-
-func (s InitialState) Kind() StateKind {
-	return StateKindInitial
+// StateLoading is the State that a Controller contains when the gkasync.Scheduler has started loading
+type StateLoading[TData any] struct {
+	State[TData]
 }
 
-type LoadingState struct{}
-
-func (s LoadingState) Kind() StateKind {
-	return StateKindLoading
-}
-
-type LoadedState struct {
-	Data interface{}
-}
-
-func (s LoadedState) Kind() StateKind {
-	return StateKindLoaded
-}
-
-type QueuedState struct{}
-
-func (s QueuedState) Kind() StateKind {
-	return StateKindQueued
+// StateLoaded is the State that a Controller contains when the gkasync.Scheduler has finished loading
+type StateLoaded[TData any] struct {
+	State[TData]
+	Data TData
 }

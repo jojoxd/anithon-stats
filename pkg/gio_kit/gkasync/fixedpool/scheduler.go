@@ -1,4 +1,4 @@
-package gkasync
+package fixedpool
 
 import (
 	"context"
@@ -6,30 +6,32 @@ import (
 	"sync"
 
 	"gioui.org/app"
+
+	"anistats/pkg/gio_kit/gkasync"
 )
 
-type poolScheduler struct {
+type scheduler struct {
 	window *app.Window
 	config *config
-	poolCh chan struct{}
-	workCh chan ScheduleFn
+	workCh chan gkasync.Schedulable
 	init   sync.Once
 }
 
-func NewPoolScheduler(window *app.Window, opts ...Option) Scheduler {
+func NewScheduler(window *app.Window, opts ...Option) gkasync.Scheduler {
 	conf := newDefaultConfig()
 	conf.Load(opts...)
 
-	return &poolScheduler{
+	return &scheduler{
 		window: window,
 		config: conf,
-		poolCh: make(chan struct{}),
-		workCh: make(chan ScheduleFn),
+		workCh: make(chan gkasync.Schedulable),
 	}
 }
 
-func (s *poolScheduler) Schedule(f ScheduleFn) {
+func (s *scheduler) Schedule(ctx context.Context, fn gkasync.Schedulable) {
 	s.init.Do(func() {
+		s.config.logger.Debug(fmt.Sprintf("starting %d workers", s.config.workers))
+
 		for i := 0; i < s.config.workers; i++ {
 			go func() {
 				s.config.logger.Debug(fmt.Sprintf("starting worker %d", i))
@@ -39,7 +41,7 @@ func (s *poolScheduler) Schedule(f ScheduleFn) {
 						s.config.logger.Debug(fmt.Sprintf("worker %d: found some work", i))
 						s.window.Invalidate()
 
-						work(context.Background())
+						work.Execute(ctx)
 
 						s.config.logger.Debug(fmt.Sprintf("worker %d: work complete", i))
 						s.window.Invalidate()
@@ -49,5 +51,5 @@ func (s *poolScheduler) Schedule(f ScheduleFn) {
 		}
 	})
 
-	s.workCh <- f
+	s.workCh <- fn
 }

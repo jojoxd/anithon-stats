@@ -10,18 +10,18 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
-	"anistats/internal/app/widget"
+	"anistats/internal/app/widget/language_switcher"
 	"anistats/pkg/gio_kit/gkrouter"
 )
 
 type Home struct {
 	gkrouter.BaseScreen
 	app          core.Application
-	langSwitcher widget.LanguageSwitcherStyle
+	langSwitcher *language_switcher.Widget
 }
 
 func NewHome(app core.Application) gkrouter.RouteView {
-	langSwitcher := widget.NewLanguageSwitcher(app.LocalizerManager())
+	langSwitcher := language_switcher.New(app.LocalizerManager())
 
 	return &Home{
 		app:          app,
@@ -30,6 +30,8 @@ func NewHome(app core.Application) gkrouter.RouteView {
 }
 
 func (h *Home) Layout(gtx layout.Context) layout.Dimensions {
+	h.langSwitcher.Update(gtx.Source)
+
 	theme := h.app.Theme()
 	return h.langSwitcher.Layout(gtx, theme)
 }

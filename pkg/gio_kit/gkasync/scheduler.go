@@ -4,8 +4,10 @@ import (
 	"context"
 )
 
-type ScheduleFn func(ctx context.Context)
+func (fn ScheduleFn) Execute(ctx context.Context) {
+	fn(ctx)
+}
 
 type Scheduler interface {
-	Schedule(ScheduleFn)
+	Schedule(context.Context, Schedulable)
 }

@@ -9,6 +9,10 @@ import (
 
 type MediaId uuid.UUID
 
+func (i MediaId) String() string {
+	return uuid.UUID(i).String()
+}
+
 type Media struct {
 	Id          MediaId        `json:"id"`
 	DisplayName Translatable   `json:"displayName"`

@@ -10,6 +10,7 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
+	"anistats/internal/app/features/media/provider"
 	"anistats/internal/app/features/media/widget"
 	"anistats/pkg/gio_kit/gkloader"
 	"anistats/pkg/gio_kit/gkrouter"
@@ -18,8 +19,9 @@ import (
 type Media struct {
 	gkrouter.BaseScreen
 	app       core.Application
-	mediaCard *widget.MediaCardStyle
-	loader    *gkloader.GkLoaderStyle
+	mediaCard *widget.CardStyle
+	provider  *provider.Media
+	mediaId   v1.MediaId
 }
 
 type MediaParams struct {
@@ -29,21 +31,24 @@ type MediaParams struct {
 func NewMedia(app core.Application) gkrouter.RouteView {
 	m := &Media{
 		app:       app,
-		mediaCard: widget.MediaCard(app),
+		mediaCard: widget.Card(app),
+		provider:  provider.NewMedia(app),
 	}
-
-	m.loader = gkloader.NewScheduler(app.GkAsyncScheduler(), m.loadMedia)
 
 	return m
 }
 
 func (m *Media) Layout(gtx layout.Context) layout.Dimensions {
-	return m.loader.Layout(gtx, gkloader.Slots[v1.Media]{
+	th := m.app.Theme()
+
+	return m.provider.Layout(gtx, m.mediaId, gkloader.Slots[v1.Media]{
 		Loading: func(gtx layout.Context) layout.Dimensions {
-			return material.Loader(m.app.Theme()).Layout(gtx)
+			// m.app.Logger().Debug("screens/media loading")
+			// return material.Body1(th, "media loading...").Layout(gtx)
+			return material.Loader(th).Layout(gtx)
 		},
-		Loaded: func(gtx layout.Context, data v1.Media) layout.Dimensions {
-			return m.mediaCard.Layout(gtx, &data)
+		Loaded: func(gtx layout.Context, media v1.Media) layout.Dimensions {
+			return m.mediaCard.Layout(gtx, th, media)
 		},
 	}.Layout)
 }
@@ -52,10 +57,6 @@ func (m *Media) layoutLoading(gtx layout.Context) layout.Dimensions {
 	theme := m.app.Theme()
 
 	return material.H1(theme, "Loading").Layout(gtx)
-}
-
-func (m *Media) layoutLoaded(gtx layout.Context, media *v1.Media) layout.Dimensions {
-	return m.mediaCard.Layout(gtx, media)
 }
 
 func (m *Media) OnIntent(intent gkrouter.Intent) error {
@@ -69,7 +70,7 @@ func (m *Media) OnIntent(intent gkrouter.Intent) error {
 		return errors.New("invalid params type")
 	}
 
-	m.loader.Load(params.MediaId)
+	m.mediaId = params.MediaId
 
 	return nil
 }
@@ -79,15 +80,17 @@ func (m *Media) Id() gkrouter.Route {
 }
 
 func (m *Media) Title() string {
-	localizer := m.app.Localizer()
+	// localizer := m.app.Localizer()
+	//
+	// if media, ok := m.loader.Data().(v1.Media); ok {
+	// 	return localizer.PageTitle("page.media.media.title", map[string]string{
+	// 		"Name": localizer.TTv1(media.DisplayName),
+	// 	})
+	// }
+	//
+	// return localizer.PageTitle("page.media.media.loading", nil)
 
-	if media, ok := m.loader.Data().(v1.Media); ok {
-		return localizer.PageTitle("page.media.media.title", map[string]string{
-			"Name": localizer.TTv1(media.DisplayName),
-		})
-	}
-
-	return localizer.PageTitle("page.media.media.loading", nil)
+	return "test"
 }
 
 func (m *Media) loadMedia(ctx context.Context, mediaId ...interface{}) (interface{}, error) {

@@ -21,7 +21,8 @@ func NewMediaService() anistats_client.MediaService {
 }
 
 func (m MediaService) Media(ctx context.Context, id v1.MediaId) (v1.Media, error) {
-	time.Sleep(5 * time.Second)
+	// TODO: Remove time.Sleep, is used for debugging gkloader
+	time.Sleep(2 * time.Second)
 
 	return v1.Media{
 		Id: id,
@@ -43,6 +44,9 @@ func (m MediaService) Media(ctx context.Context, id v1.MediaId) (v1.Media, error
 }
 
 func (m MediaService) CoverImage(ctx context.Context, id v1.MediaId) (image.Image, error) {
+	// TODO: Remove time.Sleep, is used for debugging gkloader
+	time.Sleep(2 * time.Second)
+
 	res, err := http.Get("https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5114-nSWCgQlmOMtj.jpg")
 	if err != nil {
 		return nil, err

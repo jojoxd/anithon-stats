@@ -2,85 +2,43 @@ package res
 
 import (
 	"embed"
-	"fmt"
 	"io/fs"
-	"log/slog"
-	"slices"
-	"strings"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
-	"gopkg.in/yaml.v3"
+
+	gklocale "anistats/pkg/gio_kit/gklocalizer"
 )
 
 //go:embed localizations/**/*.yaml
 var i18nFS embed.FS
 
 var (
-	LangEnglish         = language.English
-	LangDutch           = language.Dutch
-	LangJapanese        = language.Japanese
-	LangJapaneseHepburn = language.MustParse("ja-latn")
+	LocaleEnglish        = gklocale.Locale(language.English)
+	LocaleJapanese       = gklocale.Locale(language.Japanese)
+	LocaleJapaneseRomaji = gklocale.Locale(language.MustParse("ja-Latn"))
+	LocaleDutch          = gklocale.Locale(language.Dutch)
 )
 
-var AppLanguages = []language.Tag{
-	LangEnglish,
-	LangDutch,
-	LangJapanese,
-	LangJapaneseHepburn,
-}
-
-type LangBundles map[language.Tag]*i18n.Bundle
-
-func (lb LangBundles) Languages() []language.Tag {
-	tags := make([]language.Tag, 0, len(lb))
-	for tag := range lb {
-		tags = append(tags, tag)
+func Locales() []gklocale.Locale {
+	return []gklocale.Locale{
+		LocaleEnglish,
+		LocaleJapanese,
+		LocaleJapaneseRomaji,
+		LocaleDutch,
 	}
-
-	slices.SortFunc(tags, func(a, b language.Tag) int {
-		return strings.Compare(a.String(), b.String())
-	})
-
-	return tags
 }
 
-func GetLangBundles() (LangBundles, error) {
-	var bundles = make(LangBundles)
+func LocaleBundle() (gklocale.GoI18nBundle, error) {
+	loader := gklocale.NewGoI18nBundleLoader()
 
-	for _, lang := range AppLanguages {
-		bundle, err := loadBundle(lang)
-		if err != nil {
-			return nil, err
-		}
-
-		bundles[lang] = bundle
-	}
-
-	return bundles, nil
-}
-
-func loadBundle(lang language.Tag) (*i18n.Bundle, error) {
-	glob := fmt.Sprintf("localizations/**/*.%s.yaml", strings.ToLower(lang.String()))
-
-	bundle := i18n.NewBundle(lang)
-	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
-
-	matches, err := fs.Glob(i18nFS, glob)
+	sub, err := fs.Sub(i18nFS, "localizations")
 	if err != nil {
 		return nil, err
 	}
 
-	for _, match := range matches {
-		_, err := bundle.LoadMessageFileFS(i18nFS, match)
-		if err != nil {
-			return nil, err
-		}
+	if err = loader.Load(sub, Locales()); err != nil {
+		return nil, err
 	}
 
-	return bundle, nil
-}
-
-func init() {
-	slog.SetLogLoggerLevel(slog.LevelDebug)
+	return loader.Bundle(), nil
 }

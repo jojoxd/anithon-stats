@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/text/language"
 
 	"anistats/internal/server/dbal"
@@ -52,7 +52,7 @@ func (s *Server) Serve(ctx context.Context) error {
 		return err
 	}
 
-	spew.Dump(media)
+	fmt.Printf("%#v\n", media)
 
 	return nil
 }

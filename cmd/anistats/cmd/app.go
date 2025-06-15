@@ -22,5 +22,5 @@ func init() {
 }
 
 func runApp(cmd *cobra.Command, args []string) {
-	app.Main()
+	app.Main(cmd.Context())
 }

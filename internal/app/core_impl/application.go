@@ -1,6 +1,7 @@
 package core_impl
 
 import (
+	"context"
 	"log/slog"
 
 	"gioui.org/app"
@@ -14,6 +15,8 @@ import (
 	"anistats/internal/app/resources"
 	"anistats/internal/config"
 	"anistats/pkg/gio_kit/gkasync"
+	"anistats/pkg/gio_kit/gkasync/fixedpool"
+	"anistats/pkg/gio_kit/gklocalizer"
 	"anistats/pkg/gio_kit/gkrouter"
 )
 
@@ -23,7 +26,7 @@ type Application struct {
 	window           *app.Window
 	theme            *material.Theme
 	rootView         *views.Root
-	localizerManager *localizerManager
+	localizerManager gklocalizer.Manager
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
 	router           gkrouter.Manager
@@ -31,12 +34,12 @@ type Application struct {
 }
 
 func NewApplication(window *app.Window) (*Application, error) {
-	bundles, err := res.GetLangBundles()
+	bundle, err := res.LocaleBundle()
 	if err != nil {
 		return nil, err
 	}
 
-	localizerManager, err := newLocalizerManager(bundles, res.LangEnglish)
+	localizerManager, err := gklocalizer.NewGoI18nManager(bundle, res.LocaleEnglish)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +56,9 @@ func NewApplication(window *app.Window) (*Application, error) {
 		gkrouter.ManageWindowTitle(config.AppName),
 	)
 
-	gkAsyncScheduler := gkasync.NewPoolScheduler(window,
-		gkasync.Logger(slog.Default()),
-		gkasync.Workers(4),
+	gkAsyncScheduler := fixedpool.NewScheduler(window,
+		fixedpool.Logger(slog.Default()),
+		fixedpool.Workers(4),
 	)
 
 	application := &Application{
@@ -71,15 +74,22 @@ func NewApplication(window *app.Window) (*Application, error) {
 	return application, nil
 }
 
-func (a *Application) Loop() error {
+func (a *Application) Run(ctx context.Context) error {
 	var ops op.Ops
 
+	eventCtx, cancelEventHandler := context.WithCancel(ctx)
+
+	go func() {
+		a.handleEvents(eventCtx)
+	}()
+
 	for {
-		a.logger.Info("loop")
+		a.logger.Debug("loop")
 
 		switch ev := a.window.Event().(type) {
 		case app.DestroyEvent:
-			a.logger.Info("eventLoop: destroy")
+			a.logger.Debug("eventLoop: destroy")
+			cancelEventHandler()
 			return ev.Err
 
 		case app.FrameEvent:
@@ -103,11 +113,11 @@ func (a *Application) layout(gtx layout.Context) layout.Dimensions {
 	return a.rootView.Layout(gtx)
 }
 
-func (a *Application) Localizer() core.Localizer {
+func (a *Application) Localizer() gklocalizer.Localizer {
 	return a.localizerManager.Localizer()
 }
 
-func (a *Application) LocalizerManager() core.LocalizerManager {
+func (a *Application) LocalizerManager() gklocalizer.Manager {
 	return a.localizerManager
 }
 
@@ -125,4 +135,30 @@ func (a *Application) Router() gkrouter.Manager {
 
 func (a *Application) GkAsyncScheduler() gkasync.Scheduler {
 	return a.gkAsyncScheduler
+}
+
+func (a *Application) handleEvents(ctx context.Context) {
+	for {
+		select {
+		case ev := <-a.localizerManager.Events():
+			a.handleLocalizerEvent(ev)
+
+		case <-ctx.Done():
+			panic("context canceled")
+		}
+	}
+}
+
+func (a *Application) handleLocalizerEvent(ev gklocalizer.LocalizerManagerEvent) {
+	switch ev := ev.(type) {
+	case gklocalizer.LocaleChangedEvent:
+		a.logger.Info("Locale changed", "old", ev.OldLocale, "new", ev.NewLocale)
+		a.window.Invalidate()
+
+	case gklocalizer.LocalizationNotFoundEvent:
+		a.logger.Warn("localization not found",
+			slog.String("key", ev.Key),
+			slog.String("locale", ev.Locale.String()),
+		)
+	}
 }

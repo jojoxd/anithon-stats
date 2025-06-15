@@ -2,6 +2,7 @@ package gkloader
 
 import (
 	"errors"
+	"fmt"
 
 	"gioui.org/layout"
 )
@@ -14,68 +15,67 @@ type Slots[TData any] struct {
 	Loaded  func(gtx layout.Context, data TData) layout.Dimensions
 }
 
-func (slots Slots[TData]) Layout(gtx layout.Context, state State) layout.Dimensions {
+var ErrSlotFailed = errors.New("slot failed")
+var ErrSlotUndefined = errors.New("slot undefined")
+
+func (s Slots[TData]) Layout(gtx layout.Context, state State[TData]) layout.Dimensions {
 	switch state := state.(type) {
-	case *ErrorState:
-		return slots.layoutError(gtx, state.Error)
+	case StateInitial[TData]:
+		return s.layoutInitial(gtx)
 
-	case *InitialState:
-		return slots.layoutInitial(gtx)
+	case StateError[TData]:
+		return s.layoutError(gtx, state.Error)
 
-	case *QueuedState:
-		return slots.layoutQueued(gtx)
+	case StateQueued[TData]:
+		return s.layoutQueued(gtx)
 
-	case *LoadingState:
-		return slots.layoutLoading(gtx)
+	case StateLoading[TData]:
+		return s.layoutLoading(gtx)
 
-	case *LoadedState:
-		return slots.layoutLoaded(gtx, state)
+	case StateLoaded[TData]:
+		return s.layoutLoaded(gtx, state.Data)
 	}
 
-	return layout.Dimensions{}
+	return s.layoutError(gtx, ErrSlotFailed)
 }
 
-func (slots Slots[TData]) layoutError(gtx layout.Context, err error) layout.Dimensions {
-	if slots.Error == nil {
+func (s Slots[TData]) layoutInitial(gtx layout.Context) layout.Dimensions {
+	if s.Initial == nil {
+		return layout.Dimensions{}
+	}
+
+	return s.Initial(gtx)
+}
+
+func (s Slots[TData]) layoutError(gtx layout.Context, err error) layout.Dimensions {
+	if s.Error == nil {
 		// TODO should not panic
 		panic(err)
 	}
 
-	return slots.Error(gtx, err)
+	return s.Error(gtx, err)
 }
 
-func (slots Slots[TData]) layoutInitial(gtx layout.Context) layout.Dimensions {
-	if slots.Initial == nil {
-		return layout.Dimensions{}
+func (s Slots[TData]) layoutQueued(gtx layout.Context) layout.Dimensions {
+	if s.Queued == nil {
+		return s.layoutLoading(gtx)
 	}
 
-	return slots.Initial(gtx)
+	return s.Queued(gtx)
 }
 
-func (slots Slots[TData]) layoutQueued(gtx layout.Context) layout.Dimensions {
-	if slots.Queued == nil {
-		return slots.layoutLoading(gtx)
+func (s Slots[TData]) layoutLoading(gtx layout.Context) layout.Dimensions {
+	if s.Loading == nil {
+		return s.layoutInitial(gtx)
 	}
 
-	return slots.Queued(gtx)
+	return s.Loading(gtx)
 }
 
-func (slots Slots[TData]) layoutLoading(gtx layout.Context) layout.Dimensions {
-	if slots.Loading == nil {
-		return slots.layoutInitial(gtx)
+func (s Slots[TData]) layoutLoaded(gtx layout.Context, data TData) layout.Dimensions {
+	if s.Loaded == nil {
+		return s.layoutError(gtx, fmt.Errorf("%w: no loaded slot defined", ErrSlotUndefined))
 	}
 
-	return slots.Loading(gtx)
-}
-
-func (slots Slots[TData]) layoutLoaded(gtx layout.Context, state *LoadedState) layout.Dimensions {
-	if slots.Loaded == nil {
-		return slots.layoutError(gtx, errors.New("no loaded slot defined"))
-	}
-
-	if data, ok := state.Data.(TData); ok {
-		return slots.Loaded(gtx, data)
-	}
-
-	return slots.layoutError(gtx, errors.New("failed to cast data"))
+	return s.Loaded(gtx, data)
 }

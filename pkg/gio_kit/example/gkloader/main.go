@@ -3,121 +3,110 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
+	"log/slog"
+	"math/rand/v2"
 	"time"
 
 	"gioui.org/app"
 	"gioui.org/layout"
-	"gioui.org/op"
 	"gioui.org/widget/material"
 
+	"anistats/pkg/gio_kit/contract"
+	"anistats/pkg/gio_kit/example/base"
 	"anistats/pkg/gio_kit/gkasync"
+	"anistats/pkg/gio_kit/gkasync/fixedpool"
 	"anistats/pkg/gio_kit/gkloader"
+	"anistats/pkg/gio_kit/internal"
 )
 
 func main() {
 	window := new(app.Window)
 
-	scheduler := gkasync.NewPoolScheduler(window, gkasync.Workers(3))
-	controller := gkloader.NewSchedulerController(scheduler, loadData)
+	// can also be just standard slog.Default()
+	logger := internal.NewPrefixLogger("root", slog.Default())
 
-	a := App{
-		window:    window,
-		scheduler: scheduler,
-		loader:    gkloader.NewController(controller),
-		theme:     material.NewTheme(),
+	scheduler := fixedpool.NewScheduler(window,
+		fixedpool.Logger(logger),
+		fixedpool.Workers(3),
+	)
+
+	controller := gkloader.NewLoaderController(scheduler, &dataLoader{
+		logger: internal.NewPrefixLogger("dataLoader", logger),
+	})
+
+	e := &example{
+		loader: gkloader.New(controller),
+		theme:  material.NewTheme(),
+		logger: logger,
 	}
-	a.Run()
+
+	go func() {
+		i, q := 0, 0
+		for {
+			random := time.Duration(rand.IntN(5000))
+			time.Sleep(random * time.Millisecond)
+
+			e.loader.Load(i)
+
+			q++
+
+			if q%2 == 0 {
+				i++
+			}
+		}
+	}()
+
+	base.Run(window, e.frame)
 }
 
-func loadData(ctx context.Context, args ...interface{}) (interface{}, error) {
-	fmt.Printf("main.go: loadData called, sleeping for 10 seconds\n")
-	time.Sleep(10 * time.Second)
-	fmt.Printf("main.go: loadData completed\n")
-
-	return "Hello, World", nil
-}
-
-type App struct {
-	window    *app.Window
+type example struct {
 	scheduler gkasync.Scheduler
-	loader    *gkloader.GkLoaderStyle
+	logger    contract.Logger
+	loader    *gkloader.Style[int, string]
 	theme     *material.Theme
 }
 
-func (a App) Run() {
-	go func() {
-		if err := a.loop(a.window); err != nil {
-			log.Fatal(err)
-		}
-
-		os.Exit(1)
-	}()
-
-	go func() {
-		time.Sleep(5 * time.Second)
-		fmt.Printf("main.go: start loading\n")
-
-		a.loader.Load("1")
-	}()
-
-	app.Main()
-}
-
-func (a App) loop(window *app.Window) error {
-	var ops op.Ops
-
-	for {
-		switch ev := window.Event().(type) {
-		case app.DestroyEvent:
-			return ev.Err
-
-		case app.FrameEvent:
-			gtx := app.NewContext(&ops, ev)
-
-			fmt.Printf("main.go: frame event %v\n", ev)
-			a.layout(gtx)
-
-			ev.Frame(gtx.Ops)
-		}
-	}
-}
-
-func (a App) layout(gtx layout.Context) layout.Dimensions {
-	fmt.Printf("main.go: app layout called\n")
-
-	return a.loader.Layout(gtx, gkloader.Slots[string]{
+func (e example) frame(gtx layout.Context) {
+	e.loader.Layout(gtx, gkloader.Slots[string]{
 		Initial: func(gtx layout.Context) layout.Dimensions {
-			return material.Body1(a.theme, "Initial").Layout(gtx)
+			e.logger.Debug("execute slot 'Initial'")
+			return material.Body1(e.theme, "Initial Slot").Layout(gtx)
 		},
 
 		Error: func(gtx layout.Context, err error) layout.Dimensions {
-			fmt.Printf("main.go: error %v\n", err)
-
-			return material.Body1(a.theme, err.Error()).Layout(gtx)
+			e.logger.Debug("execute slot 'Error'")
+			return material.Body1(e.theme, err.Error()).Layout(gtx)
 		},
 
 		Queued: func(gtx layout.Context) layout.Dimensions {
-			return material.Body1(a.theme, "Queued").Layout(gtx)
+			e.logger.Debug("execute slot 'Queued'")
+			return material.Body1(e.theme, "Queued Slot").Layout(gtx)
 		},
 
 		Loading: func(gtx layout.Context) layout.Dimensions {
-			fmt.Printf("Loading slot called\n")
-
-			return material.Loader(a.theme).Layout(gtx)
+			e.logger.Debug("execute slot 'Loading'")
+			return material.Body1(e.theme, "Loading Slot").Layout(gtx)
 		},
 
 		Loaded: func(gtx layout.Context, data string) layout.Dimensions {
-			fmt.Printf("Loaded slot called\n")
-
-			return material.Body1(a.theme, data).Layout(gtx)
+			e.logger.Debug("execute slot 'Loaded'")
+			return material.Body1(e.theme, data).Layout(gtx)
 		},
 	}.Layout)
 }
 
-func (a App) layoutLoader(gtx layout.Context, state gkloader.State) layout.Dimensions {
-	fmt.Printf("rerender with state: %#v\n", state)
+type dataLoader struct {
+	logger contract.Logger
+}
 
-	return layout.Dimensions{}
+func (d dataLoader) Load(ctx context.Context, arg int) (string, error) {
+	d.logger.Debug(fmt.Sprintf("loading with arg %d, will take 1s", arg))
+
+	select {
+	case <-ctx.Done():
+		d.logger.Debug("context canceled", "err", ctx.Err(), "arg", arg)
+		return "", ctx.Err()
+	case <-time.After(1 * time.Second):
+		return fmt.Sprintf("hello, world: %d", arg), nil
+	}
 }

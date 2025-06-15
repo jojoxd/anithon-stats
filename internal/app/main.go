@@ -1,25 +1,28 @@
 package app
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"os"
 
-	"gioui.org/app"
+	gapp "gioui.org/app"
 
 	"anistats/internal/app/core_impl"
 )
 
-func Main() {
-	window := new(app.Window)
+func Main(ctx context.Context) {
+	window := new(gapp.Window)
 
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 
-	a := core_impl.NewApplication(window)
+	app, err := core_impl.NewApplication(window)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	go func() {
-		err := a.Loop()
-		a.Logger().Info("Application loop terminated", "err", err)
+		err := app.Run(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -27,5 +30,5 @@ func Main() {
 		os.Exit(0)
 	}()
 
-	app.Main()
+	gapp.Main()
 }

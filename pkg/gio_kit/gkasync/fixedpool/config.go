@@ -1,4 +1,4 @@
-package gkasync
+package fixedpool
 
 import (
 	"runtime"
@@ -31,7 +31,7 @@ func (c *config) Load(opts ...Option) {
 
 func Logger(logger contract.Logger) Option {
 	return func(c *config) {
-		c.logger = internal.NewPrefixLogger("gkasync", logger)
+		c.logger = internal.NewPrefixLogger("gkasync.fixedPoolScheduler", logger)
 	}
 }
 

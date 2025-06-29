@@ -25,3 +25,27 @@ func Vertical(v unit.Dp, widget layout.Widget) layout.Widget {
 		return layout.Inset{Top: v, Bottom: v}.Layout(gtx, widget)
 	}
 }
+
+func Top(v unit.Dp, widget layout.Widget) layout.Widget {
+	return func(gtx layout.Context) layout.Dimensions {
+		return layout.Inset{Top: v}.Layout(gtx, widget)
+	}
+}
+
+func Right(v unit.Dp, widget layout.Widget) layout.Widget {
+	return func(gtx layout.Context) layout.Dimensions {
+		return layout.Inset{Right: v}.Layout(gtx, widget)
+	}
+}
+
+func Bottom(v unit.Dp, widget layout.Widget) layout.Widget {
+	return func(gtx layout.Context) layout.Dimensions {
+		return layout.Inset{Bottom: v}.Layout(gtx, widget)
+	}
+}
+
+func Left(v unit.Dp, widget layout.Widget) layout.Widget {
+	return func(gtx layout.Context) layout.Dimensions {
+		return layout.Inset{Left: v}.Layout(gtx, widget)
+	}
+}

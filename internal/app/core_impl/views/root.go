@@ -9,8 +9,8 @@ import (
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/features"
-	"anistats/pkg/gio_kit/gkrouter"
-	"anistats/pkg/gio_kit/gkrouterview"
+	"anistats/pkg/giorno/router"
+	"anistats/pkg/giorno/routerview"
 )
 
 type Root struct {
@@ -31,19 +31,19 @@ func NewRoot(app core.Application) *Root {
 }
 
 func (r Root) Layout(gtx layout.Context) layout.Dimensions {
-	router := r.app.Router()
+	rtr := r.app.Router()
 	theme := r.app.Theme()
 
-	router.Update(context.TODO())
+	rtr.Update(context.TODO())
 
 	return layout.Flex{}.Layout(gtx,
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-			return gkrouterview.New(router).Layout(gtx,
-				gkrouterview.Slots{
+			return routerview.New(rtr).Layout(gtx,
+				routerview.Slots{
 					Empty: func(gtx layout.Context) layout.Dimensions {
 						return material.H1(theme, "No RouteView").Layout(gtx)
 					},
-					View: func(gtx layout.Context, view gkrouter.RouteView) layout.Dimensions {
+					View: func(gtx layout.Context, view router.RouteView) layout.Dimensions {
 						return view.Layout(gtx)
 					},
 				}.Layout,

@@ -2,13 +2,13 @@ package screen
 
 import (
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_kit/gkrouter"
+	"anistats/pkg/giorno/router"
 )
 
-type RouteProvider func(app core.Application) gkrouter.RouteView
+type RouteProvider func(app core.Application) router.RouteView
 
-func WithApp(app core.Application, provider RouteProvider) gkrouter.RouteProvider {
-	return func() gkrouter.RouteView {
+func WithApp(app core.Application, provider RouteProvider) router.RouteProvider {
+	return func() router.RouteView {
 		return provider(app)
 	}
 }

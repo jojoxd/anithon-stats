@@ -7,7 +7,7 @@ import (
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_kit/utils/gkinset"
+	"anistats/pkg/giorno/utils/inset"
 )
 
 type CardStyle struct {

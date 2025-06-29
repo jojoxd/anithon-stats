@@ -8,27 +8,27 @@ import (
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_kit/gkloader"
+	"anistats/pkg/giorno/loader"
 )
 
 type CoverImage struct {
-	loader *gkloader.Style[v1.MediaId, image.Image]
+	loader *loader.Style[v1.MediaId, image.Image]
 }
 
 func NewCoverImage(app core.Application) *CoverImage {
 	return &CoverImage{
-		loader: gkloader.New(NewCoverImageController(app)),
+		loader: loader.New(NewCoverImageController(app)),
 	}
 }
 
-func (p *CoverImage) Layout(gtx layout.Context, id v1.MediaId, slots gkloader.Widget[image.Image]) layout.Dimensions {
+func (p *CoverImage) Layout(gtx layout.Context, id v1.MediaId, slots loader.Widget[image.Image]) layout.Dimensions {
 	p.loader.Load(id) // TODO move to Update()
 
 	return p.loader.Layout(gtx, slots)
 }
 
-func NewCoverImageController(app core.Application) gkloader.Controller[v1.MediaId, image.Image] {
-	return gkloader.NewLoaderController(app.GkAsyncScheduler(), &coverImageLoader{
+func NewCoverImageController(app core.Application) loader.Controller[v1.MediaId, image.Image] {
+	return loader.NewLoaderController(app.GkAsyncScheduler(), &coverImageLoader{
 		app: app,
 	})
 }

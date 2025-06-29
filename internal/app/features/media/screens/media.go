@@ -12,19 +12,19 @@ import (
 	"anistats/internal/app/core/route"
 	"anistats/internal/app/features/media/provider"
 	"anistats/internal/app/features/media/widget"
-	"anistats/pkg/gio_kit/gkloader"
-	"anistats/pkg/gio_kit/gkrouter"
+	"anistats/pkg/giorno/loader"
+	"anistats/pkg/giorno/router"
 )
 
 type Media struct {
-	gkrouter.BaseScreen
+	router.BaseScreen
 	app       core.Application
 	mediaCard *widget.CardStyle
 	provider  *provider.Media
 	mediaId   v1.MediaId
 }
 
-func NewMedia(app core.Application) gkrouter.RouteView {
+func NewMedia(app core.Application) router.RouteView {
 	m := &Media{
 		app:       app,
 		mediaCard: widget.Card(app),
@@ -37,7 +37,7 @@ func NewMedia(app core.Application) gkrouter.RouteView {
 func (m *Media) Layout(gtx layout.Context) layout.Dimensions {
 	th := m.app.Theme()
 
-	return m.provider.Layout(gtx, m.mediaId, gkloader.Slots[v1.Media]{
+	return m.provider.Layout(gtx, m.mediaId, loader.Slots[v1.Media]{
 		Loading: func(gtx layout.Context) layout.Dimensions {
 			// m.app.Logger().Debug("screens/media loading")
 			// return material.Body1(th, "media loading...").Layout(gtx)
@@ -55,7 +55,7 @@ func (m *Media) layoutLoading(gtx layout.Context) layout.Dimensions {
 	return material.H1(theme, "Loading").Layout(gtx)
 }
 
-func (m *Media) OnIntent(intent gkrouter.Intent) error {
+func (m *Media) OnIntent(intent router.Intent) error {
 	err := m.BaseScreen.OnIntent(intent)
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func (m *Media) OnIntent(intent gkrouter.Intent) error {
 	return nil
 }
 
-func (m *Media) Id() gkrouter.Route {
+func (m *Media) Id() router.Route {
 	return route.MediaRoute
 }
 

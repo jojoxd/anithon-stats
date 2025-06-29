@@ -11,7 +11,7 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/features/media/provider"
-	"anistats/pkg/gio_kit/gkloader"
+	"anistats/pkg/giorno/loader"
 )
 
 type CoverImageStyle struct {
@@ -27,7 +27,7 @@ func NewCoverImage(app core.Application) *CoverImageStyle {
 }
 
 func (s *CoverImageStyle) Layout(gtx layout.Context, th *material.Theme, id v1.MediaId) layout.Dimensions {
-	return s.provider.Layout(gtx, id, gkloader.Slots[image.Image]{
+	return s.provider.Layout(gtx, id, loader.Slots[image.Image]{
 		Loading: func(gtx layout.Context) layout.Dimensions {
 			// s.app.Logger().Debug("widget/coverimage loading")
 			// return material.Body1(th, "coverimage loading...").Layout(gtx)

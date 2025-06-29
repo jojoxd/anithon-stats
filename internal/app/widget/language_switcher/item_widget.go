@@ -12,13 +12,13 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget/material"
 
-	"anistats/pkg/gio_kit/gklocalizer"
-	"anistats/pkg/gio_kit/utils/gkinset"
+	"anistats/pkg/giorno/localizer"
+	"anistats/pkg/giorno/utils/inset"
 )
 
 type ItemWidget struct {
-	locale           gklocalizer.Locale
-	localizerManager gklocalizer.Manager
+	locale           localizer.Locale
+	localizerManager localizer.Manager
 	pressed          bool
 	OnClick          func()
 	title            string

@@ -6,12 +6,12 @@ import (
 
 	"gioui.org/layout"
 
-	"anistats/pkg/gio_kit/gkasync"
-	"anistats/pkg/gio_kit/gkloader"
+	"anistats/pkg/giorno/async"
+	"anistats/pkg/giorno/loader"
 )
 
 type ImageLoaderStyle struct {
-	loader *gkloader.GkLoaderStyle
+	loader *loader.GkLoaderStyle
 }
 
 type ImageLoaderFn func(ctx context.Context, args ...interface{}) (image.Image, error)
@@ -21,9 +21,9 @@ func (l ImageLoaderFn) Load(ctx context.Context, args ...interface{}) (interface
 	return l(ctx, args...)
 }
 
-func NewImageLoader(scheduler gkasync.Scheduler, loader ImageLoaderFn) *ImageLoaderStyle {
+func NewImageLoader(scheduler async.Scheduler, loader ImageLoaderFn) *ImageLoaderStyle {
 	return &ImageLoaderStyle{
-		loader: gkloader.NewScheduler(scheduler, loader.Load),
+		loader: loader.NewScheduler(scheduler, loader.Load),
 	}
 }
 

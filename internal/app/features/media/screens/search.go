@@ -6,11 +6,11 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/route"
-	"anistats/pkg/gio_kit/gkrouter"
+	"anistats/pkg/giorno/router"
 )
 
 type Search struct {
-	gkrouter.BaseScreen
+	router.BaseScreen
 	app             core.Application
 	selectedMediaId v1.MediaId
 }
@@ -19,13 +19,13 @@ type SearchParams struct {
 	OnResolve func(v1.MediaId)
 }
 
-func NewSearch(app core.Application) gkrouter.RouteView {
+func NewSearch(app core.Application) router.RouteView {
 	return &Search{
 		app: app,
 	}
 }
 
-func (s Search) Id() gkrouter.Route {
+func (s Search) Id() router.Route {
 	return route.MediaSearchRoute
 }
 
@@ -35,7 +35,7 @@ func (s Search) Layout(gtx layout.Context) layout.Dimensions {
 }
 
 func (s Search) OnFinish() {
-	p, ok := gkrouter.Params[SearchParams](s.Intent)
+	p, ok := router.Params[SearchParams](s.Intent)
 	if !ok {
 		return
 	}

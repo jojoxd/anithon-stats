@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	gklocale "anistats/pkg/gio_kit/gklocalizer"
+	gklocale "anistats/pkg/giorno/localizer"
 )
 
 //go:embed localizations/**/*.yaml

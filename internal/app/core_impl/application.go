@@ -14,10 +14,10 @@ import (
 	"anistats/internal/app/core_impl/views"
 	"anistats/internal/app/resources"
 	"anistats/internal/config"
-	"anistats/pkg/gio_kit/gkasync"
-	"anistats/pkg/gio_kit/gkasync/fixedpool"
-	"anistats/pkg/gio_kit/gklocalizer"
-	"anistats/pkg/gio_kit/gkrouter"
+	"anistats/pkg/giorno/async"
+	"anistats/pkg/giorno/async/fixedpool"
+	"anistats/pkg/giorno/localizer"
+	"anistats/pkg/giorno/router"
 )
 
 var _ core.Application = (*Application)(nil)
@@ -26,11 +26,11 @@ type Application struct {
 	window           *app.Window
 	theme            *material.Theme
 	rootView         *views.Root
-	localizerManager gklocalizer.Manager
+	localizerManager localizer.Manager
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
-	router           gkrouter.Manager
-	gkAsyncScheduler gkasync.Scheduler
+	router           router.Manager
+	gkAsyncScheduler async.Scheduler
 }
 
 func NewApplication(window *app.Window) (*Application, error) {
@@ -39,7 +39,7 @@ func NewApplication(window *app.Window) (*Application, error) {
 		return nil, err
 	}
 
-	localizerManager, err := gklocalizer.NewGoI18nManager(bundle, res.LocaleEnglish)
+	localizerManager, err := localizer.NewGoI18nManager(bundle, res.LocaleEnglish)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +51,9 @@ func NewApplication(window *app.Window) (*Application, error) {
 		return nil, err
 	}
 
-	router := gkrouter.NewManager(window,
-		gkrouter.Logger(slog.Default()),
-		gkrouter.ManageWindowTitle(config.AppName),
+	router := router.NewManager(window,
+		router.Logger(slog.Default()),
+		router.ManageWindowTitle(config.AppName),
 	)
 
 	gkAsyncScheduler := fixedpool.NewScheduler(window,
@@ -113,11 +113,11 @@ func (a *Application) layout(gtx layout.Context) layout.Dimensions {
 	return a.rootView.Layout(gtx)
 }
 
-func (a *Application) Localizer() gklocalizer.Localizer {
+func (a *Application) Localizer() localizer.Localizer {
 	return a.localizerManager.Localizer()
 }
 
-func (a *Application) LocalizerManager() gklocalizer.Manager {
+func (a *Application) LocalizerManager() localizer.Manager {
 	return a.localizerManager
 }
 
@@ -129,11 +129,11 @@ func (a *Application) ApiClient() api.ClientBundle {
 	return a.clientBundle
 }
 
-func (a *Application) Router() gkrouter.Manager {
+func (a *Application) Router() router.Manager {
 	return a.router
 }
 
-func (a *Application) GkAsyncScheduler() gkasync.Scheduler {
+func (a *Application) GkAsyncScheduler() async.Scheduler {
 	return a.gkAsyncScheduler
 }
 
@@ -149,13 +149,13 @@ func (a *Application) handleEvents(ctx context.Context) {
 	}
 }
 
-func (a *Application) handleLocalizerEvent(ev gklocalizer.LocalizerManagerEvent) {
+func (a *Application) handleLocalizerEvent(ev localizer.LocalizerManagerEvent) {
 	switch ev := ev.(type) {
-	case gklocalizer.LocaleChangedEvent:
+	case localizer.LocaleChangedEvent:
 		a.logger.Info("Locale changed", "old", ev.OldLocale, "new", ev.NewLocale)
 		a.window.Invalidate()
 
-	case gklocalizer.LocalizationNotFoundEvent:
+	case localizer.LocalizationNotFoundEvent:
 		a.logger.Warn("localization not found",
 			slog.String("key", ev.Key),
 			slog.String("locale", ev.Locale.String()),

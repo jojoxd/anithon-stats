@@ -11,16 +11,16 @@ import (
 	"gioui.org/widget/material"
 	"golang.org/x/image/colornames"
 
-	"anistats/pkg/gio_kit/gklocalizer"
+	"anistats/pkg/giorno/localizer"
 )
 
 type Widget struct {
-	localizerManager gklocalizer.Manager
+	localizerManager localizer.Manager
 	list             layout.List
 	items            []*ItemWidget
 }
 
-func New(localizerManager gklocalizer.Manager) *Widget {
+func New(localizerManager localizer.Manager) *Widget {
 	return &Widget{
 		localizerManager: localizerManager,
 		items:            nil,
@@ -69,7 +69,7 @@ func (w *Widget) Update(q input.Source) {
 	}
 }
 
-func (w *Widget) onLocaleSelected(locale gklocalizer.Locale) {
+func (w *Widget) onLocaleSelected(locale localizer.Locale) {
 	err := w.localizerManager.SetLocale(locale)
 	if err != nil {
 		panic(err)

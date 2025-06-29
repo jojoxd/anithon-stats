@@ -8,27 +8,27 @@ import (
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/gio_kit/gkloader"
+	"anistats/pkg/giorno/loader"
 )
 
 type BannerImage struct {
-	loader *gkloader.Style[v1.MediaId, image.Image]
+	loader *loader.Style[v1.MediaId, image.Image]
 }
 
 func NewBannerImage(app core.Application) *BannerImage {
 	return &BannerImage{
-		loader: gkloader.New(NewBannerImageController(app)),
+		loader: loader.New(NewBannerImageController(app)),
 	}
 }
 
-func (p *BannerImage) Layout(gtx layout.Context, id v1.MediaId, slots gkloader.Widget[image.Image]) layout.Dimensions {
+func (p *BannerImage) Layout(gtx layout.Context, id v1.MediaId, slots loader.Widget[image.Image]) layout.Dimensions {
 	p.loader.Load(id) // TODO move to Update()
 
 	return p.loader.Layout(gtx, slots)
 }
 
-func NewBannerImageController(app core.Application) gkloader.Controller[v1.MediaId, image.Image] {
-	return gkloader.NewLoaderController(app.GkAsyncScheduler(), &bannerImageLoader{
+func NewBannerImageController(app core.Application) loader.Controller[v1.MediaId, image.Image] {
+	return loader.NewLoaderController(app.GkAsyncScheduler(), &bannerImageLoader{
 		app: app,
 	})
 }

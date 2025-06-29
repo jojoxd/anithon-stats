@@ -4,10 +4,10 @@ import (
 	"anistats/internal/app/core"
 	"anistats/internal/app/features/home"
 	"anistats/internal/app/features/media"
-	"anistats/pkg/gio_kit/gkrouter"
+	"anistats/pkg/giorno/router"
 )
 
-func Register(app core.Application, mgr gkrouter.Manager) error {
+func Register(app core.Application, mgr router.Manager) error {
 	var err error
 
 	err = home.Register(app, mgr)

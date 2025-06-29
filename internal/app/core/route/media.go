@@ -27,3 +27,18 @@ func MediaOverview() gkrouter.Intent {
 		Target: MediaOverviewRoute,
 	}
 }
+
+var MediaSearchRoute = gkrouter.NewRoute("media.search")
+
+type MediaSearchParams struct {
+	OnResolve func(id v1.MediaId)
+}
+
+func MediaSearch(onResolve func(id v1.MediaId)) gkrouter.Intent {
+	return gkrouter.Intent{
+		Target: MediaSearchRoute,
+		Params: MediaSearchParams{
+			OnResolve: onResolve,
+		},
+	}
+}

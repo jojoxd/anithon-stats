@@ -24,10 +24,6 @@ type Media struct {
 	mediaId   v1.MediaId
 }
 
-type MediaParams struct {
-	MediaId v1.MediaId
-}
-
 func NewMedia(app core.Application) gkrouter.RouteView {
 	m := &Media{
 		app:       app,

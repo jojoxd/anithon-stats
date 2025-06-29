@@ -1,15 +1,15 @@
 package gkrouter
 
 type BaseScreen struct {
-	location RouteLocation
+	Intent Intent
 }
 
 func (s *BaseScreen) Location() RouteLocation {
-	return s.location
+	return s.Intent.Location()
 }
 
 func (s *BaseScreen) OnIntent(intent Intent) error {
-	s.location = intent.Location()
+	s.Intent = intent
 
 	return nil
 }

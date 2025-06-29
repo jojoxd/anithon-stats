@@ -19,3 +19,8 @@ type RouteLocation string
 func buildURL(target Route, params RouteParams) RouteLocation {
 	return RouteLocation(fmt.Sprintf("%s:%s:%+v", target.path, target.name, params))
 }
+
+func Params[T any](intent Intent) (T, bool) {
+	params, ok := intent.Params.(T)
+	return params, ok
+}

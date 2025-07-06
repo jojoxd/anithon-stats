@@ -11,13 +11,14 @@ import (
 	"gioui.org/op/clip"
 	"gioui.org/unit"
 	"gioui.org/widget/material"
+	"git.jojoxd.nl/projects/go-giorno/localizer/locale"
 
-	"anistats/pkg/giorno/localizer"
-	"anistats/pkg/giorno/utils/inset"
+	"git.jojoxd.nl/projects/go-giorno/localizer"
+	"git.jojoxd.nl/projects/go-giorno/utils/inset"
 )
 
 type ItemWidget struct {
-	locale           localizer.Locale
+	locale           locale.Locale
 	localizerManager localizer.Manager
 	pressed          bool
 	OnClick          func()

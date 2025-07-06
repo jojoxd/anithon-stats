@@ -5,9 +5,10 @@ import (
 
 	"gioui.org/layout"
 
+	"git.jojoxd.nl/projects/go-giorno/loader"
+
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/giorno/loader"
 )
 
 type Media struct {

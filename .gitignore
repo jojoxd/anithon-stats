@@ -1,2 +1,6 @@
 .idea
 *.db
+out/
+
+go.work
+go.work.sum

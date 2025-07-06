@@ -1,6 +1,7 @@
 package anistats_client_http
 
 import (
+	"context"
 	"image"
 
 	v1 "anistats/api/v1"
@@ -14,15 +15,17 @@ type UserService struct {
 }
 
 func NewUserService(client *HttpClient) anistats_client.UserService {
-	return &UserService{client: client}
+	return &UserService{
+		client: client,
+	}
 }
 
-func (u UserService) User(id v1.UserId) (*v1.User, error) {
+func (u UserService) User(ctx context.Context, id v1.UserId) (v1.User, error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (u UserService) Avatar(id v1.UserId) (image.Image, error) {
+func (u UserService) Avatar(ctx context.Context, id v1.UserId) (image.Image, error) {
 	// TODO implement me
 	panic("implement me")
 }

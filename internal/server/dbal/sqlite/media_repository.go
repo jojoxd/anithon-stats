@@ -23,15 +23,15 @@ func NewMediaRepository(queries *generated.Queries) MediaRepository {
 	}
 }
 
-func (repo MediaRepository) CreateMedia(ctx context.Context, request dbal.CreateMediaRequest) (*v1.Media, error) {
+func (repo MediaRepository) CreateMedia(ctx context.Context, request dbal.CreateMediaRequest) (v1.Media, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, err
+		return v1.Media{}, err
 	}
 
 	displayName, err := repo.translationRepository.CreateTranslation(ctx, request.DisplayName)
 	if err != nil {
-		return nil, err
+		return v1.Media{}, err
 	}
 
 	params := generated.CreateMediaParams{
@@ -43,26 +43,26 @@ func (repo MediaRepository) CreateMedia(ctx context.Context, request dbal.Create
 	}
 
 	if err := repo.queries.CreateMedia(ctx, params); err != nil {
-		return nil, err
+		return v1.Media{}, err
 	}
 
 	return repo.GetMedia(ctx, v1.MediaId(id))
 }
 
-func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (*v1.Media, error) {
+func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (v1.Media, error) {
 	media, err := repo.queries.GetMedia(ctx, uuid.UUID(id))
 	if err != nil {
-		return nil, err
+		return v1.Media{}, err
 	}
 
 	displayName, err := repo.translationRepository.GetTranslation(ctx, media.DisplayName)
 	if err != nil {
-		return nil, err
+		return v1.Media{}, err
 	}
 
-	mappedMedia := &v1.Media{
+	mappedMedia := v1.Media{
 		Id:          v1.MediaId(media.Id),
-		DisplayName: *displayName,
+		DisplayName: displayName,
 		Description: media.Description,
 		Episodes: v1.MediaEpisodes{
 			Total:    media.EpisodesTotal,
@@ -77,22 +77,22 @@ func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (*v1.Me
 	return mappedMedia, nil
 }
 
-func (repo MediaRepository) ListMedia(ctx context.Context) ([]*v1.Media, error) {
+func (repo MediaRepository) ListMedia(ctx context.Context) ([]v1.Media, error) {
 	medias, err := repo.queries.ListMedia(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	mappedMedias := make([]*v1.Media, len(medias))
+	mappedMedias := make([]v1.Media, len(medias))
 	for i, media := range medias {
 		displayName, err := repo.translationRepository.GetTranslation(ctx, media.DisplayName)
 		if err != nil {
 			return nil, err
 		}
 
-		mappedMedia := &v1.Media{
+		mappedMedia := v1.Media{
 			Id:          v1.MediaId(media.Id),
-			DisplayName: *displayName,
+			DisplayName: displayName,
 			Description: media.Description,
 			Episodes: v1.MediaEpisodes{
 				Total:    media.EpisodesTotal,
@@ -110,7 +110,7 @@ func (repo MediaRepository) ListMedia(ctx context.Context) ([]*v1.Media, error) 
 	return mappedMedias, nil
 }
 
-func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit int64) ([]*v1.Media, error) {
+func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit int64) ([]v1.Media, error) {
 	params := generated.ListMediaPParams{
 		Offset: offset,
 		Limit:  limit,
@@ -121,9 +121,9 @@ func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit 
 		return nil, err
 	}
 
-	mappedMedias := make([]*v1.Media, len(medias))
+	mappedMedias := make([]v1.Media, len(medias))
 	for i, media := range medias {
-		mappedMedia := &v1.Media{
+		mappedMedia := v1.Media{
 			Id:          v1.MediaId(media.Id),
 			DisplayName: v1.Translatable{},
 			Description: media.Description,

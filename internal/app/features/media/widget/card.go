@@ -7,7 +7,7 @@ import (
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/giorno/utils/inset"
+	"git.jojoxd.nl/projects/go-giorno/utils/inset"
 )
 
 type CardStyle struct {

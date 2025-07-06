@@ -1,0 +1,7 @@
+go 1.24.4
+
+use (
+	../go-giorno
+	../go-giorno/pkg/giorno-i18n
+	.
+)

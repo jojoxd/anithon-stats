@@ -6,10 +6,11 @@ import (
 
 	"gioui.org/widget/material"
 
+	"git.jojoxd.nl/projects/go-giorno/async"
+	"git.jojoxd.nl/projects/go-giorno/localizer"
+	"git.jojoxd.nl/projects/go-giorno/router"
+
 	"anistats/internal/app/api"
-	"anistats/pkg/giorno/async"
-	"anistats/pkg/giorno/localizer"
-	"anistats/pkg/giorno/router"
 )
 
 type Application interface {
@@ -22,8 +23,8 @@ type Application interface {
 	// GkAsyncScheduler returns the global async.Scheduler
 	GkAsyncScheduler() async.Scheduler
 
-	// Router returns the global router.Manager
-	Router() router.Manager
+	// Router returns the global router.Router
+	Router() router.Router
 
 	// Localizer returns the current locale's localizer.Localizer instance
 	Localizer() localizer.Localizer

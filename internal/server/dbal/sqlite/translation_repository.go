@@ -21,10 +21,10 @@ func NewTranslationRepository(queries *generated.Queries) *TranslationRepository
 	}
 }
 
-func (repo TranslationRepository) CreateTranslation(ctx context.Context, request dbal.CreateTranslationRequest) (*v1.Translatable, error) {
+func (repo TranslationRepository) CreateTranslation(ctx context.Context, request dbal.CreateTranslationRequest) (v1.Translatable, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, err
+		return v1.Translatable{}, err
 	}
 
 	for locale, translation := range request.Translations {
@@ -35,30 +35,30 @@ func (repo TranslationRepository) CreateTranslation(ctx context.Context, request
 		}
 
 		if err = repo.queries.CreateTranslation(ctx, params); err != nil {
-			return nil, err
+			return v1.Translatable{}, err
 		}
 	}
 
 	return repo.GetTranslation(ctx, id)
 }
 
-func (repo TranslationRepository) GetTranslation(ctx context.Context, id uuid.UUID) (*v1.Translatable, error) {
+func (repo TranslationRepository) GetTranslation(ctx context.Context, id uuid.UUID) (v1.Translatable, error) {
 	translations, err := repo.queries.GetTranslations(ctx, id)
 	if err != nil {
-		return nil, err
+		return v1.Translatable{}, err
 	}
 
 	translationMap := map[language.Tag]string{}
 	for _, translation := range translations {
 		tag, err := language.Parse(translation.Locale)
 		if err != nil {
-			return nil, err
+			return v1.Translatable{}, err
 		}
 
 		translationMap[tag] = translation.Translation
 	}
 
-	translatable := &v1.Translatable{
+	translatable := v1.Translatable{
 		Id:           id,
 		Translations: translationMap,
 	}

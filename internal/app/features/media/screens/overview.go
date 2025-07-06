@@ -2,43 +2,31 @@ package screens
 
 import (
 	"gioui.org/layout"
+	"git.jojoxd.nl/projects/go-giorno/router/intent"
+	"git.jojoxd.nl/projects/go-giorno/router/view"
 
+	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/pkg/giorno/router"
 )
 
 type Overview struct {
-	router.BaseScreen
 	app core.Application
 }
 
-func NewOverview(app core.Application) router.RouteView {
+func NewOverview(app core.Application) view.TypedView[v1.MediaId] {
 	return &Overview{
 		app: app,
 	}
 }
 
-func (o *Overview) Layout(gtx layout.Context) layout.Dimensions {
+func (o Overview) Layout(gtx layout.Context) layout.Dimensions {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (o *Overview) OnIntent(intent router.Intent) error {
-	err := o.BaseScreen.OnIntent(intent)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (o *Overview) Id() router.Route {
+func (o Overview) OnIntent(intent intent.Base) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (o *Overview) Title() string {
-	localizer := o.app.Localizer()
-
-	return localizer.T("media.overview.title")
-}
+func (o Overview) OnParameter(mediaId v1.MediaId) {}

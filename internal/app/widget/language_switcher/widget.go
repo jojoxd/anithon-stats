@@ -9,9 +9,9 @@ import (
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
 	"gioui.org/widget/material"
+	"git.jojoxd.nl/projects/go-giorno/localizer"
+	"git.jojoxd.nl/projects/go-giorno/localizer/locale"
 	"golang.org/x/image/colornames"
-
-	"anistats/pkg/giorno/localizer"
 )
 
 type Widget struct {
@@ -53,12 +53,12 @@ func (w *Widget) Update(q input.Source) {
 	if w.items == nil {
 		locales := w.localizerManager.Locales()
 		w.items = make([]*ItemWidget, len(locales))
-		for i, locale := range locales {
+		for i, localeItem := range locales {
 			w.items[i] = &ItemWidget{
-				locale:           locale,
+				locale:           localeItem,
 				localizerManager: w.localizerManager,
 				OnClick: func() {
-					w.onLocaleSelected(locale)
+					w.onLocaleSelected(localeItem)
 				},
 			}
 		}
@@ -69,7 +69,7 @@ func (w *Widget) Update(q input.Source) {
 	}
 }
 
-func (w *Widget) onLocaleSelected(locale localizer.Locale) {
+func (w *Widget) onLocaleSelected(locale locale.Locale) {
 	err := w.localizerManager.SetLocale(locale)
 	if err != nil {
 		panic(err)

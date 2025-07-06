@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 
 	"github.com/pressly/goose/v3"
+	"github.com/simukti/sqldb-logger"
 
 	"anistats/internal/server/dbal"
+	"anistats/internal/server/dbal/internal/logging"
 	"anistats/internal/server/dbal/sqlite/internal"
 	"anistats/internal/server/dbal/sqlite/internal/generated"
 
@@ -28,6 +30,9 @@ func New(config Config, logger *slog.Logger) (*Database, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	logAdapter := logging.NewSlogAdapter(logger)
+	conn = sqldblogger.OpenDriver(config.Path, conn.Driver(), logAdapter)
 
 	db := &Database{
 		logger: logger,

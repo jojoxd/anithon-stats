@@ -11,7 +11,7 @@ import (
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/features/media/provider"
-	"anistats/pkg/giorno/loader"
+	"git.jojoxd.nl/projects/go-giorno/loader"
 )
 
 type CoverImageStyle struct {

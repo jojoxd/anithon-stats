@@ -2,22 +2,27 @@ package core_impl
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/widget/material"
+	localizerEvent "git.jojoxd.nl/projects/go-giorno/localizer/event"
+	giornoI18n "git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n"
+	routerEvent "git.jojoxd.nl/projects/go-giorno/router/event"
+
+	"git.jojoxd.nl/projects/go-giorno/async"
+	"git.jojoxd.nl/projects/go-giorno/async/fixedpool"
+	"git.jojoxd.nl/projects/go-giorno/localizer"
+	"git.jojoxd.nl/projects/go-giorno/router"
 
 	"anistats/internal/app/api"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core_impl/views"
 	"anistats/internal/app/resources"
 	"anistats/internal/config"
-	"anistats/pkg/giorno/async"
-	"anistats/pkg/giorno/async/fixedpool"
-	"anistats/pkg/giorno/localizer"
-	"anistats/pkg/giorno/router"
 )
 
 var _ core.Application = (*Application)(nil)
@@ -29,7 +34,7 @@ type Application struct {
 	localizerManager localizer.Manager
 	logger           *slog.Logger
 	clientBundle     api.ClientBundle
-	router           router.Manager
+	router           router.Router
 	gkAsyncScheduler async.Scheduler
 }
 
@@ -39,7 +44,12 @@ func NewApplication(window *app.Window) (*Application, error) {
 		return nil, err
 	}
 
-	localizerManager, err := localizer.NewGoI18nManager(bundle, res.LocaleEnglish)
+	localizerManager, err := giornoI18n.NewManager(
+		giornoI18n.WithBundle(bundle),
+		giornoI18n.WithFallbackLocale(res.LocaleEnglish),
+		giornoI18n.WithEventing(8),
+		giornoI18n.WithLogger(slog.Default()),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +61,9 @@ func NewApplication(window *app.Window) (*Application, error) {
 		return nil, err
 	}
 
-	router := router.NewManager(window,
-		router.Logger(slog.Default()),
-		router.ManageWindowTitle(config.AppName),
+	router := router.NewRouter(
+		router.WithLogger(slog.Default()),
+		router.WithEventing(),
 	)
 
 	gkAsyncScheduler := fixedpool.NewScheduler(window,
@@ -129,7 +139,7 @@ func (a *Application) ApiClient() api.ClientBundle {
 	return a.clientBundle
 }
 
-func (a *Application) Router() router.Manager {
+func (a *Application) Router() router.Router {
 	return a.router
 }
 
@@ -143,22 +153,37 @@ func (a *Application) handleEvents(ctx context.Context) {
 		case ev := <-a.localizerManager.Events():
 			a.handleLocalizerEvent(ev)
 
+		case ev := <-a.router.Events():
+			a.handleRouterEvent(ev)
+
 		case <-ctx.Done():
 			panic("context canceled")
 		}
 	}
 }
 
-func (a *Application) handleLocalizerEvent(ev localizer.LocalizerManagerEvent) {
+func (a *Application) handleLocalizerEvent(ev localizerEvent.Event) {
 	switch ev := ev.(type) {
-	case localizer.LocaleChangedEvent:
+	case localizerEvent.LocaleChangedEvent:
 		a.logger.Info("Locale changed", "old", ev.OldLocale, "new", ev.NewLocale)
 		a.window.Invalidate()
 
-	case localizer.LocalizationNotFoundEvent:
+	case localizerEvent.LocalizationNotFoundEvent:
 		a.logger.Warn("localization not found",
 			slog.String("key", ev.Key),
 			slog.String("locale", ev.Locale.String()),
 		)
+	}
+}
+
+func (a *Application) handleRouterEvent(ev routerEvent.Event) {
+	switch ev := ev.(type) {
+	case *routerEvent.NavigationEvent:
+		a.logger.Info("router navigation event", "ev", ev)
+
+		title := a.Localizer().T(fmt.Sprintf("page.%s.title", ev.Intent.Target()))
+
+		a.window.Option(app.Title(title))
+		a.window.Invalidate()
 	}
 }

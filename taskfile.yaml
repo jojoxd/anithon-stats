@@ -17,4 +17,10 @@ tasks:
       - task: server:sqlc:vet
 
   build:
-    cmd: go build -o out/anistats cmd/anistats/main.go
+    cmd:
+      go build -v
+        -tags nox11
+        -o out/anistats 
+        -ldflags "-X anistats/internal/constants.AppDebug=false" 
+        -ldflags "-X anistats/internal/constants.Version=${VERSION}" 
+        cmd/anistats/main.go

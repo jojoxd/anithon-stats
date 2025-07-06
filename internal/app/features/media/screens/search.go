@@ -2,31 +2,26 @@ package screens
 
 import (
 	"gioui.org/layout"
+	"git.jojoxd.nl/projects/go-giorno/router/intent"
+	"git.jojoxd.nl/projects/go-giorno/router/view"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
-	"anistats/internal/app/core/route"
-	"anistats/pkg/giorno/router"
 )
 
 type Search struct {
-	router.BaseScreen
 	app             core.Application
 	selectedMediaId v1.MediaId
 }
 
 type SearchParams struct {
-	OnResolve func(v1.MediaId)
+	OnResolve func(media v1.Media)
 }
 
-func NewSearch(app core.Application) router.RouteView {
+func NewSearch(app core.Application) view.TypedView[SearchParams] {
 	return &Search{
 		app: app,
 	}
-}
-
-func (s Search) Id() router.Route {
-	return route.MediaSearchRoute
 }
 
 func (s Search) Layout(gtx layout.Context) layout.Dimensions {
@@ -34,15 +29,12 @@ func (s Search) Layout(gtx layout.Context) layout.Dimensions {
 	panic("implement me")
 }
 
-func (s Search) OnFinish() {
-	p, ok := router.Params[SearchParams](s.Intent)
-	if !ok {
-		return
-	}
-
-	p.OnResolve(s.selectedMediaId)
+func (s Search) OnIntent(intent intent.Base) {
+	// TODO implement me
+	panic("implement me")
 }
 
-func (s Search) Finished() bool {
-	return true
+func (s Search) OnParameter(params SearchParams) {
+	// TODO implement me
+	panic("implement me")
 }

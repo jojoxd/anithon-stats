@@ -5,6 +5,7 @@ import (
 	"gioui.org/widget/material"
 	"git.jojoxd.nl/projects/go-giorno/loader"
 	"git.jojoxd.nl/projects/go-giorno/router/intent"
+	"github.com/google/uuid"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
@@ -39,6 +40,6 @@ func (o Overview) Layout(gtx layout.Context) layout.Dimensions {
 
 func (o Overview) OnIntent(intent intent.Base) {}
 
-func (o Overview) OnParameter(userId v1.UserId) {
+func (o Overview) OnParameter(userId uuid.UUID) {
 	o.userProvider.Load(userId)
 }

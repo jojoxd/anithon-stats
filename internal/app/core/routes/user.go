@@ -2,12 +2,11 @@ package routes
 
 import (
 	"git.jojoxd.nl/projects/go-giorno/router/route"
-
-	v1 "anistats/api/v1"
+	"github.com/google/uuid"
 )
 
-var UserLists = route.NewTyped[v1.UserId]("user.lists")
+var UserLists = route.NewTyped[uuid.UUID]("user.lists")
 
-var UserOverview = route.NewTyped[v1.UserId]("user.overview")
+var UserOverview = route.NewTyped[uuid.UUID]("user.overview")
 
 var UserSearch = route.New("user.search")

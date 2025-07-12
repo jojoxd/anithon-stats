@@ -1,26 +1,141 @@
 version: 3
 
-tasks:
-  server:sqlc:generate:
-    cmd: sqlc generate
-    dir: internal/server/dbal
+includes:
+  tools:
+    taskfile: '{{ .ToolDir }}/taskfile.yaml'
+    internal: false
 
-  server:sqlc:vet:
-    cmd: sqlc vet
-    dir: internal/server/dbal
+vars:
+  AppDebug: 'false'
+
+  Version:
+    sh: echo "0.0.0-DEV.0"
+
+  GitTag:
+    sh: git describe || echo 'N/A'
+  GitCommit:
+    sh: git rev-parse --short HEAD
+
+  ToolDir: 'tools'
+  GOBIN:   'tools'
+
+  Sqlc: { map: {
+    Version: latest
+  }}
+
+  Gogio: { map: {
+    Version: latest
+  }}
+
+  Goose: { map: {
+    Version: latest
+  }}
+
+  Android: { map: {
+    PlatformVersion:   '36', # Android 16
+    BuildToolsVersion: '36.0.0',
+    SdkRoot:           '{{ .ToolDir }}/android-sdk',
+    NdkRoot:           '{{ .ToolDir }}/android-sdk/ndk-bundle',
+    AppId:             'nl.jojoxd.anistats',
+  }}
+
+  GOPACKAGE: "anistats"
+
+  GOARGS: |
+    -ldflags '-X anistats/internal/constants/app.AppDebug={{.AppDebug}}' \
+    -ldflags '-X anistats/internal/constants/version.gitTag="{{.GitTag}}"' \
+    -ldflags '-X anistats/internal/constants/version.gitCommit="{{ .GitCommit }}"' \
+
+tasks:
+  generate:
+    cmds:
+      - task: generate:go
+      - task: generate:sqlc
 
   vet:
     ignore_error: true
-
     cmds:
-      - cmd: go vet ./...
-      - task: server:sqlc:vet
+      - task: vet:go
+      - task: vet:sqlc
 
   build:
-    cmd:
-      go build -v
-        -tags nox11
-        -o out/anistats 
-        -ldflags "-X anistats/internal/constants.AppDebug=false" 
-        -ldflags "-X anistats/internal/constants.Version=${VERSION}" 
-        cmd/anistats/main.go
+    cmds:
+      - task: generate
+      - task: build:linux:wayland
+      - task: build:linux:x11
+      - task: build:linux:server-only
+      - task: build:android:client
+
+  build:linux:wayland:
+    cmds:
+      - task: tools:installed
+      - task: generate
+      - cmd: |
+          go build -v \
+            -tags app,nox11,wayland \
+            -o out/linux/wayland/anistats \
+            {{ .GOARGS }} \
+          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+
+  build:linux:x11:
+    cmds:
+      - task: tools:installed
+      - task: generate
+      - cmd: |
+          go build -v \
+            -tags app,nowayland,x11 \
+            -o out/linux/x11/anistats \
+            {{ .GOARGS }} \
+          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+
+  build:linux:server-only:
+    cmds:
+      - task: tools:installed
+      - task: generate
+      - cmd: |
+          go build -v \
+            -tags serveronly \
+            -o out/linux/server/anistats \
+            {{ .GOARGS }} \
+          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+
+  build:android:client:
+    env:
+      ANDROID_SDK_ROOT: '{{ .ROOT_DIR }}/{{ .Android.SdkRoot }}'
+      ANDROID_NDK_ROOT: '{{ .ROOT_DIR }}/{{ .Android.NdkRoot }}'
+
+    cmds:
+      - task: tools:installed
+      - task: generate
+      - cmd: mkdir -p out/android
+      - cmd: |
+          {{ .GOBIN }}/gogio -x \
+            -target android -buildmode exe -targetsdk {{ .Android.PlatformVersion }} \
+            -icon internal/app/resources/icon_android.png \
+            -appid {{ .Android.AppId }} \
+            {{ .GOARGS }} \
+            -o out/android/{{ .Android.AppId }}.apk \
+          {{ .GOPACKAGE }}/entrypoint/android/anistats
+
+  generate:go:
+    sources: [ './**/*.go' ]
+    cmd: go generate ./...
+
+  generate:sqlc:
+    dir: internal/server/dbal
+    sources:
+      - internal/server/dbal/mysql/migrations/*.sql
+      - internal/server/dbal/mysql/queries/*.sql
+      - internal/server/dbal/sqlite/migrations/*.sql
+      - internal/server/dbal/sqlite/queries/*.sql
+    cmds:
+      - task: tools:installed
+      - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc generate'
+
+  vet:sqlc:
+    dir: internal/server/dbal
+    cmds:
+      - task: tools:installed
+      - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc vet'
+  vet:go:
+    cmd: go vet ./...

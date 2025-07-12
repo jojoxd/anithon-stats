@@ -2,12 +2,12 @@ package routes
 
 import (
 	"git.jojoxd.nl/projects/go-giorno/router/route"
+	"github.com/google/uuid"
 
-	v1 "anistats/api/v1"
 	"anistats/internal/app/features/media/screens"
 )
 
-var Media = route.NewTyped[v1.MediaId]("media.media")
+var Media = route.NewTyped[uuid.UUID]("media.media")
 
 var MediaOverview = route.New("media.overview")
 

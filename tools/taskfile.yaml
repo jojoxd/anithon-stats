@@ -1,0 +1,64 @@
+version: 3
+
+vars:
+  AndroidCmdLineToolsUrl: https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+
+tasks:
+  installed:
+    cmds:
+      - task: installed:gogio
+      - task: installed:android
+      - task: installed:sqlc
+      - task: installed:goose
+
+  installed:android:
+    cmds:
+      - task: installed:android:sdkmanager
+      - task: installed:android:platform
+
+  installed:android:cache/cmdline:
+    internal: true
+    status:
+      - 'stat {{ .ROOT_DIR }}/{{ .ToolDir }}/.cache/android-tools.zip'
+    cmds:
+      - 'mkdir -p {{ .ToolDir }}/.cache'
+      - 'curl -o "{{ .ToolDir }}/.cache/android-tools.zip" "{{ .AndroidCmdLineToolsUrl }}"'
+
+  installed:android:sdkmanager:
+    internal: true
+    status:
+      - 'stat {{ .Android.SdkRoot }}/tools/bin/sdkmanager'
+    cmds:
+      - task: installed:android:cache/cmdline
+      - 'mkdir -p {{ .Android.SdkRoot }}'
+      - 'unzip -d "{{ .Android.SdkRoot }}" tools/.cache/android-tools.zip'
+      - 'mv {{ .Android.SdkRoot }}/cmdline-tools {{ .Android.SdkRoot }}/tools'
+      - '{{ .Android.SdkRoot }}/tools/bin/sdkmanager --sdk_root={{ .Android.SdkRoot }} --update'
+
+  installed:android:platform:
+    status:
+      - 'stat {{ .Android.SdkRoot }}/ndk-bundle'
+
+    cmd: |
+      {{ .Android.SdkRoot }}/tools/bin/sdkmanager \
+        --sdk_root={{ .Android.SdkRoot }} \
+        --install \
+          "platform-tools" \
+          "platforms;android-{{ .Android.PlatformVersion }}" \
+          "build-tools;{{ .Android.BuildToolsVersion }}" \
+          "ndk-bundle"
+
+  installed:sqlc:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/sqlc-dev/sqlc/cmd/sqlc@{{ .Sqlc.Version }}'
+
+  installed:gogio:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/gogio' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install gioui.org/cmd/gogio@{{ .Gogio.Version }}'
+
+  installed:goose:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/goose' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/pressly/goose/v3/cmd/goose@{{ .Goose.Version }}'

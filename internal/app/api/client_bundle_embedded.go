@@ -1,3 +1,5 @@
+//go:build app && app_embed
+
 package api
 
 import (
@@ -10,7 +12,9 @@ import (
 	"anistats/pkg/anistats_client"
 )
 
-var _ ClientBundle = (*clientBundleEmbedded)(nil)
+func init() {
+	bundleFactories[config.ClientTypeEmbedded] = BundleFactory(newClientBundleRemote)
+}
 
 type clientBundleEmbedded struct {
 	db           dbal.Database
@@ -18,15 +22,17 @@ type clientBundleEmbedded struct {
 	userService  anistats_client.UserService
 }
 
-func newClientBundleEmbedded(cfg config.AppClient) ClientBundle {
+func newClientBundleEmbedded(cfg config.AppClient) (ClientBundle, error) {
 	db, err := sqlite.New(sqlite.Config{Path: "test.db"}, slog.Default())
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	return &clientBundleEmbedded{
+	bundle := &clientBundleEmbedded{
 		db: db,
 	}
+
+	return bundle, nil
 }
 
 func (b *clientBundleEmbedded) MediaService() anistats_client.MediaService {

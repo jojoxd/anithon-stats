@@ -1,3 +1,5 @@
+//go:build app && (x11 || wayland) && !serveronly
+
 package cmd
 
 import (

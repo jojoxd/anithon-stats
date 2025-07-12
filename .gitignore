@@ -4,3 +4,9 @@ out/
 
 go.work
 go.work.sum
+
+.task
+tools/*
+!tools/taskfile.yaml
+
+*.generated.go

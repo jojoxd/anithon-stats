@@ -6,6 +6,7 @@ import (
 	"git.jojoxd.nl/projects/go-giorno/loader"
 	"git.jojoxd.nl/projects/go-giorno/router/intent"
 	"git.jojoxd.nl/projects/go-giorno/router/view"
+	"github.com/google/uuid"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
@@ -17,15 +18,15 @@ type Media struct {
 	app       core.Application
 	mediaCard *widget.CardStyle
 	provider  *provider.Media
-	mediaId   v1.MediaId
+	mediaId   uuid.UUID
 }
 
-func NewMedia(app core.Application) view.TypedView[v1.MediaId] {
+func NewMedia(app core.Application) view.TypedView[uuid.UUID] {
 	return &Media{
 		app:       app,
 		mediaCard: widget.Card(app),
 		provider:  provider.NewMedia(app),
-		mediaId:   v1.MediaId{},
+		mediaId:   uuid.UUID{},
 	}
 }
 
@@ -44,6 +45,6 @@ func (m *Media) Layout(gtx layout.Context) layout.Dimensions {
 
 func (m *Media) OnIntent(intent intent.Base) {}
 
-func (m *Media) OnParameter(mediaId v1.MediaId) {
+func (m *Media) OnParameter(mediaId uuid.UUID) {
 	m.mediaId = mediaId
 }

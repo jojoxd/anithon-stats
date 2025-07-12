@@ -12,6 +12,7 @@ const (
 	LevelSql       = level(-5)
 	LevelDebug     = level(-4)
 	LevelInfo      = level(0)
+	LevelHttp      = level(1)
 	LevelWarn      = level(4)
 	LevelError     = level(8)
 	LevelEmergency = level(12)
@@ -30,6 +31,9 @@ func mapSlogLevel(level slog.Level) level {
 
 	case LevelInfo.Level():
 		return LevelInfo
+
+	case LevelHttp.Level():
+		return LevelHttp
 
 	case LevelWarn.Level():
 		return LevelWarn
@@ -65,6 +69,9 @@ func parseLogLevel(levelStr string) level {
 
 	case "info":
 		return LevelInfo
+
+	case "http":
+		return LevelHttp
 
 	case "warn":
 		return LevelWarn

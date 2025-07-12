@@ -14,6 +14,8 @@ func (l level) String() string {
 		return "DBG"
 	case LevelInfo:
 		return "INF"
+	case LevelHttp:
+		return "HTTP"
 	case LevelWarn:
 		return "WRN"
 	case LevelError:
@@ -35,6 +37,8 @@ func (l level) Color() uint8 {
 		return ansiDarkBlue
 	case LevelInfo:
 		return ansiDarkGreen
+	case LevelHttp:
+		return ansiMagenta
 	case LevelWarn:
 		return ansiYellow
 	case LevelError:

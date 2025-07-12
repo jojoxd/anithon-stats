@@ -4,8 +4,8 @@ import (
 	"git.jojoxd.nl/projects/go-giorno/router"
 	"git.jojoxd.nl/projects/go-giorno/router/route"
 	"git.jojoxd.nl/projects/go-giorno/router/view"
+	"github.com/google/uuid"
 
-	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/routes"
 	"anistats/internal/app/features/media/screens"
@@ -21,7 +21,7 @@ func Register(app core.Application, mgr router.Router) error {
 		return err
 	}
 
-	err = mgr.Register(route.BindTypedFactory(routes.Media, func() view.TypedView[v1.MediaId] {
+	err = mgr.Register(route.BindTypedFactory(routes.Media, func() view.TypedView[uuid.UUID] {
 		return screens.NewMedia(app)
 	}))
 	if err != nil {

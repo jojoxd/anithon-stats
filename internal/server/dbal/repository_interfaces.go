@@ -4,25 +4,26 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/text/language"
 
 	v1 "anistats/api/v1"
 )
 
 type UserRepository interface {
-	GetUser(ctx context.Context, id v1.UserId) (v1.User, error)
+	GetUser(ctx context.Context, id uuid.UUID) (v1.User, error)
 	ListUsers(ctx context.Context) ([]v1.User, error)
 	ListUsersP(ctx context.Context, offset int64, limit int64) ([]v1.User, error)
 	CreateUser(ctx context.Context, request CreateUserRequest) (v1.User, error)
-	DeleteUser(ctx context.Context, id v1.UserId) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 }
 
 type MediaRepository interface {
-	GetMedia(ctx context.Context, id v1.MediaId) (v1.Media, error)
+	GetMedia(ctx context.Context, id uuid.UUID) (v1.Media, error)
 	ListMedia(ctx context.Context) ([]v1.Media, error)
 	ListMediaP(ctx context.Context, offset int64, limit int64) ([]v1.Media, error)
 	CreateMedia(ctx context.Context, request CreateMediaRequest) (v1.Media, error)
-	DeleteMedia(ctx context.Context, id v1.MediaId) error
+	DeleteMedia(ctx context.Context, id uuid.UUID) error
 }
 
 // todo move requests

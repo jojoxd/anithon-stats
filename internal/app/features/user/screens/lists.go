@@ -3,8 +3,8 @@ package screens
 import (
 	"gioui.org/layout"
 	"git.jojoxd.nl/projects/go-giorno/router/intent"
+	"github.com/google/uuid"
 
-	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 )
 
@@ -28,7 +28,7 @@ func (l Lists) OnIntent(intent intent.Base) {
 	panic("implement me")
 }
 
-func (l Lists) OnParameter(userId v1.UserId) {
+func (l Lists) OnParameter(userId uuid.UUID) {
 	// TODO implement me
 	panic("implement me")
 }

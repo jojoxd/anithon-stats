@@ -4,6 +4,7 @@ import (
 	"gioui.org/layout"
 	"git.jojoxd.nl/projects/go-giorno/router/intent"
 	"git.jojoxd.nl/projects/go-giorno/router/view"
+	"github.com/google/uuid"
 
 	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
@@ -11,7 +12,7 @@ import (
 
 type Search struct {
 	app             core.Application
-	selectedMediaId v1.MediaId
+	selectedMediaId uuid.UUID
 }
 
 type SearchParams struct {

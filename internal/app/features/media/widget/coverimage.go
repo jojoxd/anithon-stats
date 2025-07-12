@@ -7,11 +7,12 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"github.com/google/uuid"
 
-	v1 "anistats/api/v1"
+	"git.jojoxd.nl/projects/go-giorno/loader"
+
 	"anistats/internal/app/core"
 	"anistats/internal/app/features/media/provider"
-	"git.jojoxd.nl/projects/go-giorno/loader"
 )
 
 type CoverImageStyle struct {
@@ -26,7 +27,7 @@ func NewCoverImage(app core.Application) *CoverImageStyle {
 	}
 }
 
-func (s *CoverImageStyle) Layout(gtx layout.Context, th *material.Theme, id v1.MediaId) layout.Dimensions {
+func (s *CoverImageStyle) Layout(gtx layout.Context, th *material.Theme, id uuid.UUID) layout.Dimensions {
 	return s.provider.Layout(gtx, id, loader.Slots[image.Image]{
 		Loading: func(gtx layout.Context) layout.Dimensions {
 			// s.app.Logger().Debug("widget/coverimage loading")

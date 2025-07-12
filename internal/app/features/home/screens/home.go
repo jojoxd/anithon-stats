@@ -8,7 +8,6 @@ import (
 	"git.jojoxd.nl/projects/go-giorno/router/view"
 	"github.com/google/uuid"
 
-	v1 "anistats/api/v1"
 	"anistats/internal/app/core"
 	"anistats/internal/app/core/routes"
 	"anistats/internal/app/widget/language_switcher"
@@ -36,7 +35,7 @@ func (h Home) Layout(gtx layout.Context) layout.Dimensions {
 func (h Home) OnIntent(intent intent.Base) {
 	go func() {
 		time.Sleep(5 * time.Second)
-		// h.app.Router().Push(routes.Media.Intent(v1.MediaId(uuid.MustParse("0197568d-6e5b-7d67-b9d5-d244fec5a766"))))
-		h.app.Router().Push(routes.UserOverview.Intent(v1.UserId(uuid.MustParse("01975666-3cac-7040-8232-46faa1e0723d"))))
+		h.app.Router().Push(routes.Media.Intent(uuid.MustParse("0197568d-6e5b-7d67-b9d5-d244fec5a766")))
+		// h.app.Router().Push(routes.UserOverview.Intent(uuid.UUID(uuid.MustParse("01975666-3cac-7040-8232-46faa1e0723d"))))
 	}()
 }

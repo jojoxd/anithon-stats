@@ -7,19 +7,27 @@ import (
 	"anistats/pkg/anistats_client"
 )
 
+type BundleFactory func(config.AppClient) (ClientBundle, error)
+
+var bundleFactories = map[config.ClientType]BundleFactory{}
+
 type ClientBundle interface {
 	MediaService() anistats_client.MediaService
 	UserService() anistats_client.UserService
 }
 
 func NewClientBundle(clientConfig config.AppClient) (ClientBundle, error) {
-	switch clientConfig.Type {
-	case config.ClientTypeRemote:
-		return newClientBundleRemote(clientConfig), nil
+	clientType := config.ClientTypeRemote
 
-	case config.ClientTypeEmbedded:
-		return newClientBundleEmbedded(clientConfig), nil
+	bundleFactory, ok := bundleFactories[clientType]
+	if !ok {
+		return nil, fmt.Errorf("client bundle '%s' not exist", clientType)
 	}
 
-	return nil, fmt.Errorf(`unknown client type "%s"`, clientConfig.Type)
+	bundle, err := bundleFactory(clientConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return bundle, nil
 }

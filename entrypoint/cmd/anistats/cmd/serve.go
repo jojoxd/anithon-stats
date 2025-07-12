@@ -29,7 +29,15 @@ func init() {
 func runServe(cmd *cobra.Command, args []string) {
 	ctx := cmd.Context()
 
-	srv := server.New()
+	srv, err := server.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := srv.Database().Migrate(ctx); err != nil {
+		log.Fatal(err)
+	}
+
 	if err := srv.Serve(ctx); err != nil {
 		log.Fatal(err)
 	}

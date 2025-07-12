@@ -1,3 +1,5 @@
+//go:build app
+
 package api
 
 import (
@@ -8,7 +10,9 @@ import (
 	"anistats/pkg/anistats_client_http"
 )
 
-var _ ClientBundle = (*clientBundleRemote)(nil)
+func init() {
+	bundleFactories[config.ClientTypeRemote] = BundleFactory(newClientBundleRemote)
+}
 
 type clientBundleRemote struct {
 	cfg          config.AppClient
@@ -17,8 +21,8 @@ type clientBundleRemote struct {
 	userService  anistats_client.UserService
 }
 
-func newClientBundleRemote(cfg config.AppClient) ClientBundle {
-	return &clientBundleRemote{
+func newClientBundleRemote(cfg config.AppClient) (ClientBundle, error) {
+	bundle := &clientBundleRemote{
 		cfg: cfg,
 		httpClient: anistats_client_http.NewHttpClient(
 			http.Client{},
@@ -27,6 +31,8 @@ func newClientBundleRemote(cfg config.AppClient) ClientBundle {
 			},
 		),
 	}
+
+	return bundle, nil
 }
 
 func (b *clientBundleRemote) MediaService() anistats_client.MediaService {

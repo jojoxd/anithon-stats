@@ -36,17 +36,17 @@ func (repo UserRepository) CreateUser(ctx context.Context, req dbal.CreateUserRe
 		return v1.User{}, err
 	}
 
-	return repo.GetUser(ctx, v1.UserId(id))
+	return repo.GetUser(ctx, uuid.UUID(id))
 }
 
-func (repo UserRepository) GetUser(ctx context.Context, id v1.UserId) (v1.User, error) {
+func (repo UserRepository) GetUser(ctx context.Context, id uuid.UUID) (v1.User, error) {
 	user, err := repo.queries.GetUser(ctx, uuid.UUID(id))
 	if err != nil {
 		return v1.User{}, err
 	}
 
 	mappedUser := v1.User{
-		Id:   v1.UserId(user.Id),
+		Id:   uuid.UUID(user.Id),
 		Name: user.Name,
 	}
 
@@ -62,7 +62,7 @@ func (repo UserRepository) ListUsers(ctx context.Context) ([]v1.User, error) {
 	mappedUsers := make([]v1.User, len(users))
 	for i, user := range users {
 		mappedUser := v1.User{
-			Id:   v1.UserId(user.Id),
+			Id:   uuid.UUID(user.Id),
 			Name: user.Name,
 		}
 
@@ -86,7 +86,7 @@ func (repo UserRepository) ListUsersP(ctx context.Context, offset int64, limit i
 	mappedUsers := make([]v1.User, len(users))
 	for i, user := range users {
 		mappedUser := v1.User{
-			Id:   v1.UserId(user.Id),
+			Id:   uuid.UUID(user.Id),
 			Name: user.Name,
 		}
 
@@ -96,6 +96,6 @@ func (repo UserRepository) ListUsersP(ctx context.Context, offset int64, limit i
 	return mappedUsers, nil
 }
 
-func (repo UserRepository) DeleteUser(ctx context.Context, id v1.UserId) error {
+func (repo UserRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return repo.queries.DeleteUser(ctx, uuid.UUID(id))
 }

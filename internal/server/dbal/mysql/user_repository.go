@@ -19,14 +19,14 @@ func NewUserRepository(queries *generated.Queries) *UserRepository {
 	return &UserRepository{queries: queries}
 }
 
-func (repo UserRepository) GetUser(ctx context.Context, id v1.UserId) (*v1.User, error) {
+func (repo UserRepository) GetUser(ctx context.Context, id uuid.UUID) (*v1.User, error) {
 	user, err := repo.queries.GetUser(ctx, uuid.UUID(id))
 	if err != nil {
 		return nil, err
 	}
 
 	mappedUser := &v1.User{
-		Id:   v1.UserId(user.Id),
+		Id:   uuid.UUID(user.Id),
 		Name: user.Name,
 	}
 
@@ -42,7 +42,7 @@ func (repo UserRepository) ListUsers(ctx context.Context) ([]*v1.User, error) {
 	mappedUsers := make([]*v1.User, len(users))
 	for i, user := range users {
 		mappedUser := &v1.User{
-			Id:   v1.UserId(user.Id),
+			Id:   uuid.UUID(user.Id),
 			Name: user.Name,
 		}
 
@@ -67,5 +67,5 @@ func (repo UserRepository) CreateUser(ctx context.Context, req dbal.CreateUserRe
 		return nil, err
 	}
 
-	return repo.GetUser(ctx, v1.UserId(id))
+	return repo.GetUser(ctx, uuid.UUID(id))
 }

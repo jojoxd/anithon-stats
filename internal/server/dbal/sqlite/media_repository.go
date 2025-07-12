@@ -46,11 +46,11 @@ func (repo MediaRepository) CreateMedia(ctx context.Context, request dbal.Create
 		return v1.Media{}, err
 	}
 
-	return repo.GetMedia(ctx, v1.MediaId(id))
+	return repo.GetMedia(ctx, id)
 }
 
-func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (v1.Media, error) {
-	media, err := repo.queries.GetMedia(ctx, uuid.UUID(id))
+func (repo MediaRepository) GetMedia(ctx context.Context, id uuid.UUID) (v1.Media, error) {
+	media, err := repo.queries.GetMedia(ctx, id)
 	if err != nil {
 		return v1.Media{}, err
 	}
@@ -61,7 +61,7 @@ func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (v1.Med
 	}
 
 	mappedMedia := v1.Media{
-		Id:          v1.MediaId(media.Id),
+		Id:          media.Id,
 		DisplayName: displayName,
 		Description: media.Description,
 		Episodes: v1.MediaEpisodes{
@@ -69,8 +69,8 @@ func (repo MediaRepository) GetMedia(ctx context.Context, id v1.MediaId) (v1.Med
 			Duration: time.Duration(media.EpisodesDurationSeconds) * time.Second,
 		},
 		Related: v1.MediaRelations{
-			PrequelIds: make([]v1.MediaId, 0),
-			SequelIds:  make([]v1.MediaId, 0),
+			PrequelIds: make([]uuid.UUID, 0),
+			SequelIds:  make([]uuid.UUID, 0),
 		},
 	}
 
@@ -91,7 +91,7 @@ func (repo MediaRepository) ListMedia(ctx context.Context) ([]v1.Media, error) {
 		}
 
 		mappedMedia := v1.Media{
-			Id:          v1.MediaId(media.Id),
+			Id:          media.Id,
 			DisplayName: displayName,
 			Description: media.Description,
 			Episodes: v1.MediaEpisodes{
@@ -99,8 +99,8 @@ func (repo MediaRepository) ListMedia(ctx context.Context) ([]v1.Media, error) {
 				Duration: time.Duration(media.EpisodesDurationSeconds) * time.Second,
 			},
 			Related: v1.MediaRelations{
-				PrequelIds: make([]v1.MediaId, 0),
-				SequelIds:  make([]v1.MediaId, 0),
+				PrequelIds: make([]uuid.UUID, 0),
+				SequelIds:  make([]uuid.UUID, 0),
 			},
 		}
 
@@ -124,7 +124,7 @@ func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit 
 	mappedMedias := make([]v1.Media, len(medias))
 	for i, media := range medias {
 		mappedMedia := v1.Media{
-			Id:          v1.MediaId(media.Id),
+			Id:          media.Id,
 			DisplayName: v1.Translatable{},
 			Description: media.Description,
 			Episodes: v1.MediaEpisodes{
@@ -132,8 +132,8 @@ func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit 
 				Duration: time.Duration(media.EpisodesDurationSeconds) * time.Second,
 			},
 			Related: v1.MediaRelations{
-				PrequelIds: make([]v1.MediaId, 0),
-				SequelIds:  make([]v1.MediaId, 0),
+				PrequelIds: make([]uuid.UUID, 0),
+				SequelIds:  make([]uuid.UUID, 0),
 			},
 		}
 
@@ -143,6 +143,6 @@ func (repo MediaRepository) ListMediaP(ctx context.Context, offset int64, limit 
 	return mappedMedias, nil
 }
 
-func (repo MediaRepository) DeleteMedia(ctx context.Context, id v1.MediaId) error {
+func (repo MediaRepository) DeleteMedia(ctx context.Context, id uuid.UUID) error {
 	return repo.queries.DeleteMedia(ctx, uuid.UUID(id))
 }

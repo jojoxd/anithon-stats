@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 
@@ -38,7 +39,9 @@ func initViper() {
 	if configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
-		viper.AddConfigPath(path.Join(xdg.ConfigHome, "anistats"))
+		configPath := path.Join(xdg.ConfigHome, "anistats")
+		slog.Default().Info(fmt.Sprintf("configPath: %s", configPath))
+		viper.AddConfigPath(configPath)
 		viper.SetConfigName("config")
 	}
 

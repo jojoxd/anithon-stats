@@ -4,10 +4,12 @@ import (
 	"context"
 	"image"
 
+	"github.com/google/uuid"
+
 	v1 "anistats/api/v1"
 )
 
 type UserService interface {
-	User(ctx context.Context, id v1.UserId) (v1.User, error)
-	Avatar(ctx context.Context, id v1.UserId) (image.Image, error)
+	User(ctx context.Context, id uuid.UUID) (v1.User, error)
+	Avatar(ctx context.Context, id uuid.UUID) (image.Image, error)
 }

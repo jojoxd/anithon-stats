@@ -25,7 +25,7 @@ type clientBundleEmbedded struct {
 func newClientBundleEmbedded(cfg config.AppClient) (ClientBundle, error) {
 	db, err := sqlite.New(sqlite.Config{Path: "test.db"}, slog.Default())
 	if err != nil {
-		return err
+		return err, nil
 	}
 
 	bundle := &clientBundleEmbedded{

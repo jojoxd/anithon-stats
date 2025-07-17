@@ -114,6 +114,7 @@ tasks:
             -icon internal/app/resources/icon_android.png \
             -appid {{ .Android.AppId }} \
             {{ .GOARGS }} \
+            -tags app \
             -o out/android/{{ .Android.AppId }}.apk \
           {{ .GOPACKAGE }}/entrypoint/android/anistats
 

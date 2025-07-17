@@ -25,7 +25,7 @@ func NewMediaService(client *HttpClient) anistats_client.MediaService {
 }
 
 func (m MediaService) Media(ctx context.Context, id uuid.UUID) (v1.Media, error) {
-	res, err := m.client.client.Get(fmt.Sprintf("http://localhost:8000/media/%s", id.String()))
+	res, err := m.client.client.Get(fmt.Sprintf("http://172.16.0.10:8000/media/%s", id.String()))
 	if err != nil {
 		return v1.Media{}, err
 	}
@@ -46,7 +46,7 @@ func (m MediaService) Media(ctx context.Context, id uuid.UUID) (v1.Media, error)
 }
 
 func (m MediaService) CoverImage(ctx context.Context, id uuid.UUID) (image.Image, error) {
-	res, err := m.client.client.Get(fmt.Sprintf("http://localhost:8000/media/%s/cover-image", id.String()))
+	res, err := m.client.client.Get(fmt.Sprintf("http://172.16.0.10:8000/media/%s/cover-image", id.String()))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (m MediaService) CoverImage(ctx context.Context, id uuid.UUID) (image.Image
 }
 
 func (m MediaService) BannerImage(ctx context.Context, id uuid.UUID) (image.Image, error) {
-	res, err := m.client.client.Get(fmt.Sprintf("http://localhost:8000/media/%s/banner-image", id.String()))
+	res, err := m.client.client.Get(fmt.Sprintf("http://172.16.0.10:8000/media/%s/banner-image", id.String()))
 	if err != nil {
 		return nil, err
 	}

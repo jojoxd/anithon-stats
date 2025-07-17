@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"gioui.org/widget/material"
+	"git.jojoxd.nl/projects/go-giorno/ext/glayout"
 
 	"git.jojoxd.nl/projects/go-giorno/async"
 	"git.jojoxd.nl/projects/go-giorno/localizer"
@@ -37,4 +38,6 @@ type Application interface {
 
 	// ApiClient returns the current api.ClientBundle used to connect to a backend
 	ApiClient() api.ClientBundle
+
+	LayoutHelper() *glayout.Helper
 }

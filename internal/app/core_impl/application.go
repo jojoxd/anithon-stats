@@ -9,6 +9,7 @@ import (
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/widget/material"
+	"git.jojoxd.nl/projects/go-giorno/ext/glayout"
 	localizerEvent "git.jojoxd.nl/projects/go-giorno/localizer/event"
 	giornoI18n "git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n"
 	routerEvent "git.jojoxd.nl/projects/go-giorno/router/event"
@@ -36,6 +37,7 @@ type Application struct {
 	clientBundle     api.ClientBundle
 	router           router.Router
 	gkAsyncScheduler async.Scheduler
+	layoutHelper     *glayout.Helper
 }
 
 func NewApplication(window *app.Window) (*Application, error) {
@@ -79,6 +81,7 @@ func NewApplication(window *app.Window) (*Application, error) {
 		clientBundle:     clientBundle,
 		logger:           slog.Default(),
 		gkAsyncScheduler: gkAsyncScheduler,
+		layoutHelper:     glayout.NewHelper(),
 	}
 
 	return application, nil
@@ -104,6 +107,8 @@ func (a *Application) Run(ctx context.Context) error {
 
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, ev)
+
+			a.layoutHelper.Update(gtx)
 
 			a.layout(gtx)
 			ev.Frame(gtx.Ops)
@@ -145,6 +150,10 @@ func (a *Application) Router() router.Router {
 
 func (a *Application) GkAsyncScheduler() async.Scheduler {
 	return a.gkAsyncScheduler
+}
+
+func (a *Application) LayoutHelper() *glayout.Helper {
+	return a.layoutHelper
 }
 
 func (a *Application) handleEvents(ctx context.Context) {

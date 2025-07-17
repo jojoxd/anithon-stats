@@ -4,19 +4,19 @@ go 1.24.4
 
 require (
 	gioui.org v0.8.0
-	git.jojoxd.nl/projects/go-giorno v0.0.0-20250706065518-280c47115cf9
-	git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n v0.0.0-20250706065518-280c47115cf9
+	git.jojoxd.nl/projects/go-giorno v0.0.0-20250717174510-f25572db8e21
+	git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n v0.0.0-20250717174510-f25572db8e21
 	github.com/adrg/xdg v0.5.3
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/gokyle/filecache v0.0.0-20220803205700-e8a4791094b7
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/jaswdr/faker/v2 v2.5.0
+	github.com/jaswdr/faker/v2 v2.6.0
 	github.com/lmittmann/tint v1.1.2
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/simukti/sqldb-logger v0.0.0-20230108155151-646c1a075551
+	github.com/spf13/afero v1.14.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	golang.org/x/image v0.29.0
@@ -29,7 +29,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-text/typesetting v0.3.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
@@ -39,13 +39,12 @@ require (
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
-	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
+	github.com/spf13/pflag v1.0.7 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
-	golang.org/x/exp/shiny v0.0.0-20250620022241-b7579e27df2b // indirect
+	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
+	golang.org/x/exp/shiny v0.0.0-20250711185948-6ae5c78190dc // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

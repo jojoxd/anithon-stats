@@ -7,6 +7,7 @@ require (
 	git.jojoxd.nl/projects/go-giorno v0.0.0-20250717174510-f25572db8e21
 	git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n v0.0.0-20250717174510-f25572db8e21
 	github.com/adrg/xdg v0.5.3
+	github.com/bin16/go-hexcolor v1.3.0
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1

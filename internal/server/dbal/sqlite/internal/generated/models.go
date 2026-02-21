@@ -35,6 +35,7 @@ type UserList struct {
 }
 
 type UserListEntry struct {
-	ListUuid  uuid.UUID
-	MediaUuid uuid.UUID
+	Id           uuid.UUID
+	UserlistUuid uuid.UUID
+	MediaUuid    uuid.UUID
 }

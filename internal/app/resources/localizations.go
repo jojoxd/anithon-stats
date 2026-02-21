@@ -12,6 +12,8 @@ import (
 //go:embed localizations/**/*.yaml
 var i18nFS embed.FS
 
+//go:generate ./gen_icons.sh
+
 var (
 	LocaleEnglish        = locale.Locale(language.English)
 	LocaleJapanese       = locale.Locale(language.Japanese)

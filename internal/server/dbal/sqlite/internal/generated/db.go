@@ -24,6 +24,9 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.addUserListEntryStmt, err = db.PrepareContext(ctx, addUserListEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query AddUserListEntry: %w", err)
+	}
 	if q.createMediaStmt, err = db.PrepareContext(ctx, createMedia); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateMedia: %w", err)
 	}
@@ -32,6 +35,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
+	}
+	if q.createUserListStmt, err = db.PrepareContext(ctx, createUserList); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUserList: %w", err)
 	}
 	if q.deleteMediaStmt, err = db.PrepareContext(ctx, deleteMedia); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteMedia: %w", err)
@@ -45,6 +51,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
 	}
+	if q.deleteUserListStmt, err = db.PrepareContext(ctx, deleteUserList); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteUserList: %w", err)
+	}
+	if q.deleteUserListEntryStmt, err = db.PrepareContext(ctx, deleteUserListEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteUserListEntry: %w", err)
+	}
 	if q.getMediaStmt, err = db.PrepareContext(ctx, getMedia); err != nil {
 		return nil, fmt.Errorf("error preparing query GetMedia: %w", err)
 	}
@@ -56,6 +68,24 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getUserStmt, err = db.PrepareContext(ctx, getUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
+	}
+	if q.getUserListStmt, err = db.PrepareContext(ctx, getUserList); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserList: %w", err)
+	}
+	if q.getUserListEntriesStmt, err = db.PrepareContext(ctx, getUserListEntries); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserListEntries: %w", err)
+	}
+	if q.getUserListEntriesPStmt, err = db.PrepareContext(ctx, getUserListEntriesP); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserListEntriesP: %w", err)
+	}
+	if q.getUserListEntryStmt, err = db.PrepareContext(ctx, getUserListEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserListEntry: %w", err)
+	}
+	if q.getUserListsStmt, err = db.PrepareContext(ctx, getUserLists); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserLists: %w", err)
+	}
+	if q.getUserListsPStmt, err = db.PrepareContext(ctx, getUserListsP); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserListsP: %w", err)
 	}
 	if q.listMediaStmt, err = db.PrepareContext(ctx, listMedia); err != nil {
 		return nil, fmt.Errorf("error preparing query ListMedia: %w", err)
@@ -69,11 +99,22 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listUsersPStmt, err = db.PrepareContext(ctx, listUsersP); err != nil {
 		return nil, fmt.Errorf("error preparing query ListUsersP: %w", err)
 	}
+	if q.updateUserListStmt, err = db.PrepareContext(ctx, updateUserList); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserList: %w", err)
+	}
+	if q.updateUserListEntryStmt, err = db.PrepareContext(ctx, updateUserListEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserListEntry: %w", err)
+	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
+	if q.addUserListEntryStmt != nil {
+		if cerr := q.addUserListEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addUserListEntryStmt: %w", cerr)
+		}
+	}
 	if q.createMediaStmt != nil {
 		if cerr := q.createMediaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createMediaStmt: %w", cerr)
@@ -87,6 +128,11 @@ func (q *Queries) Close() error {
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.createUserListStmt != nil {
+		if cerr := q.createUserListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserListStmt: %w", cerr)
 		}
 	}
 	if q.deleteMediaStmt != nil {
@@ -109,6 +155,16 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
 		}
 	}
+	if q.deleteUserListStmt != nil {
+		if cerr := q.deleteUserListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteUserListStmt: %w", cerr)
+		}
+	}
+	if q.deleteUserListEntryStmt != nil {
+		if cerr := q.deleteUserListEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteUserListEntryStmt: %w", cerr)
+		}
+	}
 	if q.getMediaStmt != nil {
 		if cerr := q.getMediaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getMediaStmt: %w", cerr)
@@ -129,6 +185,36 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
 		}
 	}
+	if q.getUserListStmt != nil {
+		if cerr := q.getUserListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListStmt: %w", cerr)
+		}
+	}
+	if q.getUserListEntriesStmt != nil {
+		if cerr := q.getUserListEntriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListEntriesStmt: %w", cerr)
+		}
+	}
+	if q.getUserListEntriesPStmt != nil {
+		if cerr := q.getUserListEntriesPStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListEntriesPStmt: %w", cerr)
+		}
+	}
+	if q.getUserListEntryStmt != nil {
+		if cerr := q.getUserListEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListEntryStmt: %w", cerr)
+		}
+	}
+	if q.getUserListsStmt != nil {
+		if cerr := q.getUserListsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListsStmt: %w", cerr)
+		}
+	}
+	if q.getUserListsPStmt != nil {
+		if cerr := q.getUserListsPStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserListsPStmt: %w", cerr)
+		}
+	}
 	if q.listMediaStmt != nil {
 		if cerr := q.listMediaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listMediaStmt: %w", cerr)
@@ -147,6 +233,16 @@ func (q *Queries) Close() error {
 	if q.listUsersPStmt != nil {
 		if cerr := q.listUsersPStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listUsersPStmt: %w", cerr)
+		}
+	}
+	if q.updateUserListStmt != nil {
+		if cerr := q.updateUserListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserListStmt: %w", cerr)
+		}
+	}
+	if q.updateUserListEntryStmt != nil {
+		if cerr := q.updateUserListEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserListEntryStmt: %w", cerr)
 		}
 	}
 	return err
@@ -186,43 +282,67 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                     DBTX
-	tx                     *sql.Tx
-	createMediaStmt        *sql.Stmt
-	createTranslationStmt  *sql.Stmt
-	createUserStmt         *sql.Stmt
-	deleteMediaStmt        *sql.Stmt
-	deleteTranslationStmt  *sql.Stmt
-	deleteTranslationLStmt *sql.Stmt
-	deleteUserStmt         *sql.Stmt
-	getMediaStmt           *sql.Stmt
-	getTranslationStmt     *sql.Stmt
-	getTranslationsStmt    *sql.Stmt
-	getUserStmt            *sql.Stmt
-	listMediaStmt          *sql.Stmt
-	listMediaPStmt         *sql.Stmt
-	listUsersStmt          *sql.Stmt
-	listUsersPStmt         *sql.Stmt
+	db                      DBTX
+	tx                      *sql.Tx
+	addUserListEntryStmt    *sql.Stmt
+	createMediaStmt         *sql.Stmt
+	createTranslationStmt   *sql.Stmt
+	createUserStmt          *sql.Stmt
+	createUserListStmt      *sql.Stmt
+	deleteMediaStmt         *sql.Stmt
+	deleteTranslationStmt   *sql.Stmt
+	deleteTranslationLStmt  *sql.Stmt
+	deleteUserStmt          *sql.Stmt
+	deleteUserListStmt      *sql.Stmt
+	deleteUserListEntryStmt *sql.Stmt
+	getMediaStmt            *sql.Stmt
+	getTranslationStmt      *sql.Stmt
+	getTranslationsStmt     *sql.Stmt
+	getUserStmt             *sql.Stmt
+	getUserListStmt         *sql.Stmt
+	getUserListEntriesStmt  *sql.Stmt
+	getUserListEntriesPStmt *sql.Stmt
+	getUserListEntryStmt    *sql.Stmt
+	getUserListsStmt        *sql.Stmt
+	getUserListsPStmt       *sql.Stmt
+	listMediaStmt           *sql.Stmt
+	listMediaPStmt          *sql.Stmt
+	listUsersStmt           *sql.Stmt
+	listUsersPStmt          *sql.Stmt
+	updateUserListStmt      *sql.Stmt
+	updateUserListEntryStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                     tx,
-		tx:                     tx,
-		createMediaStmt:        q.createMediaStmt,
-		createTranslationStmt:  q.createTranslationStmt,
-		createUserStmt:         q.createUserStmt,
-		deleteMediaStmt:        q.deleteMediaStmt,
-		deleteTranslationStmt:  q.deleteTranslationStmt,
-		deleteTranslationLStmt: q.deleteTranslationLStmt,
-		deleteUserStmt:         q.deleteUserStmt,
-		getMediaStmt:           q.getMediaStmt,
-		getTranslationStmt:     q.getTranslationStmt,
-		getTranslationsStmt:    q.getTranslationsStmt,
-		getUserStmt:            q.getUserStmt,
-		listMediaStmt:          q.listMediaStmt,
-		listMediaPStmt:         q.listMediaPStmt,
-		listUsersStmt:          q.listUsersStmt,
-		listUsersPStmt:         q.listUsersPStmt,
+		db:                      tx,
+		tx:                      tx,
+		addUserListEntryStmt:    q.addUserListEntryStmt,
+		createMediaStmt:         q.createMediaStmt,
+		createTranslationStmt:   q.createTranslationStmt,
+		createUserStmt:          q.createUserStmt,
+		createUserListStmt:      q.createUserListStmt,
+		deleteMediaStmt:         q.deleteMediaStmt,
+		deleteTranslationStmt:   q.deleteTranslationStmt,
+		deleteTranslationLStmt:  q.deleteTranslationLStmt,
+		deleteUserStmt:          q.deleteUserStmt,
+		deleteUserListStmt:      q.deleteUserListStmt,
+		deleteUserListEntryStmt: q.deleteUserListEntryStmt,
+		getMediaStmt:            q.getMediaStmt,
+		getTranslationStmt:      q.getTranslationStmt,
+		getTranslationsStmt:     q.getTranslationsStmt,
+		getUserStmt:             q.getUserStmt,
+		getUserListStmt:         q.getUserListStmt,
+		getUserListEntriesStmt:  q.getUserListEntriesStmt,
+		getUserListEntriesPStmt: q.getUserListEntriesPStmt,
+		getUserListEntryStmt:    q.getUserListEntryStmt,
+		getUserListsStmt:        q.getUserListsStmt,
+		getUserListsPStmt:       q.getUserListsPStmt,
+		listMediaStmt:           q.listMediaStmt,
+		listMediaPStmt:          q.listMediaPStmt,
+		listUsersStmt:           q.listUsersStmt,
+		listUsersPStmt:          q.listUsersPStmt,
+		updateUserListStmt:      q.updateUserListStmt,
+		updateUserListEntryStmt: q.updateUserListEntryStmt,
 	}
 }

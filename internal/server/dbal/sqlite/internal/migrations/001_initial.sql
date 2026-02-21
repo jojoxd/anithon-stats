@@ -31,10 +31,11 @@ CREATE TABLE user_lists (
 );
 
 CREATE TABLE user_list_entries (
-    list_uuid UUID NOT NULL REFERENCES user_lists(uuid),
+    uuid UUID NOT NULL,
+    userlist_uuid UUID NOT NULL REFERENCES user_lists(uuid),
     media_uuid UUID NOT NULL REFERENCES media(uuid),
-    PRIMARY KEY (list_uuid, media_uuid),
-    CONSTRAINT UQ_USER_LIST_MEDIA UNIQUE (list_uuid, media_uuid)
+    PRIMARY KEY (uuid),
+    CONSTRAINT UQ_USER_LIST_MEDIA UNIQUE (userlist_uuid, media_uuid)
 );
 
 -- +goose Down

@@ -1,9 +1,14 @@
 package screens
 
 import (
+	"image/color"
 	"time"
 
 	"gioui.org/layout"
+	"gioui.org/unit"
+	"gioui.org/widget/material"
+	"git.jojoxd.nl/projects/go-giorno/ext/gmaterial/card"
+	"git.jojoxd.nl/projects/go-giorno/ext/gmaterial/sheet"
 	"git.jojoxd.nl/projects/go-giorno/router/intent"
 	"git.jojoxd.nl/projects/go-giorno/router/view"
 	"github.com/google/uuid"
@@ -28,8 +33,26 @@ func NewHome(app core.Application) view.View {
 func (h Home) Layout(gtx layout.Context) layout.Dimensions {
 	h.langSwitcher.Update(gtx.Source)
 
-	theme := h.app.Theme()
-	return h.langSwitcher.Layout(gtx, theme)
+	th := h.app.Theme()
+
+	c := card.Style{
+		Sheet: sheet.Style{
+			Color:        color.NRGBA{},
+			Inset:        0,
+			BorderRadius: 32,
+			BorderColor:  th.Primary(),
+			BorderWidth:  0,
+		},
+		Title:        material.H4(th.Material(), "Test").Layout,
+		PrependInner: nil,
+		ContentInset: unit.Dp(32),
+	}
+
+	return layout.UniformInset(64).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+		return c.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+			return h.langSwitcher.Layout(gtx, th.Material())
+		})
+	})
 }
 
 func (h Home) OnIntent(intent intent.Base) {

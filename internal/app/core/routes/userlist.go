@@ -2,14 +2,13 @@ package routes
 
 import (
 	"git.jojoxd.nl/projects/go-giorno/router/route"
-
-	v1 "anistats/api/v1"
+	"github.com/google/uuid"
 )
 
-var UserListOverview = route.NewTyped[v1.UserListId]("userlist.overview")
+var UserListOverview = route.NewTyped[uuid.UUID]("userlist.overview")
 
-var UserListCopy = route.NewTyped[v1.UserListId]("userlist.copy")
+var UserListCopy = route.NewTyped[uuid.UUID]("userlist.copy")
 
-var UserListEdit = route.NewTyped[v1.UserListId]("userlist.edit")
+var UserListEdit = route.NewTyped[uuid.UUID]("userlist.edit")
 
-var UserListPlayer = route.NewTyped[v1.UserListId]("userlist.player")
+var UserListPlayer = route.NewTyped[uuid.UUID]("userlist.player")

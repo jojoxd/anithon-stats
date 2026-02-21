@@ -10,6 +10,7 @@ tasks:
       - task: installed:android
       - task: installed:sqlc
       - task: installed:goose
+      - task: installed:reflex
 
   installed:android:
     cmds:
@@ -62,3 +63,8 @@ tasks:
     status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/goose' ]
     env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
     cmd: 'go install github.com/pressly/goose/v3/cmd/goose@{{ .Goose.Version }}'
+
+  installed:reflex:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/reflex' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/cespare/reflex@{{ .Reflex.Version }}'

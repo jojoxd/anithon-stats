@@ -14,24 +14,19 @@ import (
 var _ anistats_client.UserService = (*UserService)(nil)
 
 type UserService struct {
-	db dbal.Database
+	userRepository dbal.UserRepository
 }
 
-func NewUserService(db dbal.Database) anistats_client.UserService {
+func NewUserService(userRepository dbal.UserRepository) anistats_client.UserService {
 	return &UserService{
-		db: db,
+		userRepository: userRepository,
 	}
 }
 
-func (u UserService) User(ctx context.Context, id uuid.UUID) (v1.User, error) {
-	userRepository, err := u.db.UserRepository(ctx)
-	if err != nil {
-		return v1.User{}, err
-	}
-
-	return userRepository.GetUser(ctx, id)
+func (svc UserService) User(ctx context.Context, id uuid.UUID) (v1.User, error) {
+	return svc.userRepository.GetUser(ctx, id)
 }
 
-func (u UserService) Avatar(ctx context.Context, id uuid.UUID) (image.Image, error) {
+func (svc UserService) Avatar(ctx context.Context, id uuid.UUID) (image.Image, error) {
 	panic("implement me")
 }

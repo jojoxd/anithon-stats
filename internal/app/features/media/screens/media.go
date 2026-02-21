@@ -31,14 +31,14 @@ func NewMedia(app core.Application) view.TypedView[uuid.UUID] {
 }
 
 func (m *Media) Layout(gtx layout.Context) layout.Dimensions {
-	theme := m.app.Theme()
+	th := m.app.Theme()
 
 	return m.provider.Layout(gtx, m.mediaId, loader.Slots[v1.Media]{
 		Loading: func(gtx layout.Context) layout.Dimensions {
-			return material.Loader(theme).Layout(gtx)
+			return material.Loader(th.Material()).Layout(gtx)
 		},
 		Loaded: func(gtx layout.Context, media v1.Media) layout.Dimensions {
-			return m.mediaCard.Layout(gtx, theme, media)
+			return m.mediaCard.Layout(gtx, th.Material(), media)
 		},
 	}.Layout)
 }

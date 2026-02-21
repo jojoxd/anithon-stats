@@ -1,20 +1,35 @@
 package v1
 
-import "encoding/json"
-
-type UserListId string
+import (
+	"github.com/google/uuid"
+)
 
 type UserList struct {
-	Id          UserListId   `json:"id"`
-	DisplayName Translatable `json:"displayName"`
+	Id          uuid.UUID `json:"id"`
+	UserId      uuid.UUID `json:"userId"`
+	DisplayName string    `json:"displayName"`
+	Description string    `json:"description"`
 }
 
-func (l *UserList) MarshalJSON() ([]byte, error) {
-	return json.Marshal(l)
+type UserListEntry struct {
+	Id      uuid.UUID `json:"id"`
+	ListId  uuid.UUID `json:"listId"`
+	MediaId uuid.UUID `json:"mediaId"`
 }
 
-func (l *UserList) UnmarshalJSON(data []byte) error {
-	return json.Unmarshal(data, l)
+type CreateUserList struct {
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
+}
+type UpdateUserList struct {
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
 }
 
-type UpdateListRequest interface{}
+type CreateUserListEntry struct {
+	MediaId uuid.UUID `json:"mediaId"`
+}
+type UpdateUserListEntry struct {
+	// @TODO: Maybe just recreate when media id changes?
+	MediaId uuid.UUID `json:"mediaId"`
+}

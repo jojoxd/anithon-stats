@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"gioui.org/widget/material"
 	"git.jojoxd.nl/projects/go-giorno/ext/glayout"
 
 	"git.jojoxd.nl/projects/go-giorno/async"
@@ -12,14 +11,15 @@ import (
 	"git.jojoxd.nl/projects/go-giorno/router"
 
 	"anistats/internal/app/api"
+	"anistats/internal/app/core/theme"
 )
 
 type Application interface {
 	// Run renders the application
 	Run(ctx context.Context) error
 
-	// Theme returns the currently applied material.Theme instance
-	Theme() *material.Theme
+	// Theme returns the currently applied theme.Theme instance
+	Theme() *theme.Theme
 
 	// GkAsyncScheduler returns the global async.Scheduler
 	GkAsyncScheduler() async.Scheduler

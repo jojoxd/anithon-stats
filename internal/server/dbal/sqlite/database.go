@@ -85,6 +85,15 @@ func (d Database) UserRepository(ctx context.Context) (dbal.UserRepository, erro
 	return NewUserRepository(queries), nil
 }
 
+func (d Database) UserListRepository(ctx context.Context) (dbal.UserListRepository, error) {
+	queries, err := generated.Prepare(ctx, d.conn)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewUserListRepository(queries), nil
+}
+
 func (d Database) MediaRepository(ctx context.Context) (dbal.MediaRepository, error) {
 	queries, err := generated.Prepare(ctx, d.conn)
 	if err != nil {

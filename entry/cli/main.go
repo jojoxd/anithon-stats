@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"anistats/entrypoint/cmd/anistats/cmd"
+	"anistats/entry/cli/cmd"
 	"anistats/internal/constants"
 	_ "anistats/internal/logging"
 )

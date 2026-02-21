@@ -12,9 +12,9 @@ vars:
     sh: echo "0.0.0-DEV.0"
 
   GitTag:
-    sh: git describe || echo 'N/A'
+    sh: git describe 2>/dev/null || echo 'N/A'
   GitCommit:
-    sh: git rev-parse --short HEAD
+    sh: git rev-parse --short HEAD 2>/dev/null
 
   ToolDir: 'tools'
   GOBIN:   'tools'
@@ -28,6 +28,10 @@ vars:
   }}
 
   Goose: { map: {
+    Version: latest
+  }}
+
+  Reflex: { map: {
     Version: latest
   }}
 
@@ -52,6 +56,12 @@ tasks:
       - task: generate:go
       - task: generate:sqlc
 
+  serve:
+    deps:
+      - tools:installed
+
+    cmd: "{{ .ROOT_DIR }}/{{ .GOBIN }}/reflex -s -g '**/*' -- go run -v -tags serveronly ./entry/cli/main.go serve"
+
   vet:
     ignore_error: true
     cmds:
@@ -75,7 +85,7 @@ tasks:
             -tags app,nox11,wayland \
             -o out/linux/wayland/anistats \
             {{ .GOARGS }} \
-          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+          {{ .GOPACKAGE }}/entry/cli/anistats
 
   build:linux:x11:
     cmds:
@@ -86,7 +96,7 @@ tasks:
             -tags app,nowayland,x11 \
             -o out/linux/x11/anistats \
             {{ .GOARGS }} \
-          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+          {{ .GOPACKAGE }}/entry/cli/anistats
 
   build:linux:server-only:
     cmds:
@@ -97,38 +107,42 @@ tasks:
             -tags serveronly \
             -o out/linux/server/anistats \
             {{ .GOARGS }} \
-          {{ .GOPACKAGE }}/entrypoint/cmd/anistats
+          {{ .GOPACKAGE }}/entry/cli/anistats
 
   build:android:client:
+    sources:
+      - './**/*.go'
+      - './internal/app/resources/**/*'
+
     env:
       ANDROID_SDK_ROOT: '{{ .ROOT_DIR }}/{{ .Android.SdkRoot }}'
       ANDROID_NDK_ROOT: '{{ .ROOT_DIR }}/{{ .Android.NdkRoot }}'
+      ANDROID_HOME:     '{{ .ROOT_DIR }}/{{ .Android.SdkRoot }}'
 
     cmds:
       - task: tools:installed
       - task: generate
       - cmd: mkdir -p out/android
       - cmd: |
-          {{ .GOBIN }}/gogio -x \
+         go run ../gio-cmd/gogio -x \
             -target android -buildmode exe -targetsdk {{ .Android.PlatformVersion }} \
             -icon internal/app/resources/icon_android.png \
             -appid {{ .Android.AppId }} \
             {{ .GOARGS }} \
             -tags app \
             -o out/android/{{ .Android.AppId }}.apk \
-          {{ .GOPACKAGE }}/entrypoint/android/anistats
+          {{ .GOPACKAGE }}/entry/android
+
+      - cmd: 'echo "TODO: Build Android Apk from out/android {{ .Android.AppId }}.aar"'
 
   generate:go:
     sources: [ './**/*.go' ]
-    cmd: go generate ./...
+    cmd: go generate -v ./...
 
   generate:sqlc:
     dir: internal/server/dbal
     sources:
-      - internal/server/dbal/mysql/migrations/*.sql
-      - internal/server/dbal/mysql/queries/*.sql
-      - internal/server/dbal/sqlite/migrations/*.sql
-      - internal/server/dbal/sqlite/queries/*.sql
+      - '**/*.sql'
     cmds:
       - task: tools:installed
       - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc generate'

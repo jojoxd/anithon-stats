@@ -1,0 +1,8 @@
+surface: "#FFFBFEFF"
+on-surface: "#1A1A1AFF"
+
+primary:    "#6750A4FF"
+on-primary: "#1A1A1AFF"
+
+secondary:    "#B4B0BBFF"
+on-secondary: "#1A1A1AFF"

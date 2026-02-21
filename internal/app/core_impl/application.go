@@ -8,7 +8,6 @@ import (
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/op"
-	"gioui.org/widget/material"
 	"git.jojoxd.nl/projects/go-giorno/ext/glayout"
 	localizerEvent "git.jojoxd.nl/projects/go-giorno/localizer/event"
 	giornoI18n "git.jojoxd.nl/projects/go-giorno/pkg/giorno-i18n"
@@ -21,6 +20,7 @@ import (
 
 	"anistats/internal/app/api"
 	"anistats/internal/app/core"
+	"anistats/internal/app/core/theme"
 	"anistats/internal/app/core_impl/views"
 	"anistats/internal/app/resources"
 	"anistats/internal/config"
@@ -30,7 +30,7 @@ var _ core.Application = (*Application)(nil)
 
 type Application struct {
 	window           *app.Window
-	theme            *material.Theme
+	theme            *theme.Theme
 	rootView         *views.Root
 	localizerManager localizer.Manager
 	logger           *slog.Logger
@@ -73,10 +73,15 @@ func NewApplication(window *app.Window) (*Application, error) {
 		fixedpool.Workers(4),
 	)
 
+	palette, err := res.DefaultPalette()
+	if err != nil {
+		return nil, err
+	}
+
 	application := &Application{
 		window:           window,
 		router:           router,
-		theme:            material.NewTheme(),
+		theme:            theme.New(palette),
 		localizerManager: localizerManager,
 		clientBundle:     clientBundle,
 		logger:           slog.Default(),
@@ -136,7 +141,7 @@ func (a *Application) LocalizerManager() localizer.Manager {
 	return a.localizerManager
 }
 
-func (a *Application) Theme() *material.Theme {
+func (a *Application) Theme() *theme.Theme {
 	return a.theme
 }
 

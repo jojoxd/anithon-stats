@@ -11,21 +11,33 @@ import (
 )
 
 type Querier interface {
+	AddUserListEntry(ctx context.Context, arg AddUserListEntryParams) error
 	CreateMedia(ctx context.Context, arg CreateMediaParams) error
 	CreateTranslation(ctx context.Context, arg CreateTranslationParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	CreateUserList(ctx context.Context, arg CreateUserListParams) error
 	DeleteMedia(ctx context.Context, argUuid uuid.UUID) error
 	DeleteTranslation(ctx context.Context, argUuid uuid.UUID) error
 	DeleteTranslationL(ctx context.Context, arg DeleteTranslationLParams) error
 	DeleteUser(ctx context.Context, argUuid uuid.UUID) error
+	DeleteUserList(ctx context.Context, argUuid uuid.UUID) error
+	DeleteUserListEntry(ctx context.Context, argUuid uuid.UUID) error
 	GetMedia(ctx context.Context, argUuid uuid.UUID) (Media, error)
 	GetTranslation(ctx context.Context, arg GetTranslationParams) (Translation, error)
 	GetTranslations(ctx context.Context, argUuid uuid.UUID) ([]Translation, error)
 	GetUser(ctx context.Context, argUuid uuid.UUID) (User, error)
+	GetUserList(ctx context.Context, argUuid uuid.UUID) (UserList, error)
+	GetUserListEntries(ctx context.Context, userlistUuid uuid.UUID) ([]UserListEntry, error)
+	GetUserListEntriesP(ctx context.Context, arg GetUserListEntriesPParams) ([]UserListEntry, error)
+	GetUserListEntry(ctx context.Context, argUuid uuid.UUID) (UserListEntry, error)
+	GetUserLists(ctx context.Context) ([]UserList, error)
+	GetUserListsP(ctx context.Context, arg GetUserListsPParams) ([]UserList, error)
 	ListMedia(ctx context.Context) ([]Media, error)
 	ListMediaP(ctx context.Context, arg ListMediaPParams) ([]Media, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	ListUsersP(ctx context.Context, arg ListUsersPParams) ([]User, error)
+	UpdateUserList(ctx context.Context, arg UpdateUserListParams) error
+	UpdateUserListEntry(ctx context.Context, arg UpdateUserListEntryParams) error
 }
 
 var _ Querier = (*Queries)(nil)

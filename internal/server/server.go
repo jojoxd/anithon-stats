@@ -64,14 +64,31 @@ func (s *Server) Serve(ctx context.Context) error {
 	mediaController := controller.NewMedia(mediaService)
 	mediaController.Register(s.router)
 
+	userRepository, err := s.db.UserRepository(ctx)
+	if err != nil {
+		return err
+	}
+	userService := server_api.NewUserService(userRepository)
+	userController := controller.NewUser(userService)
+	userController.Register(s.router)
+
+	userListRepository, err := s.db.UserListRepository(ctx)
+	if err != nil {
+		return err
+	}
+	userListService := server_api.NewUserListService(userListRepository)
+	userListController := controller.NewUserList(userListService)
+	userListController.Register(s.router)
+
 	if err := s.router.Walk(log); err != nil {
 		panic(err)
 	}
 
+	slog.Info("Starting server on :8000")
 	return http.ListenAndServe(":8000", s.router)
 }
 
-func log(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+func log(route *mux.Route, _ *mux.Router, _ []*mux.Route) error {
 	pathTemplate, err := route.GetPathTemplate()
 	if err != nil {
 		return err

@@ -50,9 +50,10 @@ func (s *CardStyle) Layout(gtx layout.Context, th *material.Theme, media v1.Medi
 
 func (s *CardStyle) layoutBody(gtx layout.Context, media v1.Media) layout.Dimensions {
 	localizer := s.app.Localizer()
+	th := s.app.Theme()
 
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-		layout.Rigid(material.H4(s.app.Theme(), localizer.Tl(media.DisplayName)).Layout),
-		layout.Rigid(material.Body1(s.app.Theme(), media.Description).Layout),
+		layout.Rigid(material.H4(th.Material(), localizer.Tl(media.DisplayName)).Layout),
+		layout.Rigid(material.Body1(th.Material(), media.Description).Layout),
 	)
 }

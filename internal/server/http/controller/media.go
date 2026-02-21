@@ -65,7 +65,7 @@ func (c Media) getMedia(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(bytes)
 }

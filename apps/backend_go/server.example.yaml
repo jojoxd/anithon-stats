@@ -1,0 +1,22 @@
+server:
+  host: 0.0.0.0
+  port: 8083
+
+  publicUrl: http://localhost:4200
+
+auth:
+  anilist:
+    clientId: "<anilistClientId>"
+    clientSecret: "<anilistClientSecret>"
+
+  token:
+    issuer: anistats
+    expiry: 8543h # 355d+23h
+
+  signingKey: anistats
+
+sync:
+  workers: 2
+
+database:
+  dsn: sqlite://./database.sqlite

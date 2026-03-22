@@ -1,0 +1,75 @@
+version: 3
+
+includes:
+  tools:
+    taskfile: 'taskfile.tools.yaml'
+    internal: false
+
+vars:
+  Version: 0.0.0-dev.0
+
+  ToolDir: '.task/tools'
+  GOBIN: '.task/tools'
+
+  Sqlc: { map: {
+    Version: latest
+  }}
+
+  Goose: { map: {
+    Version: v3.26.0
+  }}
+
+  Genqlient: { map: {
+    Version: latest
+  }}
+
+  Gqlfetch: { map: {
+    Version: v0.7.0
+  }}
+
+  GOPACKAGE: 'anistats_srv'
+
+#  GOARGS: |
+#      -ldflags '-X anistats/internal/constants/app.AppDebug={{.AppDebug}}' \
+#      -ldflags '-X anistats/internal/constants/version.gitTag="{{.GitTag}}"' \
+#      -ldflags '-X anistats/internal/constants/version.gitCommit="{{ .GitCommit }}"' \
+
+tasks:
+  generate:
+    cmds:
+      - task: generate:go
+      - task: generate:sqlc
+      - task: generate:graphql
+
+  build:
+    cmds:
+      - task: generate
+
+  generate:go:
+    sources:
+      - '**/*.go'
+    cmd: go generate -v ./...
+
+  generate:sqlc:
+    dir: internal/dbal
+    sources:
+      - '**/*.sql'
+    cmds:
+      - task: tools:installed
+      - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc generate'
+
+  generate:graphql:
+    dir: internal/anilist
+    sources:
+      - '**/*.graphql'
+    cmds:
+      - task: tools:installed
+      - task: generate:graphql:fetch-anilist-schema
+      - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/genqlient'
+
+  generate:graphql:fetch-anilist-schema:
+    dir: internal/anilist
+    status: [ 'stat schema.graphql' ]
+    cmds:
+      - task: tools:installed
+      - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/gqlfetch --endpoint "https://graphql.anilist.co" > schema.graphql'

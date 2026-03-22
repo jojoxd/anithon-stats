@@ -1,0 +1,37 @@
+# @genqlient(typename: "Media")
+fragment MediaFragment on Media {
+	id
+	type
+	description
+	duration
+	episodes
+
+	# @genqlient(typename: "MediaTitle")
+	title {
+		english
+		native
+		romaji
+	}
+
+	# @genqlient(typename: "MediaCoverImage")
+	coverImage {
+		extraLarge
+	}
+}
+
+# @genqlient(typename: "MediaRelated", flatten: true)
+fragment MediaRelatedFragment on Media {
+	...MediaFragment
+
+	# @genqlient(typename: "MediaRelatedRelations")
+	relations {
+		edges {
+			relationType(version: 2)
+
+			# @genqlient(flatten: true)
+			node {
+				...MediaFragment
+			}
+		}
+	}
+}

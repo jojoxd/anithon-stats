@@ -1,0 +1,9 @@
+# Default genqlient config; for full documentation see:
+# https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml
+schema: schema.graphql
+generated: generated/queries.go
+
+operations:
+  - queries/**/*.graphql
+  - mutations/**/*.graphql
+  - fragments/**/*.graphql

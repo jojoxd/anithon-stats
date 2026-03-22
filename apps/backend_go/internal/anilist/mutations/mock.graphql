@@ -1,0 +1,5 @@
+mutation test($mediaId: Int!) {
+	SaveMediaListEntry(mediaId: $mediaId) {
+		notes
+	}
+}

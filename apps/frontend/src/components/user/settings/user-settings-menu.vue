@@ -17,7 +17,7 @@
             const language = ref('test');
 
             const logoutUri = computed(() => {
-                return `/api/logout?redirect=${encodeURIComponent(window.location.href)}`;
+                return `/api/auth/logout?redirect=${encodeURIComponent(window.location.href)}`;
             });
 
             const theme = useTheme();

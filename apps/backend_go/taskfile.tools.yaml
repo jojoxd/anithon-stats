@@ -1,0 +1,29 @@
+version: 3
+
+tasks:
+  installed:
+    cmds:
+      - task: installed:sqlc
+      - task: installed:goose
+      - task: installed:genqlient
+      - task: installed:gqlfetch
+
+  installed:sqlc:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/sqlc' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/sqlc-dev/sqlc/cmd/sqlc@{{ .Sqlc.Version }}'
+
+  installed:goose:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/goose' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/pressly/goose/v3/cmd/goose@{{ .Goose.Version }}'
+
+  installed:genqlient:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/genqlient' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/Khan/genqlient@{{ .Genqlient.Version }}'
+
+  installed:gqlfetch:
+    status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/gqlfetch' ]
+    env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
+    cmd: 'go install github.com/suessflorian/gqlfetch/gqlfetch@{{ .Gqlfetch.Version }}'

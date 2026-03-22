@@ -43,10 +43,12 @@
         <v-app-bar-title class="app-title">
             <span>
                 AniStats
-                <span class="font-italic">V3</span>
+                <span class="font-italic">V4</span>
             </span>
 
             <firefly-background :scale="0.3" :style="{ width: '3ch', height: '60%', top: '20%', 'left': '8ch', opacity: 0.2, }" />
+
+			<v-chip text="DEV" color="orange" class="ml-2" density="dense" />
         </v-app-bar-title>
 
         <search-global></search-global>

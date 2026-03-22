@@ -1,0 +1,5 @@
+query GetSeries($mediaId: Int!) {
+	Media(id: $mediaId) {
+		...MediaFragment
+	}
+}

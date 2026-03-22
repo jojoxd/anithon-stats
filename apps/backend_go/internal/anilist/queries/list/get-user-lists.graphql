@@ -1,0 +1,19 @@
+query GetUserLists($userId: Int!, $mediaType: MediaType!) {
+	MediaListCollection(userId: $userId, type: $mediaType) {
+		lists {
+			name
+
+			# @genqlient(typename: "MediaListEntry")
+			entries {
+				id
+				status
+				progress
+
+				# @genqlient(flatten: true)
+				media {
+					...MediaRelatedFragment
+				}
+			}
+		}
+	}
+}

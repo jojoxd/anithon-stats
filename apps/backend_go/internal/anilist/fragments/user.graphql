@@ -1,0 +1,13 @@
+# @genqlient(typename: "User")
+fragment UserFragment on User {
+	id
+	name
+
+	# @genqlient(typename: "UserAvatar")
+	avatar {
+		large
+		medium
+	}
+
+	bannerImage
+}

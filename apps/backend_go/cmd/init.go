@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"git.jojoxd.nl/projects/aslog"
 	"github.com/spf13/cobra"
 
 	"git.jojoxd.nl/projects/anistats/backend/internal/config"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 var logger = aslog.NewLogger()

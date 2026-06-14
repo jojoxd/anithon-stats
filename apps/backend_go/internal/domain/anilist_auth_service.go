@@ -9,8 +9,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"git.jojoxd.nl/projects/aslog"
+
 	"git.jojoxd.nl/projects/anistats/backend/internal/config"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 type AnilistAuthService struct {

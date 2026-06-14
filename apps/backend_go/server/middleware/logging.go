@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
+	"git.jojoxd.nl/projects/aslog"
 )
 
 type logResponseWriter struct {

@@ -2,182 +2,153 @@ package application
 
 import (
 	"context"
-	"fmt"
-	"image"
+
+	"github.com/google/uuid"
 
 	"git.jojoxd.nl/projects/anistats/backend/api"
+	"git.jojoxd.nl/projects/anistats/backend/ent"
+	"git.jojoxd.nl/projects/anistats/backend/ent/list"
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/entity"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/repository"
 )
 
 type ListService struct {
-	listImageService      *domain.ListImageService
-	listEntryService      *domain.ListEntryService
-	listChunkService      *domain.ListChunkService
-	listSettingsService   *domain.ListSettingsService
-	listMetadataService   *domain.ListMetadataService
-	listEntryDataService  *domain.ListEntryDataService
-	entryRepository       repository.Entry
-	listRepository        repository.List
-	seriesService         *SeriesService
-	userService           *UserService
-	syncService           *SyncService
-	seriesRepository      repository.Series
-	syncEntriesService    *domain.SyncEntryService
-	translationRepository repository.Translation
+	db                 *ent.Client
+	listDomainService  *domain.ListService
+	entryDomainService *domain.EntryService
 }
 
 func NewListService(
-	listImageService *domain.ListImageService,
-	listEntryService *domain.ListEntryService,
-	listChunkService *domain.ListChunkService,
-	listSettingsService *domain.ListSettingsService,
-	listMetadataService *domain.ListMetadataService,
-	listEntryDataService *domain.ListEntryDataService,
-	listRepository repository.List,
-	seriesService *SeriesService,
-	entryRepository repository.Entry,
-	userService *UserService,
-	syncService *SyncService,
-	seriesRepository repository.Series,
-	syncEntriesService *domain.SyncEntryService,
-	translationRepository repository.Translation,
+	db *ent.Client,
+	listDomainService *domain.ListService,
+	entryDomainService *domain.EntryService,
 ) *ListService {
 	return &ListService{
-		listImageService:      listImageService,
-		listEntryService:      listEntryService,
-		listChunkService:      listChunkService,
-		listSettingsService:   listSettingsService,
-		listMetadataService:   listMetadataService,
-		listEntryDataService:  listEntryDataService,
-		listRepository:        listRepository,
-		seriesService:         seriesService,
-		entryRepository:       entryRepository,
-		userService:           userService,
-		syncService:           syncService,
-		seriesRepository:      seriesRepository,
-		syncEntriesService:    syncEntriesService,
-		translationRepository: translationRepository,
+		db: db,
+
+		listDomainService:  listDomainService,
+		entryDomainService: entryDomainService,
 	}
 }
 
-func (s ListService) GetList(ctx context.Context, listId string) (*api.List, error) {
-	list, err := s.listRepository.GetList(ctx, listId)
+func (svc ListService) GetList(ctx context.Context, listId uuid.UUID) (*api.List, error) {
+	list, err := svc.db.List.Query().
+		Where(list.ID(listId)).
+		WithOwner().
+		WithEntries(func(entry *ent.ListEntryQuery) {
+			entry.
+				WithSeries(func(series *ent.SeriesQuery) {
+					series.
+						WithPrequels().
+						WithSequels()
+				}).
+				WithCustomSequelSeries()
+		}).
+		Only(ctx)
+
 	if err != nil {
 		return nil, err
 	}
 
-	listEntries, err := s.entryRepository.GetByListId(ctx, listId)
-	if err != nil {
-		return nil, err
-	}
+	user := list.Edges.Owner
 
-	user, err := s.userService.GetUser(ctx, list.UserId)
-	if err != nil {
-		return nil, err
-	}
+	response := &api.List{
+		Id: list.ID.String(),
 
-	entries := api.EntryList{
-		Items: make([]api.Entry, len(listEntries)),
-		Data:  make([]api.EntryData, len(listEntries)),
-	}
+		User: api.User{
+			Id:     user.ID.String(),
+			Name:   user.Name,
+			Avatar: *user.AvatarURL,
+		},
 
-	series := api.SeriesList{
-		Items: make([]api.Series, len(listEntries)),
-	}
-
-	for i, listEntry := range listEntries {
-		entries.Items[i] = api.Entry{
-			Id:                 listEntry.Id,
-			SeriesRef:          api.SeriesRef{Id: listEntry.SeriesId},
-			Episodes:           0,
-			HasJoinedLastChunk: false,
-			Stats: api.EntryStats{
-				Chunks: 1,
-				Time:   123456,
-			},
-			Progress:        listEntry.Progress,
-			Status:          listEntry.State,
-			SequelRef:       nil,
-			CustomSequelRef: nil,
-		}
-
-		entries.Data[i] = api.EntryData{
-			Ref:              listEntry.Id,
-			Mult:             1.0,
-			Order:            nil,
-			Split:            nil,
-			SplitSequelEntry: false,
-			StartAt:          0,
-		}
-
-		serie, err := s.seriesRepository.Get(ctx, listEntry.SeriesId)
-		if err != nil {
-			return nil, err
-		}
-
-		title, err := s.translationRepository.Get(ctx, serie.TitleTranslationId)
-		if err != nil {
-			return nil, err
-		}
-
-		series.Items[i] = api.Series{
-			Id: serie.Id,
-			Title: api.SeriesTitle{
-				Romaji:  title.Map["romaji"],
-				English: title.Map["english"],
-				Native:  title.Map["native"],
-			},
-			CoverImage:  serie.CoverImageUrl,
-			Duration:    int64(serie.Duration.Minutes()),
-			Episodes:    &serie.Episodes,
-			Description: &serie.Description,
-			PrequelIds:  nil,
-			SequelIds:   nil,
-		}
-	}
-
-	dto := &api.List{
-		Id:   list.Id,
-		User: *user,
 		Settings: api.ListSettings{
-			StackSize:          0,
-			AllowChunkMerge:    false,
-			MaxChunkLength:     0,
-			MaxChunkJoinLength: 0,
+			StackSize:          list.StackSize,
+			AllowChunkMerge:    list.AllowChunkMerge,
+			MaxChunkLength:     list.MaxChunkLength,
+			MaxChunkJoinLength: list.MaxChunkJoinLength,
 		},
-		Metadata: s.GetMetadata(list),
-		Entries:  entries,
-		Chunks: api.ChunkList{
-			Items: []api.Chunk{},
-		},
-		Series: series,
+
+		Metadata: svc.listDomainService.BuildMetadata(list),
+
+		Entries: svc.entryDomainService.ToList(ctx, list),
+		Chunks:  api.ChunkList{},
+
+		Series: listSeries(list.Edges.Entries),
 	}
 
-	return dto, nil
+	return response, nil
 }
 
-func (s ListService) GetMetadata(list *entity.List) api.ListMetadata {
-	return api.ListMetadata{
-		Title:       list.Name,
-		Ref:         api.ListRef{Id: list.Id},
-		Description: list.Name, // todo
-		Stats: api.ListMetadataStats{
-			Time: 60,
+func listSeries(entries []*ent.ListEntry) api.SeriesList {
+	list := api.SeriesList{
+		Items: make([]api.Series, len(entries)),
+	}
+
+	for i, entry := range entries {
+		list.Items[i] = seriesToApi(entry.Edges.Series)
+	}
+
+	return list
+}
+
+func seriesToApi(series *ent.Series) api.Series {
+	prequelIds := make([]string, len(series.Edges.Prequels))
+	for i, prequel := range series.Edges.Prequels {
+		prequelIds[i] = prequel.ID.String()
+	}
+
+	sequelIds := make([]string, len(series.Edges.Sequels))
+	for i, sequel := range series.Edges.Sequels {
+		sequelIds[i] = sequel.ID.String()
+	}
+
+	return api.Series{
+		Id: series.ID.String(),
+		Title: api.SeriesTitle{
+			Romaji:  *series.TitleRomaji,
+			English: *series.TitleEnglish,
+			Native:  *series.TitleNative,
 		},
+		CoverImage:  series.CoverImageURL,
+		Duration:    int64(series.Duration.Minutes()), // todo remove cast
+		Episodes:    new(int64(series.Episodes)),
+		Description: new(series.Description),
+		PrequelIds:  prequelIds,
+		SequelIds:   sequelIds,
 	}
 }
 
-func (s ListService) UpdateList(ctx context.Context, req api.UpdateListRequest) error {
-	return fmt.Errorf("Not yet implemented")
-}
+func (svc ListService) GetAllByUserId(ctx context.Context, userId uuid.UUID) (*api.UserListsResponse, error) {
+	user, err := svc.db.User.Get(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
 
-type GenerateListImageParams struct {
-	Embed     bool
-	WithStats bool
-}
+	lists, err := user.QueryLists().
+		WithOwner().
+		WithEntries(func(entry *ent.ListEntryQuery) {
+			entry.
+				WithSeries().
+				WithCustomSequelSeries()
+		}).
+		All(ctx)
 
-func (s ListService) GenerateListImage(ctx context.Context, listId string, params GenerateListImageParams) (*image.Image, error) {
-	return nil, fmt.Errorf("Not yet implemented")
+	if err != nil {
+		return nil, err
+	}
+
+	response := &api.UserListsResponse{
+		User: api.User{
+			Id:     user.ID.String(),
+			Name:   user.Name,
+			Avatar: *user.AvatarURL, // todo fix indirection
+		},
+
+		Lists: make(map[string]api.ListMetadata),
+	}
+
+	for _, list := range lists {
+		response.Lists[list.ID.String()] = svc.listDomainService.BuildMetadata(list)
+	}
+
+	return response, nil
 }

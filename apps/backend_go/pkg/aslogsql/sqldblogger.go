@@ -36,7 +36,7 @@ import (
 
 	"github.com/simukti/sqldb-logger"
 
-	aslog2 "git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
+	"git.jojoxd.nl/projects/aslog"
 )
 
 // SqlDBLoggerLevelSlog implements slog.Leveler.
@@ -47,15 +47,15 @@ type SqlDBLoggerLevelSlog sqldblogger.Level
 func (s *SqlDBLoggerLevelSlog) Level() slog.Level {
 	switch *s {
 	case SqlDBLoggerLevelSlog(sqldblogger.LevelTrace):
-		return aslog2.LevelSilly.Level()
+		return aslog.LevelSilly.Level()
 	case SqlDBLoggerLevelSlog(sqldblogger.LevelDebug):
-		return aslog2.LevelSilly.Level()
+		return aslog.LevelSilly.Level()
 	case SqlDBLoggerLevelSlog(sqldblogger.LevelInfo):
-		return aslog2.LevelSql.Level()
+		return aslog.LevelSql.Level()
 	case SqlDBLoggerLevelSlog(sqldblogger.LevelError):
-		return aslog2.LevelError.Level()
+		return aslog.LevelError.Level()
 	default:
-		return aslog2.LevelInfo.Level()
+		return aslog.LevelInfo.Level()
 	}
 }
 
@@ -65,7 +65,7 @@ var _ slog.Leveler = (*SqlDBLoggerLevelSlog)(nil)
 // SlogAdapter implements sqldblogger.Logger.
 // This adapter logs using the standard `log/slog` package.
 type SlogAdapter struct {
-	logger *aslog2.Logger
+	logger *aslog.Logger
 }
 
 // Log implements sqldblogger.Logger.
@@ -79,7 +79,7 @@ func (s *SlogAdapter) Log(ctx context.Context, level sqldblogger.Level, msg stri
 var _ sqldblogger.Logger = (*SlogAdapter)(nil)
 
 // NewSlogAdapter creates a new SlogAdapter from a given slog.Logger.
-func NewSlogAdapter(logger *aslog2.Logger) *SlogAdapter {
+func NewSlogAdapter(logger *aslog.Logger) *SlogAdapter {
 	return &SlogAdapter{
 		logger: logger,
 	}

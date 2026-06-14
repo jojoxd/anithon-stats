@@ -1,0 +1,6 @@
+query GetUserByName($name: String!) {
+	# @genqlient(flatten: true)
+	User(name: $name) {
+		...UserFragment
+	}
+}

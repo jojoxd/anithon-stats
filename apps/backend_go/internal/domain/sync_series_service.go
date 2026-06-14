@@ -2,79 +2,82 @@ package domain
 
 import (
 	"context"
-	"database/sql"
-	"errors"
-	"fmt"
-	"strconv"
 
-	"git.jojoxd.nl/projects/anistats/backend/internal/anilist"
+	"git.jojoxd.nl/projects/aslog"
+
+	"git.jojoxd.nl/projects/anistats/backend/ent"
+	series2 "git.jojoxd.nl/projects/anistats/backend/ent/series"
 	"git.jojoxd.nl/projects/anistats/backend/internal/anilist/generated"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/entity"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/repository"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 type SyncSeriesService struct {
-	seriesRepository   repository.Series
-	translationService *TranslationService
-	seriesService      *SeriesService
-	logger             *aslog.Logger
+	seriesService *SeriesService
+	logger        *aslog.Logger
 }
 
 func NewSyncSeriesService(
-	seriesRepository repository.Series,
 	seriesService *SeriesService,
-	translationService *TranslationService,
 	logger *aslog.Logger,
 ) *SyncSeriesService {
 	return &SyncSeriesService{
-		seriesRepository:   seriesRepository,
-		translationService: translationService,
-		seriesService:      seriesService,
-		logger:             logger,
+		seriesService: seriesService,
+		logger:        logger,
 	}
 }
 
-func (s SyncSeriesService) SyncTx(ctx context.Context, anilistId string, tx *sql.Tx) (*entity.Series, error) {
-	client := anilist.NewClient(anilist.WithRateLimiter(s.logger))
+func (svc SyncSeriesService) SyncMediaFragment(ctx context.Context, tx *ent.Tx, media generated.MediaFragment) (*ent.Series, error) {
+	svc.logger.Info("syncing media fragment", "fragment.id", media.Id, "fragment.title", media.Title.Romaji)
 
-	mediaFragment, err := client.GetSeries(ctx, anilistId)
+	series, err := tx.Series.Query().Where(series2.AnilistIDEQ(uint(media.Id))).Only(ctx)
+	switch {
+	case ent.IsNotFound(err):
+		q := tx.Series.Create()
+		svc.seriesService.Assign(q.Mutation(), media)
+
+		return q.Save(ctx)
+
+	case err != nil:
+		return nil, err
+	}
+
+	q := series.Update()
+	svc.seriesService.Assign(q.Mutation(), media)
+
+	return q.Save(ctx)
+}
+
+func (svc SyncSeriesService) SyncMediaRelatedFragment(ctx context.Context, tx *ent.Tx, media generated.MediaRelatedFragment) (*ent.Series, error) {
+	svc.logger.Info("syncing media-related fragment", "fragment.id", media.Id, "fragment.title", media.Title.Romaji)
+
+	root, err := svc.SyncMediaFragment(ctx, tx, media.MediaFragment)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.SyncLocalTx(ctx, mediaFragment, tx)
-}
+	prequels := make([]*ent.Series, 0)
+	sequels := make([]*ent.Series, 0)
 
-func (s SyncSeriesService) SyncLocalTx(ctx context.Context, mediaFragment generated.MediaFragment, tx *sql.Tx) (*entity.Series, error) {
-	series, err := s.getOrCreateAnilistSeriesTx(ctx, mediaFragment, tx)
-	if err != nil {
-		return nil, fmt.Errorf("failed get or create series %d: %w", mediaFragment.Id, err)
+	for _, edge := range media.Relations.Edges {
+		relation, err := svc.SyncMediaFragment(ctx, tx, edge.Node)
+		if err != nil {
+			return nil, err
+		}
+
+		switch edge.RelationType {
+		case generated.MediaRelationPrequel:
+			prequels = append(prequels, relation)
+
+		case generated.MediaRelationSequel:
+			sequels = append(sequels, relation)
+		}
 	}
 
-	_, err = s.translationService.UpdateMediaTranslationTx(ctx, series.TitleTranslationId, mediaFragment.Title, tx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to update translation %s: %w", series.TitleTranslationId, err)
-	}
+	svc.logger.Info("media relations", "series.id", root.ID.String(), "prequels", prequels, "sequels", sequels)
 
-	seriesId := series.Id
-	series, err = s.seriesService.UpdateFromAnilistTx(ctx, series, mediaFragment, tx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to update series (id=%s): %w", seriesId, err)
-	}
-
-	return s.seriesRepository.WithTx(tx).Get(ctx, series.Id)
-}
-
-func (s SyncSeriesService) getOrCreateAnilistSeriesTx(ctx context.Context, mediaFragment generated.MediaFragment, tx *sql.Tx) (*entity.Series, error) {
-	series, err := s.seriesRepository.WithTx(tx).GetAnilist(ctx, strconv.Itoa(mediaFragment.Id))
-	if err == nil {
-		return series, err
-	}
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return s.seriesService.CreateFromAnilistTx(ctx, mediaFragment, tx)
-	}
-
-	return nil, err
+	return tx.Series.UpdateOne(root).
+		ClearPrequels().
+		AddPrequels(prequels...).
+		ClearSequels().
+		AddSequels(sequels...).
+		Save(ctx)
 }

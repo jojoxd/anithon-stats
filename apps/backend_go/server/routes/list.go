@@ -3,6 +3,8 @@ package routes
 import (
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"git.jojoxd.nl/projects/anistats/backend/api"
 	"git.jojoxd.nl/projects/anistats/backend/internal/application"
 )
@@ -13,9 +15,13 @@ func HandleListGet(listService *application.ListService) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		list, err := listService.GetList(r.Context(), r.PathValue("listId"))
+		listId, err := uuid.Parse(r.PathValue("listId"))
 		if err != nil {
-			// todo log it
+			panic(err)
+		}
+
+		list, err := listService.GetList(r.Context(), listId)
+		if err != nil {
 			internalServerError(w, r)
 			return
 		}
@@ -26,76 +32,76 @@ func HandleListGet(listService *application.ListService) http.Handler {
 
 func HandleListUpdate(listService *application.ListService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		req, err := decode[api.UpdateListRequest](r)
-		if err != nil {
-			// todo log it
-			badRequest(w, r)
-			return
-		}
-
-		err = listService.UpdateList(r.Context(), req)
-		if err != nil {
-			// todo log it
-			internalServerError(w, r)
-			return
-		}
-
-		encode(w, r, http.StatusOK, "updateList")
+		// req, err := decode[api.UpdateListRequest](r)
+		// if err != nil {
+		// 	// todo log it
+		// 	badRequest(w, r)
+		// 	return
+		// }
+		//
+		// err = listService.UpdateList(r.Context(), req)
+		// if err != nil {
+		// 	// todo log it
+		// 	internalServerError(w, r)
+		// 	return
+		// }
+		//
+		// encode(w, r, http.StatusOK, "updateList")
 	})
 }
 
 func HandleListImagePng(listService *application.ListService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		params := application.GenerateListImageParams{
-			Embed:     true,
-			WithStats: true,
-		}
-
-		_, err := listService.GenerateListImage(
-			r.Context(),
-			r.PathValue("listId"),
-			params,
-		)
-
-		if err != nil {
-			// todo log it
-			internalServerError(w, r)
-			return
-		}
-
-		// todo: reply with image
-
-		encode(w, r, http.StatusOK, "listImagePng")
+		// params := application.GenerateListImageParams{
+		// 	Embed:     true,
+		// 	WithStats: true,
+		// }
+		//
+		// _, err := listService.GenerateListImage(
+		// 	r.Context(),
+		// 	r.PathValue("listId"),
+		// 	params,
+		// )
+		//
+		// if err != nil {
+		// 	// todo log it
+		// 	internalServerError(w, r)
+		// 	return
+		// }
+		//
+		// // todo: reply with image
+		//
+		// encode(w, r, http.StatusOK, "listImagePng")
 	})
 }
 
 func HandleListImageSvg(listService *application.ListService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		params := application.GenerateListImageParams{
-			Embed:     true,
-			WithStats: true,
-		}
-
-		_, err := listService.GenerateListImage(
-			r.Context(),
-			r.PathValue("listId"),
-			params,
-		)
-
-		if err != nil {
-			// todo log it
-			internalServerError(w, r)
-			return
-		}
-
-		// todo: reply with image
-
-		encode(w, r, http.StatusOK, "listImagePng")
+		// params := application.GenerateListImageParams{
+		// 	Embed:     true,
+		// 	WithStats: true,
+		// }
+		//
+		// _, err := listService.GenerateListImage(
+		// 	r.Context(),
+		// 	r.PathValue("listId"),
+		// 	params,
+		// )
+		//
+		// if err != nil {
+		// 	// todo log it
+		// 	internalServerError(w, r)
+		// 	return
+		// }
+		//
+		// // todo: reply with image
+		//
+		// encode(w, r, http.StatusOK, "listImagePng")
 	})
 }
 
 func HandleListEntryUpdate() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		encode(w, r, http.StatusOK, "listEntryUpdate")
+		// encode(w, r, http.StatusOK, "listEntryUpdate")
 	})
 }

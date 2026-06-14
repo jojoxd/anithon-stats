@@ -5,9 +5,10 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"git.jojoxd.nl/projects/anistats/backend/ent"
 	"git.jojoxd.nl/projects/anistats/backend/internal/config"
+
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain/auth"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/entity"
 )
 
 type TokenService struct {
@@ -18,14 +19,14 @@ func NewTokenService(config config.Auth) *TokenService {
 	return &TokenService{config}
 }
 
-func (s TokenService) CreateToken(user *entity.User, anilistToken string) (string, *auth.Claims, error) {
+func (s TokenService) CreateToken(user *ent.User, anilistToken string) (string, *auth.Claims, error) {
 	claims := &auth.Claims{
 		AnilistToken: anilistToken,
 
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        "jti",
 			Issuer:    s.config.Token.Issuer,
-			Subject:   user.Id,
+			Subject:   user.ID.String(),
 			Audience:  jwt.ClaimStrings{s.audience()},
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.config.Token.Expiry)),
 			NotBefore: jwt.NewNumericDate(time.Now()),

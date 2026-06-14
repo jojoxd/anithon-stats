@@ -9,13 +9,13 @@ type Entry struct {
 	Stats              EntryStats  `json:"stats"`
 	Progress           int64       `json:"progress"`
 	Status             EntryStatus `json:"status"`
-	SequelRef          *string     `json:"sequel"`
-	CustomSequelRef    *string     `json:"customSequel"`
+	SequelRef          *EntryRef   `json:"sequel"`
+	CustomSequelRef    *EntryRef   `json:"customSequel"`
 }
 
 // EntryRef references a specific Entry
 type EntryRef struct {
-	Id string `json:"id"`
+	Ref string `json:"ref"`
 }
 
 type EntryList struct {
@@ -51,4 +51,34 @@ const (
 
 func (e EntryStatus) String() string {
 	return string(e)
+}
+
+func (EntryStatus) Values() []string {
+	return []string{
+		string(EntryStatusCompleted),
+		string(EntryStatusCurrent),
+		string(EntryStatusDropped),
+		string(EntryStatusPaused),
+		string(EntryStatusPlanning),
+		string(EntryStatusRepeating),
+	}
+}
+
+func (e EntryStatus) Valid() bool {
+	switch e {
+	case EntryStatusCompleted:
+		return true
+	case EntryStatusCurrent:
+		return true
+	case EntryStatusDropped:
+		return true
+	case EntryStatusPaused:
+		return true
+	case EntryStatusPlanning:
+		return true
+	case EntryStatusRepeating:
+		return true
+	}
+
+	return false
 }

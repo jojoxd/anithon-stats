@@ -27,3 +27,13 @@ tasks:
     status: [ 'stat {{ .ROOT_DIR }}/{{ .GOBIN }}/gqlfetch' ]
     env: { GOBIN: '{{ .ROOT_DIR }}/{{ .GOBIN }}' }
     cmd: 'go install github.com/suessflorian/gqlfetch/gqlfetch@{{ .Gqlfetch.Version }}'
+
+  installed:gorm:
+    status: [ 'stat {{.ROOT_DIR}}/{{.GOBIN}}/gorm' ]
+    env: { GOBIN: '{{.ROOT_DIR}}/{{.GOBIN}}' }
+    cmd: 'go install gorm.io/cli/gorm@latest'
+
+  installed:ent:
+    status: [ 'stat {{.ROOT_DIR}}/{{.GOBIN}}/ent' ]
+    env: { GOBIN: '{{.ROOT_DIR}}/{{.GOBIN}}' }
+    cmd: 'go install entgo.io/ent/cmd/ent@latest'

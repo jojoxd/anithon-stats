@@ -24,14 +24,14 @@ func HandleSearchAnime(searchService *application.SearchService) http.HandlerFun
 			return
 		}
 
-		res, err := searchService.SearchSeries(r.Context(), req.Query)
+		series, err := searchService.SearchSeries(r.Context(), req.Query)
 		if err != nil {
 			// todo log it
 			internalServerError(w, r)
 			return
 		}
 
-		encode(w, r, http.StatusOK, &SearchResponse{Series: res.Items})
+		encode(w, r, http.StatusOK, &SearchResponse{Series: series})
 	}
 }
 
@@ -41,20 +41,20 @@ func HandleSearchGlobal(searchService *application.SearchService) http.HandlerFu
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		req, err := decode[SearchRequest](r)
-		if err != nil {
-			// todo log it
-			badRequest(w, r)
-			return
-		}
-
-		res, err := searchService.SearchGlobal(r.Context(), req.Query)
-		if err != nil {
-			// todo log it
-			internalServerError(w, r)
-			return
-		}
-
-		encode(w, r, http.StatusOK, res)
+		// req, err := decode[SearchRequest](r)
+		// if err != nil {
+		// 	// todo log it
+		// 	badRequest(w, r)
+		// 	return
+		// }
+		//
+		// res, err := searchService.SearchGlobal(r.Context(), req.Query)
+		// if err != nil {
+		// 	// todo log it
+		// 	internalServerError(w, r)
+		// 	return
+		// }
+		//
+		// encode(w, r, http.StatusOK, res)
 	}
 }

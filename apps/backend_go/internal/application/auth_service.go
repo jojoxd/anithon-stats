@@ -2,20 +2,18 @@ package application
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"net/url"
 	"path"
-	"strconv"
 
+	"git.jojoxd.nl/projects/aslog"
 	"github.com/golang-jwt/jwt/v5"
 
+	"git.jojoxd.nl/projects/anistats/backend/ent"
 	"git.jojoxd.nl/projects/anistats/backend/internal/anilist"
 	"git.jojoxd.nl/projects/anistats/backend/internal/config"
+
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain"
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain/auth"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/repository"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 type AuthService struct {
@@ -23,7 +21,7 @@ type AuthService struct {
 	serverConfig       config.Server
 	anilistAuthService *domain.AnilistAuthService
 	tokenService       *domain.TokenService
-	userRepository     repository.User
+	userService        *UserService
 	logger             *aslog.Logger
 }
 
@@ -37,7 +35,7 @@ func NewAuthService(
 	serverConfig config.Server,
 	anilistAuthService *domain.AnilistAuthService,
 	tokenService *domain.TokenService,
-	userRepository repository.User,
+	userService *UserService,
 	logger *aslog.Logger,
 ) *AuthService {
 	return &AuthService{
@@ -45,7 +43,7 @@ func NewAuthService(
 		serverConfig:       serverConfig,
 		anilistAuthService: anilistAuthService,
 		tokenService:       tokenService,
-		userRepository:     userRepository,
+		userService:        userService,
 		logger:             logger,
 	}
 }
@@ -78,18 +76,9 @@ func (s AuthService) HandleRedirect(ctx context.Context, anilistCode string) (to
 		return "", nil, err
 	}
 
-	anilistCurrentUserId := strconv.Itoa(anilistCurrentUser.Id)
-	user, err := s.userRepository.GetUserByAnilistId(ctx, anilistCurrentUserId)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		user, err = s.userRepository.CreateUser(ctx, repository.CreateUserDto{
-			Name:      anilistCurrentUser.Name,
-			AnilistId: anilistCurrentUserId,
-
-			AvatarUrl: sql.NullString{
-				String: anilistCurrentUser.Avatar.Large,
-				Valid:  true,
-			},
-		})
+	user, err := s.userService.GetByAnilistId(ctx, uint(anilistCurrentUser.Id))
+	if ent.IsNotFound(err) {
+		user, err = s.userService.CreateByAnilistId(ctx, uint(anilistCurrentUser.Id))
 	}
 
 	if err != nil {

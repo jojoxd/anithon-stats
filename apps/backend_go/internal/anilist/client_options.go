@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"git.jojoxd.nl/projects/aslog"
 	"golang.org/x/time/rate"
 
 	"git.jojoxd.nl/projects/anistats/backend/internal/anilist/transport"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 type ClientOption func(httpClient *http.Client)

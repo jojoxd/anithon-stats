@@ -3,10 +3,12 @@ package routes
 import (
 	"net/http"
 
+	"git.jojoxd.nl/projects/aslog"
+	"github.com/google/uuid"
+
 	"git.jojoxd.nl/projects/anistats/backend/api"
 	"git.jojoxd.nl/projects/anistats/backend/internal/application"
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain/auth"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 func HandleGetCurrentUser(userService *application.UserService, logger *aslog.Logger) http.Handler {
@@ -22,7 +24,12 @@ func HandleGetCurrentUser(userService *application.UserService, logger *aslog.Lo
 			return
 		}
 
-		user, err := userService.GetUser(r.Context(), authorization.Subject)
+		userId, err := uuid.Parse(authorization.Subject)
+		if err != nil {
+			panic(err)
+		}
+
+		user, err := userService.GetById(r.Context(), userId)
 		if err != nil {
 			logger.Error("failed to get user", "user_id", authorization.Subject, "err", err)
 			// todo log it
@@ -30,7 +37,11 @@ func HandleGetCurrentUser(userService *application.UserService, logger *aslog.Lo
 			return
 		}
 
-		encode(w, r, http.StatusOK, &UserResponse{User: user})
+		encode(w, r, http.StatusOK, &UserResponse{User: &api.User{
+			Id:     user.ID.String(),
+			Name:   user.Name,
+			Avatar: *user.AvatarURL,
+		}})
 	})
 }
 
@@ -40,26 +51,40 @@ func HandleGetUser(userService *application.UserService) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, err := userService.GetUser(r.Context(), r.PathValue("userId"))
+		userId, err := uuid.Parse(r.PathValue("userId"))
+		if err != nil {
+			panic(err)
+		}
+
+		user, err := userService.GetById(r.Context(), userId)
 		if err != nil {
 			// todo log it
 			internalServerError(w, r)
 			return
 		}
 
-		encode(w, r, http.StatusOK, &UserResponse{User: user})
+		encode(w, r, http.StatusOK, &UserResponse{User: &api.User{
+			Id:     user.ID.String(),
+			Name:   user.Name,
+			Avatar: *user.AvatarURL,
+		}})
 	})
 }
 
-func HandleGetUserLists(userService *application.UserService) http.Handler {
+func HandleGetUserLists(listService *application.ListService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		lists, err := userService.GetLists(r.Context(), r.PathValue("userId"))
+		userId, err := uuid.Parse(r.PathValue("userId"))
+		if err != nil {
+			panic(err)
+		}
+
+		listMetadatas, err := listService.GetAllByUserId(r.Context(), userId)
 		if err != nil {
 			// todo log it
 			internalServerError(w, r)
 			return
 		}
 
-		encode(w, r, http.StatusOK, lists)
+		encode(w, r, http.StatusOK, listMetadatas)
 	})
 }

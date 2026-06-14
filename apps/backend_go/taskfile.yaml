@@ -73,3 +73,17 @@ tasks:
     cmds:
       - task: tools:installed
       - cmd: '{{ .ROOT_DIR }}/{{ .GOBIN }}/gqlfetch --endpoint "https://graphql.anilist.co" > schema.graphql'
+
+  ent:
+    cmds:
+      - task: tools:installed:ent
+      - '{{.ROOT_DIR}}/{{.GOBIN}}/ent {{.CLI_ARGS}}'
+
+  generate:ent:
+    cmds:
+      - go run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy,entql ./ent/schema
+#  generate:gorm:
+#    dir: internal/dbal/gormgen
+#    cmds:
+#      - task: tools:installed:gorm
+#      - cmd: '{{.ROOT_DIR}}/{{.GOBIN}}/gorm gen -i ../../domain/entity -o generated'

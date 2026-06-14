@@ -22,10 +22,10 @@ type ListMetadataStats struct {
 }
 
 type ListSettings struct {
-	StackSize          int  `json:"stackSize"`
+	StackSize          uint `json:"stackSize"`
 	AllowChunkMerge    bool `json:"allowChunkMerge"`
-	MaxChunkLength     int  `json:"maxChunkLength"`
-	MaxChunkJoinLength int  `json:"maxChunkJoinLength"`
+	MaxChunkLength     uint `json:"maxChunkLength"`
+	MaxChunkJoinLength uint `json:"maxChunkJoinLength"`
 }
 
 type UpdateListRequest struct {

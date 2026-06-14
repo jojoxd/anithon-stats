@@ -1,0 +1,8 @@
+fragment PageView on Page {
+	pageInfo {
+		total,
+
+		currentPage,
+		hasNextPage,
+	}
+}

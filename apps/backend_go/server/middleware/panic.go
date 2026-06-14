@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"git.jojoxd.nl/projects/aslog"
+
 	"git.jojoxd.nl/projects/anistats/backend/api"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 func Panic(h http.Handler, logger *aslog.Logger) http.Handler {

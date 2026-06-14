@@ -1,0 +1,9 @@
+query SearchSeries($query: String!, $mediaType: MediaType!, $page: Int!, $perPage: Int!) {
+	Page(page: $page, perPage: $perPage) {
+		...PageView,
+
+		media(search: $query, type: $mediaType) {
+			...MediaRelatedFragment
+		}
+	}
+}

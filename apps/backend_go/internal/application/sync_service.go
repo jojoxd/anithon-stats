@@ -2,282 +2,202 @@ package application
 
 import (
 	"context"
-	"database/sql"
-	"errors"
-	"fmt"
 	"log/slog"
 
+	"git.jojoxd.nl/projects/aslog"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/google/uuid"
+
+	"git.jojoxd.nl/projects/anistats/backend/ent"
+	list2 "git.jojoxd.nl/projects/anistats/backend/ent/list"
+	"git.jojoxd.nl/projects/anistats/backend/ent/listentry"
+	user2 "git.jojoxd.nl/projects/anistats/backend/ent/user"
 	"git.jojoxd.nl/projects/anistats/backend/internal/anilist"
 	"git.jojoxd.nl/projects/anistats/backend/internal/anilist/generated"
-	"git.jojoxd.nl/projects/anistats/backend/internal/application/sync"
-	"git.jojoxd.nl/projects/anistats/backend/internal/config"
 	"git.jojoxd.nl/projects/anistats/backend/internal/domain"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/dbal"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/entity"
-	"git.jojoxd.nl/projects/anistats/backend/internal/domain/repository"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 type SyncService struct {
-	config                 config.Sync
-	database               dbal.Database
-	userRepository         repository.User
-	listRepository         repository.List
-	listSettingsRepository repository.ListSettings
-	syncUserService        *domain.SyncUserService
-	syncListService        *domain.SyncListService
-	syncSeriesService      *domain.SyncSeriesService
-	syncEntryService       *domain.SyncEntryService
-	logger                 *aslog.Logger
-	queue                  chan sync.Job
+	listService   *domain.ListService
+	seriesService *domain.SeriesService
+	entryService  *domain.EntryService
+
+	syncSeriesService *domain.SyncSeriesService
+
+	logger *aslog.Logger
 }
 
 func NewSyncService(
-	config config.Sync,
-	database dbal.Database,
-	userRepository repository.User,
-	listRepository repository.List,
-	listSettingsRepository repository.ListSettings,
-	syncUserService *domain.SyncUserService,
-	syncListService *domain.SyncListService,
+	listService *domain.ListService,
+	seriesService *domain.SeriesService,
+	entryService *domain.EntryService,
 	syncSeriesService *domain.SyncSeriesService,
-	syncEntryService *domain.SyncEntryService,
 	logger *aslog.Logger,
 ) *SyncService {
 	return &SyncService{
-		config:                 config,
-		database:               database,
-		userRepository:         userRepository,
-		listRepository:         listRepository,
-		listSettingsRepository: listSettingsRepository,
-		syncUserService:        syncUserService,
-		syncListService:        syncListService,
-		syncSeriesService:      syncSeriesService,
-		syncEntryService:       syncEntryService,
-		logger:                 logger,
-		queue:                  make(chan sync.Job),
+		listService:   listService,
+		seriesService: seriesService,
+		entryService:  entryService,
+
+		syncSeriesService: syncSeriesService,
+
+		logger: logger,
 	}
 }
 
-func (s SyncService) Start(ctx context.Context) {
-	for i := 0; i < int(s.config.Workers); i++ {
-		go func() {
-			for {
-				select {
-				case <-ctx.Done():
-					return
-
-				case item := <-s.queue:
-					err := s.handle(ctx, item)
-
-					if err != nil {
-						panic(err)
-					}
-				}
-			}
-		}()
-	}
-}
-
-func (s SyncService) handle(ctx context.Context, item sync.Job) error {
-
-	tx, err := s.database.NewTransaction(ctx)
+func (svc SyncService) SyncUserById(ctx context.Context, tx *ent.Tx, userId uuid.UUID) error {
+	user, err := tx.User.Get(ctx, userId)
 	if err != nil {
 		return err
 	}
 
-	switch job := item.(type) {
-	case *sync.JobUser:
-		err := s.handleUserJob(ctx, job, tx)
-		if err != nil {
-			if txerr := tx.Rollback(); txerr != nil {
-				return errors.Join(err, txerr)
-			}
-		}
+	svc.logger.Info("sync user", "user.id", user.ID.String(), "user.name", user.Name)
 
-		return err
-
-	case *sync.JobSeries:
-		err := s.handleSeriesJob(ctx, job, tx)
-		if err != nil {
-			if txerr := tx.Rollback(); txerr != nil {
-				return errors.Join(err, txerr)
-			}
-		}
-
-		return err
-
-	default:
-		panic(fmt.Errorf("Sync job %#v: unsupported\n", job))
-	}
-}
-
-func (s SyncService) handleUserJob(ctx context.Context, job *sync.JobUser, tx *sql.Tx) error {
-	s.logger.Info("sync user", slog.Any("uid", job.Ref.Id))
-
-	err := s.SyncUserImmediate(ctx, job.Ref.Id, tx)
-	if err != nil {
-		s.logger.Error(
-			"sync user failed",
-			slog.Any("err", err),
-			slog.Any("uid", job.Ref.Id),
-		)
-	}
-
-	return err
-}
-
-func (s SyncService) handleSeriesJob(ctx context.Context, job *sync.JobSeries, tx *sql.Tx) error {
-	s.logger.Info("sync series", slog.Any("sid", job.Ref.Id))
-
-	err := s.SyncSeriesImmediate(ctx, job.Ref.Id, tx)
-	if err != nil {
-		s.logger.Error(
-			"sync series failed",
-			slog.Any("err", err),
-			slog.Any("sid", job.Ref.Id),
-		)
-	}
-
-	return err
-}
-
-func (s SyncService) Queue(i sync.Job) {
-	s.queue <- i
-}
-
-func (s SyncService) SyncUserImmediate(ctx context.Context, userId string, tx *sql.Tx) error {
-
-	utx, err := s.database.NewTransaction(ctx)
+	// fetch user (should be rate-limited)
+	al := anilist.NewClient()
+	aluser, err := al.GetUser(ctx, user.AnilistID) // todo: drop cast
 	if err != nil {
 		return err
 	}
 
-	user, err := s.syncUserService.SyncImmediateTx(ctx, userId, utx)
-	if err != nil {
-		utx.Rollback()
-		return err
-	}
-
-	if err := utx.Commit(); err != nil {
-		return err
-	}
-
-	// todo
-	client := anilist.NewClient(anilist.WithRateLimiter(s.logger))
-
-	// sync lists
-	alAnimeUserlists, err := client.GetUserLists(ctx, user.AnilistId, generated.MediaTypeAnime)
-	if err != nil {
-		return err
-	}
-
-	for _, alList := range alAnimeUserlists.MediaListCollection.Lists {
-		if err := s.syncList(ctx, user, alList); err != nil {
-			return err
-		}
-	}
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s SyncService) syncList(ctx context.Context, user *entity.User, alList generated.GetUserListsMediaListCollectionListsMediaListGroup) error {
-	ltx, err := s.database.NewTransaction(ctx)
-	if err != nil {
-		return err
-	}
-
-	// // only for debugging
-	// if len(alList.Entries) > 40 {
-	// 	continue
-	// }
-
-	s.logger.Debug("sync user list", "user.name", user.Username, "user.uid", user.AnilistId, "list.name", alList.Name)
-
-	list, err := s.syncListService.SyncTx(ctx, user, alList, ltx)
-	if err != nil {
-		ltx.Rollback()
-
-		s.logger.Warn("failed to sync list",
-			slog.Any("err", err),
-			slog.Any("user.name", user.Username),
-			slog.Any("list.name", alList.Name))
-
-		return err
-	}
-
-	// todo sync entries
-	for _, alListEntry := range alList.Entries {
-		// Ensure series exists, and is up-to-date
-		series, err := s.syncSeriesService.SyncLocalTx(ctx, alListEntry.Media.MediaFragment, ltx)
-		if err != nil {
-			ltx.Rollback()
-
-			s.logger.Warn("Failed to sync series for entry",
-				slog.Any("err", err),
-				slog.Any("entry.anilist_id", alListEntry.Id),
-				slog.Any("series.anilist_id", alListEntry.Media.MediaFragment.Id))
-
-			return err
-		}
-
-		// sync entry
-
-		entry, err := s.syncEntryService.SyncTx(ctx, list, series, alListEntry, ltx)
-		if err != nil {
-			ltx.Rollback()
-
-			s.logger.Warn("Failed to sync entry",
-				slog.Any("err", err),
-				slog.Any("entry.anilist_id", alListEntry.Id),
-				slog.Any("series.anilist_id", alListEntry.Media.MediaFragment.Id))
-
-			return err
-		}
-
-		s.logger.Info("sync entry",
-			slog.Any("user.name", user.Username),
-			slog.Any("list.name", list.Name),
-			slog.Any("series.id", series.Id),
-			slog.Any("entry.id", entry.Id))
-	}
-
-	s.logger.Info("user list",
-		slog.Any("user.name", user.Username),
-		slog.Any("list.name", list.Name),
-		slog.Any("list.id", list.Id),
-		slog.Any("list.total_entries", len(alList.Entries)),
+	svc.logger.Info("sync user",
+		slog.Group("user",
+			slog.String("id", user.ID.String()),
+			slog.String("name", user.Name),
+			slog.Any("anilist_id", user.AnilistID),
+		),
+		slog.Group("aluser",
+			slog.Int("id", aluser.Id),
+			slog.String("name", aluser.Name),
+		),
 	)
 
-	if err := ltx.Commit(); err != nil {
-		s.logger.Warn("failed to commit sync user list",
-			slog.Any("err", err),
-			slog.Any("user.name", user.Username),
-			slog.Any("list.name", list.Name))
+	user, err = tx.User.UpdateOne(user).
+		SetName(aluser.Name).
+		SetAvatarURL(getAvatarUrl(aluser.Avatar)).
+		Save(ctx)
 
+	if err != nil {
 		return err
+	}
+
+	return svc.SyncListsByAnilistUserId(ctx, tx, user.AnilistID)
+}
+
+func (svc SyncService) SyncListsByAnilistUserId(ctx context.Context, tx *ent.Tx, anilistUserId uint) error {
+	client := anilist.NewClient()
+
+	user, err := tx.User.Query().Where(user2.AnilistID(anilistUserId)).Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	userLists, err := client.GetUserLists(ctx, anilistUserId, generated.MediaTypeAnime)
+	if err != nil {
+		return err
+	}
+
+	for _, userList := range userLists.MediaListCollection.Lists {
+		// debug: only sync small lists for now
+		// if len(userList.Entries) > 25 {
+		// 	continue
+		// }
+
+		_, err := svc.syncList(ctx, tx, user, userList)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (s SyncService) SyncSeriesImmediate(ctx context.Context, seriesId string, tx *sql.Tx) error {
+func (svc SyncService) syncList(
+	ctx context.Context,
+	tx *ent.Tx,
+	user *ent.User,
+	allist generated.MediaList,
+) (*ent.List, error) {
+	svc.logger.Info("Sync list", "user", user, "list.name", allist.Name, "list.#entries", len(allist.Entries))
 
-	// todo this converts a seriesId into an anilistId
-	series, err := s.syncSeriesService.SyncTx(ctx, seriesId, tx)
-	if err != nil {
-		return err
+	list, err := user.QueryLists().Where(list2.NameEQ(allist.Name)).Only(ctx)
+	switch {
+	case ent.IsNotFound(err):
+		q := tx.List.Create()
+		svc.listService.AssignMut(q.Mutation(), allist, user.ID)
+
+		list, err = q.Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+	case err != nil:
+		return nil, err
 	}
 
-	s.logger.Info("sync series", slog.Any("sid", seriesId), slog.Any("series", series))
+	spew.Dump(list)
 
-	if err := tx.Commit(); err != nil {
-		return err
+	qlist := list.Update()
+	svc.listService.AssignMut(qlist.Mutation(), allist, user.ID)
+
+	var currentEntries []*ent.ListEntry
+	// todo: couple/decouple entries
+	for _, alentry := range allist.Entries {
+		series, err := svc.syncSeriesService.SyncMediaRelatedFragment(ctx, tx, alentry.Media)
+		if err != nil {
+			return nil, err
+		}
+
+		entry, err := list.QueryEntries().Where(listentry.AnilistID(uint(alentry.Id))).Only(ctx)
+		switch {
+		case ent.IsNotFound(err): // todo: create
+			qentry := tx.ListEntry.Create()
+			svc.entryService.AssignMut(qentry.Mutation(), series.ID, list.ID, alentry)
+
+			entry, err = qentry.Save(ctx)
+			if err != nil {
+				return nil, err
+			}
+
+			currentEntries = append(currentEntries, entry)
+			continue // next entry
+
+		case err != nil:
+			return nil, err
+		}
+
+		qentry := entry.Update()
+		svc.entryService.AssignMut(qentry.Mutation(), series.ID, list.ID, alentry)
+
+		entry, err = qentry.Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		currentEntries = append(currentEntries, entry)
+
+		svc.logger.Info("sync list entry",
+			"list_id", list.ID.String(),
+			"entry.title", alentry.Media.Title,
+			"series.id", series.ID.String(),
+		)
 	}
 
-	return nil
+	qlist.
+		ClearEntries().
+		AddEntries(currentEntries...)
+
+	return qlist.Save(ctx)
+}
+
+func getAvatarUrl(avatar generated.UserAvatar) string {
+	if avatar.Large != "" {
+		return avatar.Large
+	}
+
+	if avatar.Medium != "" {
+		return avatar.Medium
+	}
+
+	return ""
 }

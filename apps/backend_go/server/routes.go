@@ -3,8 +3,9 @@ package server
 import (
 	"net/http"
 
+	"git.jojoxd.nl/projects/aslog"
+
 	"git.jojoxd.nl/projects/anistats/backend/internal/application"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 	"git.jojoxd.nl/projects/anistats/backend/server/middleware"
 	"git.jojoxd.nl/projects/anistats/backend/server/routes"
 )
@@ -36,5 +37,5 @@ func addRoutes(
 
 	mux.Handle("GET /api/user", authorized(routes.HandleGetCurrentUser(userService, logger)))
 	mux.Handle("GET /api/user/{userId}", routes.HandleGetUser(userService))
-	mux.Handle("GET /api/user/{userId}/lists", routes.HandleGetUserLists(userService))
+	mux.Handle("GET /api/user/{userId}/lists", routes.HandleGetUserLists(listService))
 }

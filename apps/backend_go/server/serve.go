@@ -11,22 +11,21 @@ import (
 	"sync"
 	"time"
 
+	"git.jojoxd.nl/projects/aslog"
+
+	"git.jojoxd.nl/projects/anistats/backend/ent"
 	"git.jojoxd.nl/projects/anistats/backend/internal/config"
-	"git.jojoxd.nl/projects/anistats/backend/internal/dbal"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 func Serve(ctx context.Context, logger *aslog.Logger, config *config.Config) error {
-	database, err := dbal.New(config.Dbal, logger)
+	database, err := ent.Open("postgres", config.Dbal.Dsn, ent.Debug())
 	if err != nil {
 		return err
 	}
+	defer database.Close()
 
-	if err := database.Migrate(ctx); err != nil {
-		return err
-	}
-
-	if err := database.Open(ctx); err != nil {
+	// migrate it
+	if err := database.Schema.Create(ctx); err != nil {
 		return err
 	}
 

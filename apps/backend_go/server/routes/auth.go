@@ -3,8 +3,9 @@ package routes
 import (
 	"net/http"
 
+	"git.jojoxd.nl/projects/aslog"
+
 	"git.jojoxd.nl/projects/anistats/backend/internal/application"
-	"git.jojoxd.nl/projects/anistats/backend/pkg/aslog"
 )
 
 func HandleAuthLogin(authService *application.AuthService) http.Handler {

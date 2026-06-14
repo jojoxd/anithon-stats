@@ -1,5 +1,6 @@
 query GetUserLists($userId: Int!, $mediaType: MediaType!) {
 	MediaListCollection(userId: $userId, type: $mediaType) {
+		# @genqlient(typename: "MediaList")
 		lists {
 			name
 
